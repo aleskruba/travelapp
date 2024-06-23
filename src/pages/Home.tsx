@@ -8,8 +8,13 @@ function Home() {
   return (
     <div className="flex h-full flex-col md:flex-row dark:text-lighTextColor px-2 py:2 md:px-6 md:py-6 ">
 
+
     <div className="flex  flex-col md:flex-row">
+
+
       <div className="flex-1 text-xl">
+
+
       <p>Vítejte na našem webu <span className='dark:text-pink-300  text-pink-800 font-bold'>Aleš </span>! </p>
       <br />
       <p> Jsme tu pro vás, abychom vám poskytli užitečné informace a inspiraci pro vaše cestovní plány. Naše stránky jsou zdrojem poznatků o turisticky zajímavých státech po celém světě, které vám pomohou naplánovat nezapomenutelnou dovolenou.</p>

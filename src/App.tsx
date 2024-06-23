@@ -3,7 +3,7 @@ import './App.css';
 import {Routes,Route} from "react-router-dom";
 import Layout from './components/Layout';
 import Navbar from './components/Navbar';
-import Home from './components/Home';
+import Home from './pages/Home';
 import { useThemeContext } from './context/themeContext';
 import Footer from './components/Footer';
 
