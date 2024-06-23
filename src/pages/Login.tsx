@@ -12,14 +12,12 @@ import { FaEye ,FaEyeSlash } from "react-icons/fa";
 import Image from '../custom/Image';
 import lide from '../assets/images/lide.svg';
 
-type Email = boolean;
 
 function Login() {
 
 
   const navigate = useNavigate();
   const [showPassword,setShowPassword] = useState(false);
-  const [emailForm, setEmailForm] = useState<Email>(false);
   const [backendError, setBackendError] = useState('');
   const [backendErrorGoogle, setBackendErrorGoogle] = useState('');
 
@@ -34,6 +32,14 @@ function Login() {
 
   }, []);
 
+  const handleBack = () => {
+    const currentPath = location.pathname;
+    if (currentPath === '/login' || currentPath === '/register') {
+      navigate('/');
+    } else {
+      navigate(-1);
+    }
+  };
   const validationSchema = Yup.object({
     email: Yup.string()
       .required('Required!')
@@ -144,9 +150,9 @@ return (
       {backendError && <div className="text-red-500">{backendError}</div>}
       <div className="flex space-x-4">
         <input type="submit" className="px-4 py-2 bg-blue-500 text-gray-700 rounded-md cursor-pointer hover:bg-blue-600 transition duration-300 w-[120px]" value="Přihlásit" />
-        <Link to="/" type="button" className="px-4 py-2 text-center bg-gray-300 text-gray-700 rounded-md cursor-pointer hover:bg-gray-400 transition duration-300 w-[120px]" >
-          Zpět
-          </Link>
+        <button onClick={handleBack} type="button" className="px-4 py-2 text-center bg-gray-300 text-gray-700 rounded-md cursor-pointer hover:bg-gray-400 transition duration-300 w-[120px]">
+        Zpět
+      </button>
       </div>
     </Form>
   </Formik>

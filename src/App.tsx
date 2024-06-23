@@ -8,6 +8,7 @@ import { useThemeContext } from './context/themeContext';
 import Footer from './components/Footer';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgottenPassword from './pages/ForgottenPassword';
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
             <Route index element={<Home />}/> 
             <Route path="/login" element={<Login />}/> 
             <Route path="/register" element={<Register />}/> 
+            <Route path="/forgottenpassword" element={<ForgottenPassword />}/> 
          
         </Route>
       </Routes>
