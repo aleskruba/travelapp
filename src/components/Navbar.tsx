@@ -31,24 +31,24 @@ function Navbar() {
             <Image src={logo} alt="Logo" className='' />
           </Link>
 
-            <div className='flex gap-6'>
-                <Link to="/traveltips" className="dark:hover:text-gray-300 hover:text-yellow-500 pl-4 md:pl-0">
+            <div className='flex gap-2 md:gap-6'>
+                <Link to="/traveltips" className="dark:hover:text-gray-300 hover:text-yellow-500 ">
                     TravelTips
                 </Link>
                 
-                <Link to="/spolucesty" className="dark:hover:text-gray-300 hover:text-yellow-500 pl-4 md:pl-0">
+                <Link to="/spolucesty" className="dark:hover:text-gray-300 hover:text-yellow-500 ">
                     Spolucesty
                 </Link>
              </div>
         </div>
 
-        <div className='flex flex-col md:flex-row md:space-x-4 md:pt-2 items-start justify-start pr-6 md:pr-0 '>
+        <div className='flex flex-col md:flex-row md:space-x-4 md:pt-2 items-start justify-start pr-8 md:pr-0 '>
           <Link to="/login" className="dark:hover:text-gray-300 hover:text-yellow-500">
-            Login
+            Přihlášení
           </Link>
           
           <Link to="/register" className="dark:hover:text-gray-300 hover:text-yellow-500">
-            Register
+            Registrace
           </Link>
 
         </div>
@@ -76,11 +76,11 @@ function Navbar() {
 
         <div className='flex space-x-4 items-center pr-6 md:pr-0'>
           <Link to="/login" className="dark:hover:text-gray-300 hover:text-yellow-500">
-            Login
+          Přihlášení
           </Link>
           
           <Link to="/register" className="dark:hover:text-gray-300 hover:text-yellow-500">
-            Register
+            Registrace
           </Link>
 
           <div className="dark:hover:text-gray-300 hover:text-yellow-500">
