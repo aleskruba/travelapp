@@ -6,6 +6,9 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import { useThemeContext } from './context/themeContext';
 import Footer from './components/Footer';
+import Login from './pages/Login';
+import Register from './pages/Register';
+
 
 function App() {
 
@@ -17,6 +20,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />} >
             <Route index element={<Home />}/> 
+            <Route path="/login" element={<Login />}/> 
+            <Route path="/register" element={<Register />}/> 
          
         </Route>
       </Routes>
