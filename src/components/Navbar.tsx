@@ -25,7 +25,7 @@ function Navbar() {
 }, [prevScrollPos]);
   return (
     <>
-      <nav className={` ${visible ? 'sticky' : 'none'} bg-gray-200 dark:bg-gray-700  top-0 flex justify-between items-center w-full dark:text-yellow-500 text-yellow-800 md:px-4  md:py-4 md:text-2xl font-bold text-xl pb-4 `}>
+      <nav className={` absolute bg-gray-200 dark:bg-gray-700  top-0 flex justify-between items-center w-full dark:text-yellow-500 text-yellow-800 md:px-4  md:py-4 md:text-2xl font-bold text-xl pb-4 `}>
         <div className='flex flex-col md:flex-row md:space-x-16 space-x-2 md:space-y-0 space-y-2 items-start md:items-center'>
           <Link to="/" className="md:w-[250px] w-[150px] block">
             <Image src={logo} alt="Logo" className='' />
