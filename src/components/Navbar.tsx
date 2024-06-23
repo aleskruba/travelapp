@@ -74,7 +74,7 @@ function Navbar() {
         
         </div>
 
-        <div className='flex space-x-4 items-center pr-6 md:pr-0'>
+        <div className='flex gap-2 pl-2 items-center pr-6 md:pr-0'>
           <Link to="/login" className="dark:hover:text-gray-300 hover:text-yellow-500">
           Přihlášení
           </Link>
