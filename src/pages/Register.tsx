@@ -1,5 +1,4 @@
-import React, { useEffect, useRef,useState } from 'react';
-import { MdOutlineCancel } from "react-icons/md";
+import React, { useEffect, useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
@@ -11,7 +10,13 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { FaEye ,FaEyeSlash } from "react-icons/fa";
 import Image from '../custom/Image';
 import lide from '../assets/images/lide.svg';
+import { useMutation } from '@tanstack/react-query';
 
+interface RegisterCredentials {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 
 function Register() {
@@ -21,6 +26,7 @@ function Register() {
   const [showPassword,setShowPassword] = useState(false);
   const [backendError, setBackendError] = useState('');
   const [backendErrorGoogle, setBackendErrorGoogle] = useState('');
+  const [isLoding, setIsLoding] = useState(false)
 
   let location = useLocation();
 
@@ -29,9 +35,6 @@ function Register() {
   }
 
 
-  useEffect(() => {
-
-  }, []);
 
   const handleBack = () => {
     const currentPath = location.pathname;
@@ -67,32 +70,76 @@ function Register() {
     password:'',
     confirmPassword:''
   }
-  async function handleSubmit(values:any, { resetForm}:any) {
-
-   try {
-
-   console.log(values);
- 
-
-  } catch (error: any) { 
-
-    setBackendError(error.response.data.error)
-
-    toast.error('Chyba při ukládání',  {
-      position: "top-left",
-      autoClose: 1500,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-      transition: Flip,
+  const logCredentials = async (credentials: RegisterCredentials) => {
+    try {
+      setIsLoding(true);
+      const response = await fetch(`${BASE_URL}/signup`, {
+        ...HTTP_CONFIG,
+        method: 'POST',
+        body: JSON.stringify(credentials),
       });
-  } finally {
+  
+      console.log(response)
+      if (!response.ok && response.status === 401) {
+        setIsLoding(false);
+        throw new Error('Email je již zaregistrován');
+       
+      }
+      if (!response.ok && response.status === 400) {
+        setIsLoding(false);
+        throw new Error('Hesla musí být stejná'); 
+      }
+      const data = await response.json(); 
+      setIsLoding(false);
+      
+      console.log(data);
+      return data; 
+    } catch (error) {
+      console.error('Error logging in:', error);
+      throw error; 
+    }
+  };
+  
 
-    resetForm();
-  }
+  const mutation = useMutation<void, Error, RegisterCredentials>({
+    mutationFn: logCredentials,
+    onSuccess: (data:any) => {
+      navigate('/');
+      console.log(data);
+        toast.success(data.message,  { 
+          position: "top-left",
+          autoClose: 1500,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Flip,
+        });
+    },
+    onError: (error) => {
+      setBackendError(error.message);
+      toast.error('Chyba při registraci', {
+        position: "top-left",
+        autoClose: 1500,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Flip,
+      });
+    },
+  });
+
+  const handleSubmit = (values: RegisterCredentials, { resetForm }: any) => {
+    mutation.mutate(values, {
+      onSuccess: () => {
+        resetForm(); // Reset the form only upon successful registration
+      }
+    });
 
   }
 
@@ -137,16 +184,28 @@ return (
 
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto ">
       <div className='flex flex-wrap items-center  overflow-y-auto min-h-[600px] mt-20'>
-      <div className="relative bg-white px-4 py-4 rounded-lg flex items-center justify-center flex-col ">
+      <div className={` ${isLoding ? 'opacity-30 pointer-events-none' : ''}relative bg-white px-4 py-4 rounded-lg flex items-center justify-center flex-col `}>
         <h1 className='mt-4 text-black poppins-extrabold text-3xl'>Registrace</h1>
   
         <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
   <Form className="flex flex-col space-y-4 items-center w-[350px] relative">
-    <Field name="email" type="email" id="email" placeholder="Email" autoComplete="off" className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
-    <ErrorMessage name="email" component="div" className="text-red-500" />
+    <Field name="email" 
+           type="email" 
+           id="email" 
+           placeholder="Email" 
+           autoComplete="off" 
+           className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
+    <ErrorMessage name="email" 
+                  component="div" 
+                  className="text-red-500" />
     
 
-    <Field name="password"   type={showPassword ? "text" : "password"} id="password" placeholder="Heslo" autoComplete="off" className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500 " />
+    <Field name="password"   
+          type={showPassword ? "text" : "password"} 
+          id="password" placeholder="Heslo" 
+          autoComplete="off" 
+          className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500 " />
+   
     <div className="absolute top-14 text-xl right-1  flex items-center pr-3"
           onClick={()=>showPasswordToggle()}>
         {showPassword ?
@@ -159,7 +218,13 @@ return (
     <ErrorMessage name="password" component="div" className="text-red-500" />
  
 
-    <Field name="confirmPassword"   type={showPassword ? "text" : "password"} id="confirmPassword" placeholder="Zopakuj heslo" autoComplete="off" className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500 " />
+    <Field name="confirmPassword"   
+           type={showPassword ? "text" : "password"} 
+           id="confirmPassword" 
+           placeholder="Zopakuj heslo" 
+           autoComplete="off" 
+           className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500 " />
+    
     <div className="absolute inset-y-0 right-1 text-xl top-11 flex items-center pr-3"
        onClick={()=>showPasswordToggle()}>
                {showPassword ?
@@ -172,8 +237,12 @@ return (
     <ErrorMessage name="confirmPassword" component="div" className="text-red-500" />
     {backendError && <div className="text-red-500">{backendError}</div>}
       <div className="flex space-x-4">
-        <input type="submit" className="px-4 py-2 bg-blue-500 text-gray-700 rounded-md cursor-pointer hover:bg-blue-600 transition duration-300 w-[120px]" value="Přihlásit" />
-        <button onClick={handleBack} type="button" className="px-4 py-2 text-center bg-gray-300 text-gray-700 rounded-md cursor-pointer hover:bg-gray-400 transition duration-300 w-[120px]">
+        <input type="submit" 
+               className="px-4 py-2 bg-blue-500 text-gray-700 rounded-md cursor-pointer hover:bg-blue-600 transition duration-300 w-[120px]"
+               value="Registrovat" />
+        <button onClick={handleBack} 
+                type="button" 
+                className="px-4 py-2 text-center bg-gray-300 text-gray-700 rounded-md cursor-pointer hover:bg-gray-400 transition duration-300 w-[120px]">
         Zpět
       </button>
       </div>
@@ -204,8 +273,8 @@ return (
      
 
   
-        {backendError && <div className="text-red-500">{backendError}</div>}
-        {backendErrorGoogle && <div className="text-red-500">{backendErrorGoogle}</div>}
+   {/*      {backendError && <div className="text-red-500">{backendError}</div>}
+        {backendErrorGoogle && <div className="text-red-500">{backendErrorGoogle}</div>} */}
         <div className='h-[100px]'>
         <Image className='flex mt-4  w-full h-full object-cover' src={lide} alt="lide" />
         </div>
