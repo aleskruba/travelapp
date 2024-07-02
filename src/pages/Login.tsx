@@ -9,6 +9,8 @@ import Image from '../custom/Image';
 import lide from '../assets/images/lide.svg';
 import { useMutation } from '@tanstack/react-query';
 import { BASE_URL, HTTP_CONFIG } from '../constants/config';
+import { useAuthContext } from '../context/authContext';
+import axios from 'axios';
 
 interface LoginCredentials {
   email: string;
@@ -21,6 +23,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [backendError, setBackendError] = useState('');
   const [backendErrorGoogle, setBackendErrorGoogle] = useState('');
+  const { setUser,setUpdateUser} = useAuthContext()
 
   const location = useLocation();
 
@@ -57,21 +60,24 @@ function Login() {
   const logCredentials = async (credentials: LoginCredentials) => {
     try {
       const response = await fetch(`${BASE_URL}/login`, {
-        ...HTTP_CONFIG,
+        ...HTTP_CONFIG, // Spread HTTP_CONFIG if needed
         method: 'POST',
         body: JSON.stringify(credentials),
+        credentials: 'include', // Set credentials directly here
       });
-  
+/*       const response = await axios.post(`${BASE_URL}/login`, credentials, HTTP_CONFIG);
+      console.log(response); */
       if (!response.ok) {
-        throw new Error('Failed to login'); // Handle non-200 status codes
+        throw new Error('Chyba při přihlašování'); 
       }
   
-      const data = await response.json(); // Extract JSON body from response
-      console.log(data); // Log the response data from the server
+      const data = await response.json(); 
+            setUser(data.user);
+
       return data; 
     } catch (error) {
       console.error('Error logging in:', error);
-      throw error; // Re-throw the error to be caught in your onError handler
+      throw error; 
     }
   };
   
@@ -80,7 +86,6 @@ function Login() {
     mutationFn: logCredentials,
     onSuccess: (data:any) => {
       navigate('/');
-      console.log(data);
         toast.success(data.message,  { 
           position: "top-left",
           autoClose: 1500,
@@ -125,10 +130,22 @@ function Login() {
               <Field name="email" type="email" id="email" placeholder="Email" autoComplete="off" className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
               <ErrorMessage name="email" component="div" className="text-red-500" />
 
-              <Field name="password" type={showPassword ? "text" : "password"} id="password" placeholder="Heslo" autoComplete="off" className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
-              <div className="absolute top-14 text-xl right-1 flex items-center pr-3" onClick={() => showPasswordToggle()}>
-                {showPassword ? <FaEye /> : <FaEyeSlash />}
-              </div>
+              <div className="relative w-full">
+                <Field
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  placeholder="Heslo"
+                  autoComplete="off"
+                  className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                />
+                <div
+                  className="absolute inset-y-0 right-1 text-xl flex items-center pr-3 cursor-pointer"
+                  onClick={showPasswordToggle}
+                >
+                  {showPassword ? <FaEye /> : <FaEyeSlash />}
+                </div>
+            </div>
               <ErrorMessage name="password" component="div" className="text-red-500" />
 
               {backendError && <div className="text-red-500">{backendError}</div>}
@@ -152,8 +169,8 @@ function Login() {
           </h5>
           <h5 className='text-gray-600'>Zapomenuté heslo: <Link to='/forgottenpassword' className='text-gray-600 underline cursor-pointer'>Klikni zde</Link></h5>
 
-          {backendError && <div className="text-red-500">{backendError}</div>}
-          {backendErrorGoogle && <div className="text-red-500">{backendErrorGoogle}</div>}
+       {/*    {backendError && <div className="text-red-500">{backendError}</div>}
+          {backendErrorGoogle && <div className="text-red-500">{backendErrorGoogle}</div>} */}
           <div className='h-[100px]'>
             <Image className='flex mt-4 w-full h-full object-cover' src={lide} alt="lide" />
           </div>

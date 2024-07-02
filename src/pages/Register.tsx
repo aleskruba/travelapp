@@ -11,6 +11,7 @@ import { FaEye ,FaEyeSlash } from "react-icons/fa";
 import Image from '../custom/Image';
 import lide from '../assets/images/lide.svg';
 import { useMutation } from '@tanstack/react-query';
+import { useAuthContext } from '../context/authContext';
 
 interface RegisterCredentials {
   email: string;
@@ -27,6 +28,7 @@ function Register() {
   const [backendError, setBackendError] = useState('');
   const [backendErrorGoogle, setBackendErrorGoogle] = useState('');
   const [isLoding, setIsLoding] = useState(false)
+  const { setUser,setUpdateUser} = useAuthContext()
 
   let location = useLocation();
 
@@ -74,12 +76,12 @@ function Register() {
     try {
       setIsLoding(true);
       const response = await fetch(`${BASE_URL}/signup`, {
-        ...HTTP_CONFIG,
+        ...HTTP_CONFIG, // Spread HTTP_CONFIG if needed
         method: 'POST',
         body: JSON.stringify(credentials),
+        credentials: 'include',
       });
   
-      console.log(response)
       if (!response.ok && response.status === 401) {
         setIsLoding(false);
         throw new Error('Email je již zaregistrován');
@@ -90,6 +92,8 @@ function Register() {
         throw new Error('Hesla musí být stejná'); 
       }
       const data = await response.json(); 
+      setUser(data.user);
+
       setIsLoding(false);
       
       console.log(data);
@@ -188,52 +192,53 @@ return (
         <h1 className='mt-4 text-black poppins-extrabold text-3xl'>Registrace</h1>
   
         <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
-  <Form className="flex flex-col space-y-4 items-center w-[350px] relative">
+  <Form className="flex flex-col space-y-4 items-center w-[350px] ">
     <Field name="email" 
            type="email" 
            id="email" 
            placeholder="Email" 
            autoComplete="off" 
-           className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
+           className="w-full px-4 py-2 relative border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
     <ErrorMessage name="email" 
                   component="div" 
                   className="text-red-500" />
     
 
-    <Field name="password"   
-          type={showPassword ? "text" : "password"} 
-          id="password" placeholder="Heslo" 
-          autoComplete="off" 
-          className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500 " />
-   
-    <div className="absolute top-14 text-xl right-1  flex items-center pr-3"
-          onClick={()=>showPasswordToggle()}>
-        {showPassword ?
-        <FaEye />
-        :
-        <FaEyeSlash />
-
-        }
-      </div>
+    <div className="relative w-full">
+    <Field
+      name="password"
+      type={showPassword ? "text" : "password"}
+      id="password"
+      placeholder="Heslo"
+      autoComplete="off"
+      className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+    />
+    <div
+      className="absolute inset-y-0 right-1 text-xl flex items-center pr-3 cursor-pointer"
+      onClick={showPasswordToggle}
+    >
+      {showPassword ? <FaEye /> : <FaEyeSlash />}
+    </div>
+  </div>
     <ErrorMessage name="password" component="div" className="text-red-500" />
  
 
-    <Field name="confirmPassword"   
-           type={showPassword ? "text" : "password"} 
-           id="confirmPassword" 
-           placeholder="Zopakuj heslo" 
-           autoComplete="off" 
-           className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500 " />
-    
-    <div className="absolute inset-y-0 right-1 text-xl top-11 flex items-center pr-3"
-       onClick={()=>showPasswordToggle()}>
-               {showPassword ?
-        <FaEye />
-        :
-        <FaEyeSlash />
-
-        }
-      </div>
+    <div className="relative w-full">
+    <Field
+      name="confirmPassword"
+      type={showPassword ? "text" : "password"}
+      id="confirmPassword"
+      placeholder="Zopakuj heslo"
+      autoComplete="off"
+      className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+    />
+    <div
+      className="absolute inset-y-0 right-1 text-xl flex items-center pr-3 cursor-pointer"
+      onClick={showPasswordToggle}
+    >
+      {showPassword ? <FaEye /> : <FaEyeSlash />}
+    </div>
+  </div>
     <ErrorMessage name="confirmPassword" component="div" className="text-red-500" />
     {backendError && <div className="text-red-500">{backendError}</div>}
       <div className="flex space-x-4">

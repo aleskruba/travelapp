@@ -33,7 +33,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [updateUser, setUpdateUser] = useState<UserProps | null>(null);
   const [backendServerError,setBackendServerError] = useState(false)
 
-  useEffect(() => {
+/*   useEffect(() => {
     const checkServerStatus = async () => {
       try {
         const response = await fetch(`${BASE_URL}/`);
@@ -50,13 +50,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     return () => clearInterval(intervalId); // Cleanup the interval when the component unmounts
   }, []);
-  
+   */
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         setBackendServerError(false);
-        const url = `${BASE_URL}/checkuser`;
+        const url = `${BASE_URL}/checksession`;
         const response = await axios.get(url, { withCredentials: true });
         const responseData = response.data;
         setUser(responseData.user);

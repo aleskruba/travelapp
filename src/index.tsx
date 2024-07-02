@@ -10,6 +10,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
+import { AuthProvider } from './context/authContext';
 
 const queryClient = new QueryClient()
 
@@ -20,13 +21,15 @@ root.render(
   <QueryClientProvider client={queryClient}>
     <BrowserRouter >
     <GoogleOAuthProvider clientId="85802491961-b7t13blg4rkgqbira2i00fni49cg8rmm.apps.googleusercontent.com">
-      <ThemeProvider>
-          <Routes>
-              <Route path="/*" element={<App/>} />
-          </Routes>
-          <ToastContainer 
-                /> 
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider>
+            <Routes>
+                <Route path="/*" element={<App/>} />
+            </Routes>
+            <ToastContainer 
+                  /> 
+        </ThemeProvider>
+      </AuthProvider>
       </GoogleOAuthProvider>
     </BrowserRouter>
   </QueryClientProvider>
