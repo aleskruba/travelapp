@@ -13,6 +13,7 @@ import lide from '../assets/images/lide.svg';
 import { useMutation } from '@tanstack/react-query';
 import { useAuthContext } from '../context/authContext';
 
+
 interface RegisterCredentials {
   email: string;
   password: string;
@@ -28,9 +29,15 @@ function Register() {
   const [backendError, setBackendError] = useState('');
   const [backendErrorGoogle, setBackendErrorGoogle] = useState('');
   const [isLoding, setIsLoding] = useState(false)
-  const { setUser,setUpdateUser} = useAuthContext()
+  const { user,setUser,setUpdateUser} = useAuthContext()
 
   let location = useLocation();
+
+  useEffect(()=>{
+    if (user){
+        navigate('/')
+        }
+    },[user])
 
   const showPasswordToggle = () => {
     setShowPassword(prev => !prev)
@@ -152,32 +159,62 @@ function Register() {
 const login = useGoogleLogin({
   onSuccess: async (res) =>{
     try {
-      const data = await axios.get(
-        "https://www.googleapis.com/oauth2/v3/userinfo",
-        {
-          headers:{
-            Authorization: `Bearer ${res.access_token}`,  
-          },
-         }
-      )
+      const responseGoogle = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: {
+          Authorization: `Bearer ${res.access_token}`,
+        },
+      });
+      
+      if (!responseGoogle.ok) {
+        throw new Error(`HTTP error! status: ${responseGoogle.status}`);
+      }
+      
+      const dataGoogle = await responseGoogle.json();
+      
  
 
       const values = {
-        email: data.data.email,
-        name: data.data.given_name,
-        profilePicture: data.data.picture,
+        email: dataGoogle.email,
+        name: dataGoogle.given_name,
+        profilePicture: dataGoogle.picture,
+      }
 
-    }
+        const response = await fetch(`${BASE_URL}/googlesignup`, {
+          ...HTTP_CONFIG, // Spread HTTP_CONFIG if needed
+          method: 'POST',
+          body: JSON.stringify(values),
+          credentials: 'include', // Set credentials directly here
+        });
 
+        if (!response.ok) {
+          setIsLoding(false);
+          throw new Error('Chyba při přihlašování'); 
+          
+        }
+        const data = await response.json(); 
+
+
+        toast.success(data.message,  {
+          position: "top-left",
+          autoClose: 1500,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Flip,
+          });
+      
+        setUser(data.user);
         navigate(location.pathname);
 
 
 
     }
     catch (error: any){
-      console.log(error)
-      console.error(error.response.data.error);
-      setBackendErrorGoogle(error.response.data.error)
+
+      setBackendErrorGoogle('Tento účet je již zaregistrován')
     
     }
   }
@@ -192,6 +229,13 @@ return (
         <h1 className='mt-4 text-black poppins-extrabold text-3xl'>Registrace</h1>
   
         <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
+
+          
+        {({ values, errors }) => {
+    const isFormValid =  values.email && !errors.password && !errors.confirmPassword && values.password && values.confirmPassword;;  
+
+    return (
+
   <Form className="flex flex-col space-y-4 items-center w-[350px] ">
     <Field name="email" 
            type="email" 
@@ -243,8 +287,8 @@ return (
     {backendError && <div className="text-red-500">{backendError}</div>}
       <div className="flex space-x-4">
         <input type="submit" 
-               className="px-4 py-2 bg-blue-500 text-gray-700 rounded-md cursor-pointer hover:bg-blue-600 transition duration-300 w-[120px]"
-               value="Registrovat" />
+                     className={`px-4 py-2 rounded-md cursor-pointer transition duration-300 w-[120px] ${isFormValid ? 'bg-blue-500 text-gray-700 hover:bg-blue-600' : 'bg-gray-300 text-gray-500 opacity-50 cursor-not-allowed'}`}
+                      value="Registrovat" />
         <button onClick={handleBack} 
                 type="button" 
                 className="px-4 py-2 text-center bg-gray-300 text-gray-700 rounded-md cursor-pointer hover:bg-gray-400 transition duration-300 w-[120px]">
@@ -252,6 +296,9 @@ return (
       </button>
       </div>
     </Form>
+
+);
+}}
   </Formik>
 
           <div className='mt-4 w-[80%]  bg-gray-200 flex items-center justify-center rounded-lg cursor-pointer'>
@@ -263,7 +310,11 @@ return (
               Zaregistovat se s  Google 🚀
             </button>
 
+          
+      
+      
             </div>
+            {backendErrorGoogle && <div className="text-red-500">{backendErrorGoogle}</div>} 
    
         <h5 className='pt-4 text-gray-600 '>Již nemáš účet? 
             <Link to='/login' className='text-gray-600 underline cursor-pointer'

@@ -1,7 +1,7 @@
-import React, { useState, FormEvent} from "react";
+import React, { useState, useEffect} from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
+import { useAuthContext } from "../context/authContext";
 import { Link, useNavigate,useLocation } from "react-router-dom";
 import { BASE_URL,HTTP_CONFIG } from '../constants/config';
 import { Flip, toast } from "react-toastify";
@@ -12,8 +12,15 @@ function ForgottenPassword() {
   const navigate = useNavigate();
   const [backendError, setBackendError] = useState("");
   const [isLoading, setIsloading] = useState(false);
+  const { user} = useAuthContext()
 
   let location = useLocation();
+
+  useEffect(()=>{
+    if (user){
+        navigate('/')
+        }
+    },[user])
 
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -33,11 +40,48 @@ function ForgottenPassword() {
 
     try {
     console.log(values);
+   // const response = await axios.post(`${BASE_URL}/sendotp`, values, config);
+    const response = await fetch(`${BASE_URL}/sendemail`, {
+      ...HTTP_CONFIG, // Spread HTTP_CONFIG if needed
+      method: 'POST',
+      body: JSON.stringify(values),
+      credentials: 'include', // Set credentials directly here
+    });
+//console.log(response)
+    if (response.status === 404) {
+      setBackendError('Tento email není zaregistrován');
+      toast.error('Email nenení zaregistrován', {
+        position: "top-left",
+        autoClose: 1500,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Flip,
+      });
+    }
+    if (response.status === 201) {
+      setIsloading(false);
+      toast.success('Email byl úspěšně odeslán', {
+        position: "top-left",
+        autoClose: 1500,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Flip,
+      });
 
+      navigate('/');
+    }
 
 
     } catch (err: any) {
-      setBackendError(err.response.data.error);
+      setBackendError('Něco se pokazilo');
       setIsloading(false);
       return;
     } finally {
@@ -56,6 +100,7 @@ function ForgottenPassword() {
   };
 
   return (
+
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto ">
       <div className="flex flex-wrap items-center  overflow-y-auto min-h-[500px] mt-20">
         <div className="relative bg-white p-2 rounded-lg flex items-center justify-center flex-col w-[350px] min-w-[350px] h-full max-h-[400px] md:w-[450px] md:h-[550px] ">
@@ -72,8 +117,10 @@ function ForgottenPassword() {
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
               >
-                {!isLoading ? (
-                  <>
+                        {({ values, errors }) => {
+    const isFormValid = values.email;  
+
+    return (
                     <Form className="flex flex-col space-y-4 items-center w-[350px] ">
                       <Field
                         name="email"
@@ -81,7 +128,7 @@ function ForgottenPassword() {
                         id="email"
                         placeholder="zadej svůj email"
                         autoComplete="off"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                        className="w-full px-4 py-2 border border-gray-300 text-black rounded-md focus:outline-none focus:border-blue-500"
                       />
 
                       <ErrorMessage
@@ -95,7 +142,7 @@ function ForgottenPassword() {
                       <div className="flex justify-center gap-4 mt-4">
                         <input
                           type="submit"
-                          className="px-4 py-2 bg-blue-500 text-white rounded-md cursor-pointer hover:bg-blue-600 transition duration-300 w-[120px]"
+                          className={`px-4 py-2 rounded-md cursor-pointer transition duration-300 w-[120px] ${isFormValid ? 'bg-blue-500 text-gray-700 hover:bg-blue-600' : 'bg-gray-300 text-gray-500 opacity-50 cursor-not-allowed'}`}
                           value="Odeslat"
                         /> 
                         <button onClick={handleBack} type="button" className="px-4 py-2 text-center bg-gray-300 text-gray-700 rounded-md cursor-pointer hover:bg-gray-400 transition duration-300 w-[120px]">
@@ -103,12 +150,10 @@ function ForgottenPassword() {
                       </button>
                       </div>
                     </Form>
-                  </>
-                ) : (
-                  <>
-                  <p>moment prosím....</p>
-                  </>
-                )}
+                  );
+                }}
+
+
               </Formik>
             </div>
    
@@ -124,6 +169,7 @@ function ForgottenPassword() {
 
 
     </div>
+     
   )
 }
 
