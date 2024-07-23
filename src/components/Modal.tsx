@@ -8,9 +8,7 @@ const Modal: React.FC = () => {
 
   const [isBlurred, setIsBlurred] = useState(true);
 
-  const handleAnimationComplete = () => {
-    setIsBlurred(false);
-  };
+
 
   useEffect(() => {
     if (modal) {
@@ -40,7 +38,7 @@ const Modal: React.FC = () => {
     <>
       {modal && (
         <div className="overlay fixed inset-0 w-full h-full bg-gray-800 bg-opacity-80 z-40 flex justify-center items-center">
-          <div ref={modalRef} className="modal-content relative bg-gray-100 p-2 rounded-md max-w-lg w-full mx-4 z-30">
+          <div ref={modalRef} className="modal-content relative bg-gray-100 p-2 rounded-md max-w-lg w-full mx-4 my-4 z-30">
             <button 
               onClick={() => toggleModal()} 
               className="close-modal absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full z-40"
