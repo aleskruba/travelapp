@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useAuthContext } from "../context/authContext";
 import { BASE_URL,HTTP_CONFIG } from '../constants/config';
 import { Flip, toast } from "react-toastify";
-import { useNavigate,useLocation,useSearchParams  } from "react-router-dom";
+import { useNavigate,useSearchParams  } from "react-router-dom";
 import { FaEye ,FaEyeSlash } from "react-icons/fa";
 import { useMutation } from '@tanstack/react-query';
 
@@ -20,13 +20,12 @@ function ResetPassword() {
     const [isLoding, setIsLoding] = useState(false)
     const [verified,setVerified] = useState(false);
     const [userId,setUserId] = useState(null)
-    const { user,setUser} = useAuthContext()
+    const { user} = useAuthContext()
 
     const navigate = useNavigate();
 
     const [searchParams] = useSearchParams();
     const token = searchParams.get('token');
-  console.log(token)
 
   useEffect(() => {
     if (!token) {
@@ -41,7 +40,7 @@ function ResetPassword() {
         theme: "colored",
         transition: Flip,
       });
-        navigate("/login");
+        navigate("/");
         return; // Return early if the token is missing
     }
 
@@ -60,6 +59,7 @@ function ResetPassword() {
 
             const data = await response.json(); 
             setUserId(data.user);
+
             setVerified(true);
         } catch (error) {
             console.error('Error verifying token:', error);
@@ -137,11 +137,10 @@ function ResetPassword() {
             throw new Error('Hesla musí být stejná'); 
           }
           const data = await response.json(); 
-          setUser(data.user);
-    
+     //     setUser(data.user);
+      //    setResetPassword(true)
           setIsLoding(false);
-          
-          console.log(data);
+          console.log(data)
           return data; 
         } catch (error) {
            console.log(error)
@@ -153,8 +152,7 @@ function ResetPassword() {
       const mutation = useMutation<void, Error, NewPasswordCredentials>({
         mutationFn: logCredentials,
         onSuccess: (data:any) => {
-          navigate('/');
-          console.log(data);
+          navigate("/login");
             toast.success(data.message,  { 
               position: "top-left",
               autoClose: 1500,

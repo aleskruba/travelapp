@@ -11,22 +11,28 @@ import Register from './pages/Register';
 import ForgottenPassword from './pages/ForgottenPassword';
 import Test from './pages/Test';
 import ResetPassword from './pages/ResetPassword';
-
+import Profil from './pages/Profil';
+import Modal from './components/Modal';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
 
-  const { theme } = useThemeContext();
+  const { theme,modal } = useThemeContext();
 
   return (
     <div className={`relative ${theme === 'dark' ? 'bg-darkBackground text-white' : 'bg-lightBackground text-black'}`}>
+{modal && <Modal/>}
       <Navbar/>
+      <ScrollToTop />
       <Routes>
+ 
         <Route path="/" element={<Layout />} >
             <Route index element={<Home />}/> 
             <Route path="/login" element={<Login />}/> 
             <Route path="/register" element={<Register />}/> 
             <Route path="/forgottenpassword" element={<ForgottenPassword />}/> 
             <Route path="/resetpassword" element={<ResetPassword />}/> 
+            <Route path="/profil" element={<Profil />}/> 
             <Route path="/test" element={<Test />}/> 
          
         </Route>

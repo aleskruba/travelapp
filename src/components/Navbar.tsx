@@ -12,7 +12,7 @@ import axios from 'axios';
 function Navbar() {
     const [prevScrollPos, setPrevScrollPos] = useState(0);
     const [visible, setVisible] = useState(true);
-    const { user,setUser,setUpdateUser} = useAuthContext();
+    const { user,setUser,setUpdateUser,isLoading} = useAuthContext();
     const navigate = useNavigate()
 
   useEffect(() => {

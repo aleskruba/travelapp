@@ -1,17 +1,23 @@
-import React, { createContext, useState, useEffect, ReactNode ,useContext} from 'react';
-
+import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 
 type Theme = 'light' | 'dark';
 
 interface ThemeContextProps {
   theme: Theme;
   setTheme: React.Dispatch<React.SetStateAction<Theme>>;
-  
+  modal: boolean;
+  setModal: React.Dispatch<React.SetStateAction<boolean>>;
+  toggleModal: (imageUrl?: string) => void;
+  image: string | null;
 }
 
 export const ThemeContext = createContext<ThemeContextProps>({
   theme: 'light',
   setTheme: () => {},
+  modal: false,
+  setModal: () => {},
+  toggleModal: () => {},
+  image: null,
 });
 
 interface ThemeProviderProps {
@@ -24,9 +30,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     return storedTheme || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   });
 
+  const [modal, setModal] = useState(false);
+  const [image, setImage] = useState<string | null>(null);
   const element = document.documentElement;
-
-
 
   useEffect(() => {
     switch (theme) {
@@ -41,7 +47,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       default:
         break;
     }
-  }, [theme,element.classList]);
+  }, [theme, element.classList]);
 
   useEffect(() => {
     const handleDeviceThemeChange = () => {
@@ -56,19 +62,24 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     };
   }, []);
 
+  const toggleModal = (imageUrl?: string) => {
+    if (imageUrl !== undefined) {
+      setImage(imageUrl);
+    }
+    setModal((prevModal) => !prevModal);
+  };
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme}}>
+    <ThemeContext.Provider value={{ theme, setTheme, modal, setModal, toggleModal, image }}>
       {children}
     </ThemeContext.Provider>
   );
 };
 
-
 export function useThemeContext() {
   const context = useContext(ThemeContext);
   if (!context) {
-      throw new Error("useThemeContext must be used within a ThemeContextProvider");
+    throw new Error('useThemeContext must be used within a ThemeProvider');
   }
   return context;
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import { useState, useEffect} from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useAuthContext } from "../context/authContext";
@@ -11,7 +11,7 @@ function ForgottenPassword() {
 
   const navigate = useNavigate();
   const [backendError, setBackendError] = useState("");
-  const [isLoading, setIsloading] = useState(false);
+  const [isLoading,setisLoading] = useState(false);
   const { user} = useAuthContext()
 
   let location = useLocation();
@@ -36,10 +36,10 @@ function ForgottenPassword() {
 
 
   async function handleSubmit(values: any, { resetForm }: any) {
-
+    setisLoading(true)
 
     try {
-    console.log(values);
+
    // const response = await axios.post(`${BASE_URL}/sendotp`, values, config);
     const response = await fetch(`${BASE_URL}/sendemail`, {
       ...HTTP_CONFIG, // Spread HTTP_CONFIG if needed
@@ -47,8 +47,9 @@ function ForgottenPassword() {
       body: JSON.stringify(values),
       credentials: 'include', // Set credentials directly here
     });
-//console.log(response)
+
     if (response.status === 404) {
+      setisLoading(false)
       setBackendError('Tento email není zaregistrován');
       toast.error('Email nenení zaregistrován', {
         position: "top-left",
@@ -63,7 +64,8 @@ function ForgottenPassword() {
       });
     }
     if (response.status === 201) {
-      setIsloading(false);
+
+      setisLoading(false)
       toast.success('Email byl úspěšně odeslán', {
         position: "top-left",
         autoClose: 1500,
@@ -82,7 +84,7 @@ function ForgottenPassword() {
 
     } catch (err: any) {
       setBackendError('Něco se pokazilo');
-      setIsloading(false);
+   //   setIsloading(false);
       return;
     } finally {
       resetForm();
@@ -142,7 +144,12 @@ function ForgottenPassword() {
                       <div className="flex justify-center gap-4 mt-4">
                         <input
                           type="submit"
-                          className={`px-4 py-2 rounded-md cursor-pointer transition duration-300 w-[120px] ${isFormValid ? 'bg-blue-500 text-gray-700 hover:bg-blue-600' : 'bg-gray-300 text-gray-500 opacity-50 cursor-not-allowed'}`}
+                          className={
+                            isLoading 
+                              ? 'px-4 py-2 rounded-md cursor-pointer bg-blue-500 opacity-50 pointer-events-none w-[120px]' 
+                              : `px-4 py-2 rounded-md cursor-pointer transition duration-300 w-[120px] ${isFormValid ? 'bg-blue-500 text-gray-700 hover:bg-blue-600' : 'bg-gray-300 text-gray-500 opacity-50 cursor-not-allowed'}`
+                          }
+                          
                           value="Odeslat"
                         /> 
                         <button onClick={handleBack} type="button" className="px-4 py-2 text-center bg-gray-300 text-gray-700 rounded-md cursor-pointer hover:bg-gray-400 transition duration-300 w-[120px]">

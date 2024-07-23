@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@react-oauth/google": "^0.12.1",
-    "@tanstack/react-query": "^5.48.0",
+    "@tanstack/react-query": "^5.51.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -13,8 +13,10 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "axios": "^1.7.2",
-    "dompurify": "^3.1.5",
+    "dompurify": "^3.1.6",
+    "exif-js": "^2.3.0",
     "formik": "^2.4.6",
+    "framer-motion": "^11.3.12",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
@@ -50,6 +52,7 @@
     ]
   },
   "devDependencies": {
+    "@types/dompurify": "^3.0.5",
     "autoprefixer": "^10.4.19",
     "file-loader": "^6.2.0",
     "postcss": "^8.4.38",
