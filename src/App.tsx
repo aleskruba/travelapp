@@ -14,6 +14,7 @@ import ResetPassword from './pages/ResetPassword';
 import Profil from './pages/Profil';
 import Modal from './components/Modal';
 import ScrollToTop from './components/ScrollToTop';
+import TravelTips from './pages/TravelTips';
 
 function App() {
 
@@ -33,6 +34,9 @@ function App() {
             <Route path="/forgottenpassword" element={<ForgottenPassword />}/> 
             <Route path="/resetpassword" element={<ResetPassword />}/> 
             <Route path="/profil" element={<Profil />}/> 
+            <Route path="/traveltips" element={<TravelTips />}/> 
+            <Route path="/traveltips/:id" element={<TravelTips />}/> 
+
             <Route path="/test" element={<Test />}/> 
          
         </Route>

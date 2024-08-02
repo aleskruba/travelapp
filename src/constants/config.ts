@@ -6,3 +6,5 @@ export const HTTP_CONFIG = {
     'Content-Type': 'application/json',
   },
 };
+
+export const SOCKET_URL = 'https://travelsocket.onrender.com';

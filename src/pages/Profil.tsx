@@ -10,14 +10,13 @@ import Resizer from "react-image-file-resizer";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import EXIF from 'exif-js';
 import lide from '../assets/images/lide.svg';
-import { useMutation, QueryClient, } from '@tanstack/react-query';
 
 function Profil() {
 
     const [updateProfile, setUpdateProfile] = useState(false);
     const [updatePassword, setUpdatePassword] = useState(false);
     const { user, setUser, updateUser, setUpdateUser } = useAuthContext();
-    const { modal, setModal,toggleModal } = useThemeContext();
+    const { toggleModal } = useThemeContext();
     const [backendError, setBackendError] = useState('');
     const [backendImageError, setBackendImageError] = useState('');
     const [noChange, setNoChange] = useState('');
@@ -118,135 +117,11 @@ function Profil() {
         });
     };
 
-    const updateProfileFunction = async (user: UserProps | null) => {
-      try {
-          const response = await fetch(`${BASE_URL}/updateprofile`, {
-              ...HTTP_CONFIG, // Spread HTTP_CONFIG if needed
-              method: 'PUT',
-              body: JSON.stringify(user),
-              credentials: 'include', // Set credentials directly here
-          });
-  
-          if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(errorData.error || 'Failed to update profile');
-          }
-
-          const data = await response.json();
-          return data;
-      } catch (e) {
-          throw new Error( 'Network error');
-      }
-  };
-
-  const updatePasswordFunction = async (user: UserProps | null) => {
-    try {
-        const response = await fetch(`${BASE_URL}/updatepassword`, {
-            ...HTTP_CONFIG, // Spread HTTP_CONFIG if needed
-            method: 'PUT',
-            body: JSON.stringify(user),
-            credentials: 'include', // Set credentials directly here
-        });
-
-    
-        
-
-        if (response.ok) {
-            const data = await response.json();
-      
-            return data;
-        } else {
-            const errorData = await response.json();
-            console.log(response.status, errorData);
-        }
-
-  
-    } catch (e) {
-        throw new Error( 'Network error');
-    }
-};
-
-  const queryClient = new QueryClient()
-
-
-  const mutation = useMutation<void, Error, UserProps>({
-    
-      mutationFn: updateProfileFunction ,
-      onSuccess: (data: any) => {
-        queryClient.setQueryData(['userkey'],  data)
-
-      
-           setUser(data.updatedUser);
-           setUpdateUser(data.updatedUser);
-     
-  
-          toast.success('Update proběhl úspěšně', {
-              position: "top-left",
-              autoClose: 1500,
-              hideProgressBar: true,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "colored",
-              transition: Flip,
-          });
-      },
-      onError: (error: Error) => {
-          console.log(error);
-  
-          toast.error('Chyba při úpravě profilu', {
-              position: "top-left",
-              autoClose: 1500,
-              hideProgressBar: true,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "colored",
-              transition: Flip,
-          });
-      },
-  });
-  
-
-  const passwordMutation = useMutation<void, Error, UserProps>({
-    
-    mutationFn: updatePasswordFunction ,
-    onSuccess: (data: any) => {
-      queryClient.setQueryData(['userkey'],  data)
-
-            toast.success('Změna hesla proběhla úspěšně', {
-            position: "top-left",
-            autoClose: 1500,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-            transition: Flip,
-        });
-    },
-    onError: (error: Error) => {
-        console.log(error);
-
-        toast.error('Chyba při změně hesla', {
-            position: "top-left",
-            autoClose: 1500,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-            transition: Flip,
-        });
-    },
-});
 
     const handleSubmitProfile = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+
+        try {
 
         if (updateUser?.username === user?.username && updateUser?.firstName === user?.firstName &&
           updateUser?.lastName === user?.lastName && updateUser?.email === user?.email) {
@@ -273,19 +148,59 @@ function Profil() {
           setBackendError('Email  musí mít 4 až 50 znaků F')
         }
 
-        mutation.mutate(updateUser, {
-          onSuccess: () => {
+        const response = await fetch(`${BASE_URL}/updateprofile`, {
+            ...HTTP_CONFIG, // Spread HTTP_CONFIG if needed
+            method: 'PUT',
+            body: JSON.stringify(updateUser),
+            credentials: 'include', // Set credentials directly here
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to update profile');
+        }
+
+        const data = await response.json();
+        console.log(data)
+   
+        toast.success('Update proběhl úspěšně', {
+            position: "top-left",
+            autoClose: 1500,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Flip,
+        });
               setUpdateProfile(false);
-          }
-      });
+ 
 }
+        }catch(e){
+            console.error(e)
+            toast.error('Chyba při úpravě profilu', {
+                position: "top-left",
+                autoClose: 1500,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                transition: Flip,
+            });
+
+        }
       }
 
 
 
  const handleSubmitPassword = async (event: FormEvent<HTMLFormElement>) => {
+
     event.preventDefault();
 
+    try {
     if (updateUser) {
 
             if(updateUser.password !== updateUser.confirmPassword) {
@@ -296,20 +211,60 @@ function Profil() {
               setBackendError('Heslo musí mít 8 až 50 znaků')
               return;
             } 
+
+            const response = await fetch(`${BASE_URL}/updatepassword`, {
+                ...HTTP_CONFIG, // Spread HTTP_CONFIG if needed
+                method: 'PUT',
+                body: JSON.stringify({password:updateUser.password, confirmPassword:updateUser.confirmPassword} ),
+                credentials: 'include', // Set credentials directly here
+            });
     
-        passwordMutation.mutate(updateUser, {
-        onSuccess: () => {
+        
+            
+    
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data);
+    
+            }
+              
+            toast.success('Změna hesla proběhla úspěšně', {
+                position: "top-left",
+                autoClose: 1500,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                transition: Flip,
+            });
             setUpdatePassword(false);
-        }
-    });
+  
 
     }
+
+}catch(e){
+    console.error(e)
+    toast.error('Chyba při změně hesla', {
+        position: "top-left",
+        autoClose: 1500,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Flip,
+    });
+
+}
  }
         
 
     return (
 
-  <div className="flex items-center h-full pb-4 flex-col pt-8 gap-6">
+  <div className="flex items-center h-full pb-4 flex-col pt-8 gap-6 ">
   
             <Link
                 to={`/tvojeblogy`}
@@ -364,9 +319,9 @@ function Profil() {
                     {!updateProfile ? (
                         <div>
                             <div className="text-lg font-semibold mb-2">Tvůj profil</div>
-                            <div className="mb-2">Username: {user?.username}</div>
-                            <div className="mb-2">Jméno: {user?.firstName}</div>
-                            <div className="mb-2">Příjmění: {user?.lastName}</div>
+                            <div className="mb-2">Username: {updateUser?.username}</div>
+                            <div className="mb-2">Jméno: {updateUser?.firstName}</div>
+                            <div className="mb-2">Příjmění: {updateUser?.lastName}</div>
                             <div>Email: {user?.email}</div>
                         </div>
                     ) : (

@@ -71,7 +71,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   });
 
   useEffect(() => {
-    console.log('useEffect context runs')
+    console.log('useEffect uthContext runs')
     if (userData !== undefined) {
    // console.log(status)
       setUser(userData);
