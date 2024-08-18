@@ -118,7 +118,7 @@ function CreateVlog({ setOpenDivCreateVlog }: Props) {
   };
   
   return (
-    <form className="space-y-4 p-6 bg-white dark:bg-slate-400 shadow-md rounded-lg max-w-md mx-auto" onSubmit={handleSubmit}>
+    <form className="space-y-4 p-6 bg-white dark:bg-slate-400 shadow-md rounded-lg max-w-[22rem]" onSubmit={handleSubmit}>
       <input
         type="text"
         placeholder="Titulek max 150 znaků"
@@ -130,7 +130,7 @@ function CreateVlog({ setOpenDivCreateVlog }: Props) {
       />
       <input
         type="text"
-        placeholder="YouTube kód v podobném tvaru jako: 'dYJpPdSTzGs' "
+        placeholder="YouTube kód ve tvaru: 'dYJpPdSTzGs' "
         maxLength={15}
         className="w-full p-2 border border-gray-300  dark:bg-slate-200 text-white dark:text-black"
         name="video"
