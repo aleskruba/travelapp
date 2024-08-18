@@ -19,6 +19,8 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allow
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [message, setMessage] = useState<MessageProps>(initialMessageState);
   const { chosenCountry } = useCountryContext();
+
+
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const sanitizedMessage = DOMPurify.sanitize(event.target.value);
     setMessage({ ...message, [event.target.name]: sanitizedMessage });
@@ -69,7 +71,9 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allow
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const newMessage = { ...message, country: chosenCountry, user_id: user.id };
+    const newMessage = { ...message, 
+                                  country: chosenCountry, 
+                                  user_id: user.id };
 
     try {
       createMessageMutation.mutate(newMessage);
@@ -80,7 +84,7 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allow
 
     return (
       <div className='flex flex-col '>
-<form onSubmit={handleSubmit}>
+  <form onSubmit={handleSubmit}>
 
     <div className="flex justify-between items-center dark:text-lighTextColor gap-4 bg-gray-100 px-2 py-2 md:rounded-lg shadow-md mt-2">
       <div className="flex items-center gap-2"> 

@@ -1,21 +1,20 @@
 import React, {useEffect, useState } from 'react';
-import { BiLike,BiDislike  } from "react-icons/bi";
 import moment from 'moment';
 import { FaRegTrashAlt } from "react-icons/fa";
 import { GoTriangleDown ,GoTriangleUp } from "react-icons/go";
 import { MessageProps } from '../../types';
 import { useAuthContext } from '../../context/authContext';
 import { BASE_URL, HTTP_CONFIG, SOCKET_URL} from '../../constants/config';
-import { motion, useAnimation } from 'framer-motion';
+/* import { motion, useAnimation } from 'framer-motion'; */
 import useVote from '../../hooks/useVote';
 import { useCountryContext } from '../../context/countryContext';
 import { useThemeContext } from '../../context/themeContext';
-import { useNavigate  } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import ConfirmationModal from '../ConfirmationModal';
 import { useMutation,useQueryClient } from '@tanstack/react-query';
-
 import Reply from './Reply';
+import CreateReply from './CreateReply';
+import CreateMessageVote from './CreateMessageVote';
 
 type Props = {
   message: MessageProps;
@@ -33,23 +32,18 @@ const Message: React.FC<Props> = ( {
   const { toggleModal } = useThemeContext();
     const [hiddenAnswers,setHiddenAnswes] = useState(true);
     const [deleted, setDeleted] = useState(false);
-    const controls = useAnimation();
-    const[deletedReply,setDeletedReply] = useState<number | null>(null);
+ /*    const controls = useAnimation(); */
     const [selectedReplyDivId, setSelectedReplyDivId] = useState<number | null>(null);
     const [showModal, setShowModal] = useState<boolean>(false);
-    const [selectedReplyId, setSelectedReplyId] = useState<number | null>(null);
     const [selectedMessageId, setSelectedMessageId] = useState<number | null>(null);
     const { chosenCountry } = useCountryContext();
    // const {votes,handleVote,setVotes} = useVote(chosenCountry);
-    const [liked, setLiked] = useState(false);
-    const [disliked, setdisLiked] = useState(false);
-    const [replyDiv, setReplyDiv] = useState(false);
-    const navigate = useNavigate();
+     const [replyDiv, setReplyDiv] = useState(false);
     //const socket = io(SOCKET_URL);
     const imageUrl = message?.user.image ? message?.user.image : '/profile.png';
                 
 
-    const shakeAnimation = {
+/*     const shakeAnimation = {
       shake: {
         x: [0, -10, 10, -10, 10, 0],
         transition: { duration: 0.5 }
@@ -62,10 +56,10 @@ const Message: React.FC<Props> = ( {
         opacity: 1,
      
       }
-    };
+    }; */
     
 
-    useEffect(() => {
+ /*    useEffect(() => {
       if (deleted) { // If deleted is true, start the animation sequence
         controls.start("shake").then(() => {
           controls.start("fadeOut").then(() => {
@@ -76,7 +70,7 @@ const Message: React.FC<Props> = ( {
         });
       }
     }, [deleted, controls]);
-
+ */
 
 const handleDeleteMessageClick = (ID: number) => {
       setSelectedMessageId(ID);
@@ -188,10 +182,9 @@ const countThumbsDown = (message_id:any) =>{
  */
 
 return (
-  <motion.div
+  <div
   className='flex flex-col dark:bg-gray-500 dark:text-gray-100 px-4 py-2 shadow-2xl rounded-lg'
-  animate={controls}
-  variants={shakeAnimation}
+
 > 
 
 
@@ -233,44 +226,9 @@ return (
      <div className='flex  gap-2 flex-col md:flex-row '>
    
      <div className='flex gap-4  '>
-        {/*   <div className='flex flex-col'>         
-            <div onClick={() => handleVoteClick('thumb_up',message.id)} 
-            className={`
-              ${user?.id === message.user_id ? 'opacity-20 pointer-events-none' : `cursor-pointer transition-transform
-                ${liked 
-                                   ? 'scale-150 rotate-10 ' 
-                                   : 'scale-100 rotate-0 '}
-                `}
-     
-       
-            `} >
-            
-                        
-                    
-              
-  
-              <BiLike />
 
-              </div>
-               
-            <div>{ countThumbsUp(message.id)}</div>
-          </div> */}
-     {/*      <div className='flex flex-col'>    
-            <div onClick={() => handleVoteClick('thumb_down',message.id)} 
-                 className={`
-                  ${user?.id === message.user_id ? 'opacity-20 pointer-events-none' : `cursor-pointer transition-transform
-                    ${disliked 
-                                       ? 'scale-150 rotate-10 ' 
-                                       : 'scale-100 rotate-0 '}
-                    `}
-         
-           
-                `} >
-                
-              <BiDislike /></div>
-        
-            <div>{countThumbsDown((message.id))}</div>
-          </div> */}
+      <CreateMessageVote
+              message={message}/>
 
 
           {!replyDiv &&  user?.id !== message.user_id  &&
@@ -282,8 +240,15 @@ return (
 
 
 </div>
+{replyDiv && message.id === selectedReplyDivId &&
 
-  
+<CreateReply 
+      setReplyDiv={setReplyDiv}
+      message={message}
+      setSelectedReplyDivId={setSelectedReplyDivId}
+
+/>
+}  
     </div>
     
     <div className='flex gap-4' onClick={()=>setHiddenAnswes(!hiddenAnswers)}>
@@ -331,7 +296,7 @@ return (
        onConfirm={()=>{selectedMessageId &&deleteMessageMutation.mutate(selectedMessageId)}}             
       message="Chceš opravdu smazat tuto zprávu?"
     /> 
-    </motion.div>
+    </div>
   );
 };
 

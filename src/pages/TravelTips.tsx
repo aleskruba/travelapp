@@ -5,17 +5,19 @@ import { useCountryContext } from '../context/countryContext';
 import { countriesData } from '../constants/constantsData';
 import Country from '../components/traveltips/Country';
 import Messages from '../components/traveltips/Messages';
+import Vlogs from '../components/traveltips/Vlogs';
 
 function TravelTips() {
 
     const { chosenCountry, setChosenCountryData } = useCountryContext();
     const [selectComp, setSelectComp] = useState(true);
-  
+    const [openDivCreateVlog,setOpenDivCreateVlog] = useState<boolean>(false);
+
     useEffect(() => {
       window.scrollTo(0, 0);
   
       if (chosenCountry) {
-    
+        setOpenDivCreateVlog(false)
        
         const selectedCountryData = countriesData.find(
           (country) => country.name === chosenCountry
@@ -47,11 +49,14 @@ function TravelTips() {
               }}
               className="bg-green-500 py-3 px-4 rounded-lg shadow-md transform transition duration-300 hover:scale-105 text-xl text-white"
             >
-              {selectComp ? "Video blogy - klikni zde" : "Fórum -  klikni zde"}
+              {selectComp ? "Cestovatelské vlogy - klikni zde" : "Fórum -  klikni zde"}
             </button>
           )}
         </div>
-        {selectComp && chosenCountry ? <Messages/>: 'Cards' }
+      {chosenCountry ? 
+          selectComp ? <Messages/> : <Vlogs openDivCreateVlog={openDivCreateVlog} setOpenDivCreateVlog={setOpenDivCreateVlog}/>
+          : null
+        }
       </div>
 
 

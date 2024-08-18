@@ -23,6 +23,7 @@ export type MessageProps = {
   country: string;
   user: UserProps;
   reply: ReplyProps[];
+  votes: VoteProps[];
 };
 
 export type ReplyProps = {
@@ -32,7 +33,26 @@ export type ReplyProps = {
   user_id: number | null;
   message_id: number | null;
   user: UserProps;
+  votesreply: ReplyVoteProps[];
 };
+
+export type VoteProps = {
+  id: number;
+  user_id: number | null;
+  message_id: number | null;
+  vote_type: string;
+  vote_date: Date;
+};
+
+export type ReplyVoteProps = {
+  id: number;
+  user_id: number | null;
+  message_id: number | null;
+  reply_id: number | null;
+  vote_type: string;
+  vote_date: Date;
+};
+
 
 export const initialUserState: UserProps = {
   id: 0,
@@ -58,6 +78,16 @@ export const initialSingleReplyState: ReplyProps = {
   user_id: null,
   message_id: null,
   user: initialUserState,
+  votesreply: [
+    {
+      id: 0,
+      vote_date: new Date(),
+      reply_id: null,
+      message_id: null,
+      user_id: null,
+      vote_type: '',
+    }
+  ]
 };
 
 export const initialReplyState: ReplyProps[] = [
@@ -68,6 +98,16 @@ export const initialReplyState: ReplyProps[] = [
     user_id: null,
     message_id: null,
     user: initialUserState,
+    votesreply: [
+      {
+        id: 0,
+        vote_date: new Date(),
+        message_id: null,
+        reply_id: null,
+        user_id: null,
+        vote_type: '',
+      }
+    ]
   },
 ];
 
@@ -79,7 +119,27 @@ export const initialMessageState: MessageProps = {
   country: '',
   user: initialUserState,
   reply: initialReplyState,
+  votes: [
+    {
+      id: 0,
+      vote_date: new Date(),
+      message_id: null,
+      user_id: null,
+      vote_type: '',
+    }
+  ]
 };
+
+
+export type VlogsProps = {
+  id: number;
+  country: string;
+  title: string;
+  video:string;
+  user_id: number | null;
+  user: UserProps;
+}
+
 
 
 export type ChosenCountryData = {

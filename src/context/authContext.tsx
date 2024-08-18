@@ -1,9 +1,6 @@
 import React, { createContext, useState, ReactNode, useContext, Dispatch, SetStateAction, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-// import axios from 'axios';
 import { UserProps } from '../types';
-import { BASE_URL, HTTP_CONFIG } from '../constants/config';
-
+import { BASE_URL } from '../constants/config';
 
 interface AuthContextProps {
   user: UserProps | null;
@@ -13,19 +10,9 @@ interface AuthContextProps {
   isLoading: boolean;
   setBackendServerError: Dispatch<SetStateAction<boolean>>;
   backendServerError: boolean;
-
 }
 
-export const AuthContext = createContext<AuthContextProps>({
-  user: null,
-  setUser: () => {},
-  updateUser: null,
-  setUpdateUser: () => {},
-  isLoading: true,
-  setBackendServerError: () => {},
-  backendServerError: false,
-
-});
+export const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -34,61 +21,54 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserProps | null>(null);
   const [updateUser, setUpdateUser] = useState<UserProps | null>(null);
-
+  const [isLoading, setIsLoading] = useState(true);
   const [backendServerError, setBackendServerError] = useState(false);
 
   const fetchUserData = async (): Promise<UserProps | null> => {
     try {
       setBackendServerError(false);
       const url = `${BASE_URL}/checksession`;
-    // const response = await axios.get(url, { withCredentials: true });
-    // const responseData = response.data;
+      const response = await fetch(url, {
+        credentials: 'include',
+      });
 
-    const response = await fetch(url, {
-      credentials: 'include', // Include cookies in the request
-    });
+      if (!response.ok) {
+        return null;
+      }
 
-    if (!response.ok) {
-      return null; 
-    }
-    
-    const responseData = await response.json();
+      const responseData = await response.json();
       if (responseData && responseData.user) {
         return responseData.user;
       } else {
-        return null; 
+        return null;
       }
     } catch (err) {
       setBackendServerError(true);
-      console.log('Error fetching user data:', err);
-      throw err;
+      console.error('Error fetching user data:', err);
+      return null;
     }
   };
 
-  const { status, data: userData, isLoading, isError } = useQuery<UserProps | null, Error>({
-    queryKey: ["userkey"],
-    queryFn: fetchUserData,
-  });
-
   useEffect(() => {
-    console.log('useEffect uthContext runs')
-    if (userData !== undefined) {
-   // console.log(status)
+    const getUserData = async () => {
+      setIsLoading(true);
+      const userData = await fetchUserData();
       setUser(userData);
       setUpdateUser(userData);
-      setBackendServerError(false);
-    }
-  }, [userData]);
+      setIsLoading(false);
+    };
+
+    getUserData();
+  }, []);
 
   useEffect(() => {
-    if (isError) {
-      setBackendServerError(true);
-      console.log('Error fetching user data');
+    if (backendServerError) {
+      console.error('Error fetching user data');
     }
-  }, [isError]);
+  }, [backendServerError]);
 
   return (
-    <AuthContext.Provider value={{ user,setUser, isLoading, updateUser, setUpdateUser, backendServerError, setBackendServerError }}>
+    <AuthContext.Provider value={{ user, setUser, updateUser, setUpdateUser, isLoading, backendServerError, setBackendServerError }}>
       {children}
     </AuthContext.Provider>
   );
@@ -96,8 +76,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 export function useAuthContext() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuthContext must be used within an AuthProvider");
+  if (context === undefined) {
+    throw new Error('useAuthContext must be used within an AuthProvider');
   }
   return context;
 }
+

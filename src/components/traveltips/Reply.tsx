@@ -4,14 +4,12 @@ import { useAuthContext } from '../../context/authContext';
 import { useThemeContext } from '../../context/themeContext';
 import { useCountryContext } from '../../context/countryContext';
 import { FaRegTrashAlt } from "react-icons/fa";
-import { BiLike,BiDislike  } from "react-icons/bi";
 import moment from 'moment';
-import useVote from '../../hooks/useVote';
-import { useNavigate  } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { BASE_URL, HTTP_CONFIG, SOCKET_URL} from '../../constants/config';
 import { useMutation,useQueryClient } from '@tanstack/react-query';
 import ConfirmationModal from '../ConfirmationModal';
+import CreateReplyVote from './CreateReplyVote';
 
 type Props = {
   reply: ReplyProps;
@@ -27,9 +25,6 @@ const Reply: React.FC<Props> = ( {reply,message,allowedToDelete}) => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const { chosenCountry } = useCountryContext();
  // const {  votes,votesReply,handleVoteReply,setVotesReply} = useVote(chosenCountry);
-  const [likedReply, setLikedReply] = useState(false);
-  const [dislikedReply, setdisLikedReply] = useState(false);
-  const navigate = useNavigate();
   //const socket = io(SOCKET_URL);
 
   const imageUrl = reply?.user.image ? reply?.user.image : '/profile.png';
@@ -58,7 +53,6 @@ const Reply: React.FC<Props> = ( {reply,message,allowedToDelete}) => {
   }
 
   const handleDeleteClick = (ID: number) => {  
-    console.log(ID)
     setSelectedReplyId(ID);
     setShowModal(true);
   };
@@ -92,101 +86,6 @@ const Reply: React.FC<Props> = ( {reply,message,allowedToDelete}) => {
    });
  
  
- 
-
-/*   const handleVoteClickReply = async (voteType: 'thumb_up' | 'thumb_down',reply_id:any,message_id:any) => {
-
-    if (!user) {
-      navigate('/login')
-  
-    } 
-    
-    if (voteType === 'thumb_up') {
-      setLikedReply(true);
-      setTimeout(() => {
-        setLikedReply(false);
-      }, 500); 
-    }
-    if (voteType === 'thumb_down') {
-      setdisLikedReply(true);
-      setTimeout(() => {
-        setdisLikedReply(false);
-      }, 500); 
-    }
-  
-    try {
-      handleVoteReply(voteType,reply_id,message_id);
-  
-      const newValue = votesReply.map(vote => {
-        if (vote.reply_id === reply_id && vote.user_id === user?.id) {
-          return { ...vote, vote_type: voteType };
-        }
-        return vote;
-      });
-      
-      const voteExists = votesReply.some(vote => vote.reply_id === reply_id && vote.user_id === user?.id);
-      
-      if (!voteExists && user) {
-        newValue.push({
-          reply_id:reply_id,
-          message_id: message_id,
-          user_id: user?.id ,
-          vote_type: voteType,
-        });
-      }
-      
-      setVotesReply(newValue);
-      
-  
-      // Optionally, update state or UI after voting
-    } catch (error) {
-      console.error('Error handling vote:', error);
-    }
-  };
-  
-  
-  const countThumbsUp = (message_id:any) =>{
-    let counter = 0;
-    votes.forEach(vote => {
-      if (vote.message_id === message_id && vote.vote_type === 'thumb_up') {
-              counter++
-            }
-        }) ;
-    return counter 
-  }
-  
-  const countThumbsDown = (message_id:any) =>{
-    let counter = 0;
-    votes.forEach(vote => {
-      if (vote.message_id === message_id && vote.vote_type === 'thumb_down') {
-              counter++
-            }
-          }) ;
-    return counter 
-  }
-
-  const countThumbsUpReply = (reply_id:any) =>{
-    let counter = 0;
-    votesReply.forEach(vote => {
-      if (vote.reply_id === reply_id && vote.vote_type === 'thumb_up') {
-              counter++
-            }
-        }) ;
-    return counter 
-  }
-  
-  const countThumbsDownReply = (reply_id:any) =>{
-    let counter = 0;
-    votesReply.forEach(vote => {
-      if (vote.reply_id === reply_id && vote.vote_type === 'thumb_down') {
-              counter++
-            }
-          }) ;
-    return counter 
-  } */
-
-
-
   return (
     <div   className={`shadow-xl rounded-lg transition-opacity duration-1000 opacity-100'}`}>
     <div key={reply.id} className='flex flex-col  pt-2  border-t border-gray-400 dark:text-gray-100 relative'>
@@ -217,43 +116,13 @@ const Reply: React.FC<Props> = ( {reply,message,allowedToDelete}) => {
      </div>
 
   </div>
-    
- {/*    <div className='flex gap-4 md:pl-14'>
-      <div className='flex flex-col'>         
-        <div onClick={() => handleVoteClickReply('thumb_up',reply.id,message.id)} 
-                 className={`
-              ${user?.id === reply.user_id ? 'opacity-20 pointer-events-none' : `cursor-pointer transition-transform
-                ${likedReply 
-                                   ? 'scale-150 rotate-10 ' 
-                                   : 'scale-100 rotate-0 '}
-                `}
-     
-       
-            `} >
-          
-          <BiLike /></div>
-           
-        <div>{ countThumbsUpReply(reply.id)}</div>
-      </div>
-      <div className='flex flex-col'>    
-        <div onClick={() => handleVoteClickReply('thumb_down',reply.id,message.id)} 
-              className={`
-                ${user?.id === reply.user_id ? 'opacity-20 pointer-events-none' : `cursor-pointer transition-transform
-                  ${dislikedReply 
-                                     ? 'scale-150 rotate-10 ' 
-                                     : 'scale-100 rotate-0 '}
-                  `}
-       
-         
-              `} >
-          
-          <BiDislike /></div>
-    
-        <div>{countThumbsDownReply((reply.id))}</div>
-      </div>
-    </div> */}
 
-    
+  <div className='flex gap-4  '>
+<CreateReplyVote
+    message={message}
+    reply={reply}
+/>
+    </div>
   <ConfirmationModal
       show={showModal}
       onClose={() => setShowModal(false)}

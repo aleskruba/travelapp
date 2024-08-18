@@ -267,10 +267,10 @@ function Profil() {
   <div className="flex items-center h-full pb-4 flex-col pt-8 gap-6 ">
   
             <Link
-                to={`/tvojeblogy`}
+                to={`/tvojevlogy`}
                 className="p-6 rounded-lg shadow-md w-96 flex justify-center items-center font-extrabold bg-gradient-to-br from-teal-600 to-indigo-600 text-white cursor-pointer hover:bg-opacity-90 hover:shadow-lg transition duration-300 ease-in-out"
             >
-                Tvoje Blogy
+                Tvoje Vlogy
             </Link>
 
             <Link

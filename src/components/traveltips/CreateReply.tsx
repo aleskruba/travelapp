@@ -1,14 +1,13 @@
-import React,{useState,FormEvent, useEffect} from 'react'
+import React,{useState,FormEvent} from 'react'
 import DOMPurify from 'dompurify';
 import { useAuthContext } from '../../context/authContext';
-import axios from 'axios';
+import { useCountryContext } from '../../context/countryContext';
 import { BASE_URL, HTTP_CONFIG } from '../../constants/config';
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import { BsEmojiGrin } from "react-icons/bs";
-import { useCountryContext } from '../../context/countryContext';
-import { io } from 'socket.io-client';
-import { initialReplyState, initialSingleReplyState, MessageProps, ReplyProps, UserProps } from '../../types';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {  initialSingleReplyState, MessageProps, ReplyProps } from '../../types';
 
   interface Props {
     setReplyDiv: React.Dispatch<boolean>; 
@@ -17,12 +16,14 @@ import { initialReplyState, initialSingleReplyState, MessageProps, ReplyProps, U
 }
 
 function CreateReply({setReplyDiv,message,setSelectedReplyDivId}:Props) {
+      
+      const queryClient = useQueryClient();
        const { user} = useAuthContext();
        const { chosenCountry } = useCountryContext();
-      const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-      const [backendError,setBackendError] = useState('');
-      const [reply, setReply] = useState<ReplyProps>(initialSingleReplyState);
- 
+       const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+       const [backendError,setBackendError] = useState('');
+       const [reply, setReply] = useState<ReplyProps>(initialSingleReplyState);
+  
 
 
       const addEmoji = (event: any) => {
@@ -35,14 +36,13 @@ function CreateReply({setReplyDiv,message,setSelectedReplyDivId}:Props) {
         let emoji = String.fromCodePoint(...codeArray);
       
          
-        // Ensure the message object is updated correctly
         setReply((prevMessage: any) => ({
           ...prevMessage,
           message: (prevMessage.message || '') + emoji,
         }));
       };
    
-      const handleChangeReply = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         const sanitizedMessage = DOMPurify.sanitize(event.target.value);
         setReply(prevState => ({
           ...prevState,
@@ -51,61 +51,58 @@ function CreateReply({setReplyDiv,message,setSelectedReplyDivId}:Props) {
       };
       
 
-      
-      const onSubmitFunction = async (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-      
-        try {
-          if (!reply.message || !reply.message.trim()) { // Check if reply.message is falsy or empty after trimming whitespace
-            return;
-          }
-     
-      
-          const newReply = {
-            id: 0,
-            firstName: user?.firstName || '',
-            date: new Date(),
-            image: user?.image || '',
-            message: reply.message || '',
-            message_id: message.id || 0,
-            user_id: user?.id || 0,
-          };
-        
-          const createReply = async (newReply: ReplyProps) => {
-            const response = await fetch(`${BASE_URL}/reply`, {
-              ...HTTP_CONFIG, 
-              method: 'POST',
-              body: JSON.stringify(newReply),
-              credentials: 'include',
-            });
-        
-            if (!response.ok) {
-              throw new Error('Chyba při odeslaní zprávy');
-            }
-        
-            return response.json();
-          };
+      const createReply = async (newReply: ReplyProps) => {
 
-
-        } catch (error:any) {
-          console.error('Error submitting reply:', error.response.data.error);
-          setBackendError(error.response.data.error)
-          setTimeout(() =>setBackendError(''),1000);
+        const response = await fetch(`${BASE_URL}/reply`, {
+          ...HTTP_CONFIG, 
+          method: 'POST',
+          body: JSON.stringify(newReply),
+          credentials: 'include',
+        });
+    
+        if (!response.ok) {
+          throw new Error('Chyba při odeslaní zprávy');
         }
+    
+        return response.json();
       };
-      useEffect(() => {
-        setShowEmojiPicker(false)
-      },[reply]) 
+
+      const createReplyMutation = useMutation({
+        mutationFn: createReply,
+        onSuccess: () => {
+          queryClient.invalidateQueries({queryKey: ['messages',chosenCountry]});
+          setReply(initialSingleReplyState);
+          setReplyDiv(false)
+        }
+      });
+
+      const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if (user) {
+        const newReply = { ...reply, user_id: user.id, 
+                                     message_id: message.id };
+       
+    
+        try {
+          createReplyMutation.mutate(newReply);
+        } catch (e) {
+          console.error(e);
+        }
+  
+      }
+      };
+
 
   return (
    
-    <form onSubmit={onSubmitFunction} className='w-full '>
+    <form onSubmit={handleSubmit} className='w-full '>
     <div className="flex flex-col items-center space-y-4 mt-4 ">
       <div className='relative w-full '>
     <textarea
       name="reply"
       value={reply.message}
-      onChange={handleChangeReply}
+      onChange={handleChange}
       className="w-full min-h-[100px] py-2 px-4 bg-gray-200 dark:text-black rounded-lg focus:outline-none focus:ring focus:border-blue-500 resize-none"
       style={{ maxWidth: '100%', overflowWrap: 'break-word' }}
       placeholder="Sdlej svůj názor (max 500 znaků)"

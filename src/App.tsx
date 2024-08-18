@@ -15,6 +15,7 @@ import Profil from './pages/Profil';
 import Modal from './components/Modal';
 import ScrollToTop from './components/ScrollToTop';
 import TravelTips from './pages/TravelTips';
+import YourVlogs from './components/traveltips/YourVlogs';
 
 function App() {
 
@@ -36,7 +37,8 @@ function App() {
             <Route path="/profil" element={<Profil />}/> 
             <Route path="/traveltips" element={<TravelTips />}/> 
             <Route path="/traveltips/:id" element={<TravelTips />}/> 
-
+            <Route path="/tvojevlogy" element={<YourVlogs />}/> 
+            
             <Route path="/test" element={<Test />}/> 
          
         </Route>
