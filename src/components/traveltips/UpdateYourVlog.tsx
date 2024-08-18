@@ -120,7 +120,7 @@ const updateVlogFunction = async (newVlog: Partial<VlogsProps>) => {
       type="text"
       placeholder="Titulek max 150 znaků"
       maxLength={150}
-      className="w-full p-2 border border-gray-300 rounded dark:bg-slate-200 text-white dark:text-black"
+      className="w-full p-2 border border-gray-300 rounded bg-slate-200 text-black"
       name="title"
       value={updateVlog.title}
       onChange={handleChange}
@@ -129,7 +129,7 @@ const updateVlogFunction = async (newVlog: Partial<VlogsProps>) => {
       type="text"
       placeholder="YouTube kód v podobném tvaru jako: 'dYJpPdSTzGs' "
       maxLength={15}
-      className="w-full p-2 border border-gray-300  dark:bg-slate-200 text-white dark:text-black"
+      className="w-full p-2 border border-gray-300  bg-slate-200 text-black"
       name="video"
       value={updateVlog.video}
       onChange={handleChange}
