@@ -10,6 +10,7 @@ import lide from '../assets/images/lide.svg';
 import { BASE_URL, HTTP_CONFIG } from '../constants/config';
 import { useAuthContext } from '../context/authContext';
 import { useGoogleLogin } from '@react-oauth/google';
+import { fetchData } from '../hooks/useFetchData';
 
 interface LoginCredentials {
   email: string;
@@ -64,12 +65,7 @@ function Login() {
   const logCredentials = async (credentials: LoginCredentials) => {
     setIsLoding(true);
     try {
-      const response = await fetch(`${BASE_URL}/login`, {
-        ...HTTP_CONFIG,
-        method: 'POST',
-        body: JSON.stringify(credentials),
-        credentials: 'include',
-      });
+      const response = await fetchData(`${BASE_URL}/login`,'POST',credentials)
 
       if (!response.ok) {
         setIsLoding(false);

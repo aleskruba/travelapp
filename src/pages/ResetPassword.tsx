@@ -6,6 +6,7 @@ import { BASE_URL, HTTP_CONFIG } from '../constants/config';
 import { Flip, toast } from "react-toastify";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { fetchData } from "../hooks/useFetchData";
 
 interface NewPasswordCredentials {
   password: string;
@@ -43,13 +44,15 @@ function ResetPassword() {
 
     const fetchFunction = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/verifytoken`, {
+
+        const response = await fetchData(`${BASE_URL}/verifytoken`,'POST',{ token: token })
+/*         const response = await fetch(`${BASE_URL}/verifytoken`, {
           ...HTTP_CONFIG,
           method: 'POST',
           body: JSON.stringify({ token: token }),
           credentials: 'include',
         });
-
+ */
         if (!response.ok) {
           throw new Error('Failed to verify token');
         }
@@ -114,12 +117,14 @@ function ResetPassword() {
 
     try {
       setIsLoding(true);
-      const response = await fetch(`${BASE_URL}/resetpassword`, {
+      const response = await fetchData(`${BASE_URL}/resetpassword`,'PUT',payload)
+
+/*       const response = await fetch(`${BASE_URL}/resetpassword`, {
         ...HTTP_CONFIG,
         method: 'PUT',
         body: JSON.stringify(payload),
         credentials: 'include',
-      });
+      }); */
 
       if (!response.ok && response.status === 400) {
         setIsLoding(false);

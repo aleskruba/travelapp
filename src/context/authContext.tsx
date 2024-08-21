@@ -1,6 +1,7 @@
 import React, { createContext, useState, ReactNode, useContext, Dispatch, SetStateAction, useEffect } from 'react';
 import { UserProps } from '../types';
 import { BASE_URL } from '../constants/config';
+import { fetchData } from '../hooks/useFetchData';
 
 interface AuthContextProps {
   user: UserProps | null;
@@ -19,7 +20,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<UserProps | null>(null);
+  const [user, setUser] = useState<UserProps | null >(null);
   const [updateUser, setUpdateUser] = useState<UserProps | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [backendServerError, setBackendServerError] = useState(false);
@@ -27,15 +28,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const fetchUserData = async (): Promise<UserProps | null> => {
     try {
       setBackendServerError(false);
-      const url = `${BASE_URL}/checksession`;
-      const response = await fetch(url, {
-        credentials: 'include',
-      });
+      const response = await fetchData(`${BASE_URL}/checksession`,'GET')
 
       if (!response.ok) {
         return null;
       }
-
       const responseData = await response.json();
       if (responseData && responseData.user) {
         return responseData.user;

@@ -1,0 +1,13 @@
+.transition-wrapper {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+  }
+  
+  .transition-wrapper.open {
+    max-height: 500px; /* Or adjust this to fit your content */
+    opacity: 1;
+    overflow-y: auto; /* Enable scroll when open */
+  }
+  

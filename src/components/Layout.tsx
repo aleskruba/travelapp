@@ -4,7 +4,7 @@ function Layout() {
 
   return (
     <>
-            <Outlet />
+            <Outlet/>
     </>
 
 

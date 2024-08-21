@@ -10,6 +10,7 @@ import { BASE_URL, HTTP_CONFIG, SOCKET_URL} from '../../constants/config';
 import { useMutation,useQueryClient } from '@tanstack/react-query';
 import ConfirmationModal from '../ConfirmationModal';
 import CreateReplyVote from './CreateReplyVote';
+import { fetchData } from '../../hooks/useFetchData';
 
 type Props = {
   reply: ReplyProps;
@@ -62,11 +63,14 @@ const Reply: React.FC<Props> = ( {reply,message,allowedToDelete}) => {
 
   const deleteMessageFunction = async (id:number): Promise<any> => {
 
-    const response = await fetch(`${BASE_URL}/reply/${id}`,{
+    const response = await fetchData(`${BASE_URL}/reply/${id}`,'DELETE')
+
+/*     const response = await fetch(`${BASE_URL}/reply/${id}`,{
      ...HTTP_CONFIG, 
      method: 'DELETE',
      credentials: 'include',
-    })
+    }) */
+
     queryClient.invalidateQueries({queryKey: ['messages',chosenCountry]});
  
     if (!response.ok) {
@@ -87,7 +91,7 @@ const Reply: React.FC<Props> = ( {reply,message,allowedToDelete}) => {
  
  
   return (
-    <div   className={`shadow-xl rounded-lg transition-opacity duration-1000 opacity-100'}`}>
+    <div   className={`shadow-xl rounded-lg '}`}>
     <div key={reply.id} className='flex flex-col  pt-2  border-t border-gray-400 dark:text-gray-100 relative'>
       <div className={`flex items-center gap-6 md:gap-2  cursor-pointer mt-1 ${reply.user_id ===  user?.id ? 'pl-1': 'p3-6' }`}>
         {reply.user_id === user?.id &&
@@ -107,7 +111,7 @@ const Reply: React.FC<Props> = ( {reply,message,allowedToDelete}) => {
         </div>
         <div className="flex gap-1 ">
         <p className={` ${reply.user_id ===  user?.id ? 'text-red-600 dark:text-red-200' : 'text-gray-600 dark:text-gray-100' }  font-bold  `}>{reply.user.firstName ? reply.user.firstName.slice(0, 10) : '' }</p>
-        <p className="text-gray-600  dark:bg-gray-500 dark:text-gray-100 italic"> {displayText}</p>
+        <p className="text-gray-600  dark:text-gray-100 italic"> {displayText}</p>
         </div>
       </div>
      

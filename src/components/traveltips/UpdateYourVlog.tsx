@@ -5,6 +5,7 @@ import DOMPurify from 'dompurify';
 import { BASE_URL, HTTP_CONFIG } from '../../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Flip, toast } from 'react-toastify';
+import { fetchData } from '../../hooks/useFetchData';
 
 type Props = {
     vlog: VlogsProps
@@ -37,12 +38,14 @@ function UpdateYourVlog({vlog,setSelectedVlogEditIdtVlog}:Props) {
 
 
 const updateVlogFunction = async (newVlog: Partial<VlogsProps>) => {
-    const response = await fetch(`${BASE_URL}/vlog/${vlog.id}`, {
+
+  const response = await fetchData(`${BASE_URL}/vlog/${vlog.id}`,'PUT',newVlog)
+/*     const response = await fetch(`${BASE_URL}/vlog/${vlog.id}`, {
       ...HTTP_CONFIG, 
       method: 'PUT',
       body: JSON.stringify(newVlog),
       credentials: 'include',
-    });
+    }); */
 
     if (!response.ok) {
       throw new Error('Chyba při odeslaní zprávy');

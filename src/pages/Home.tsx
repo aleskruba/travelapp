@@ -5,7 +5,7 @@ import { useAuthContext } from '../context/authContext';
 
 function Home() {
 
-  const {user, setUser,setUpdateUser,isLoading} = useAuthContext()
+  const {user,isLoading} = useAuthContext()
 
   if (isLoading) return <div className='flex h-screen justify-center items-center'>Moment prosím...</div>;
 

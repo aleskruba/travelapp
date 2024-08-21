@@ -4,15 +4,14 @@ import ReactPaginate from 'react-paginate';
 import { useState } from 'react';
 import { useAuthContext } from '../../context/authContext';
 import YourVlog from './YourVlog';
-import CreateVlog from './CreateVlog';
+
 
 /* const ITEMS_PER_PAGE = 6;
  */
 
 function YourVlogs() {
-    const [openDivCreateVlog,setOpenDivCreateVlog] = useState<boolean>(false);
     const [currentPage, setCurrentPage] = useState(0);
-    const { user } = useAuthContext();
+
 
     const fetchYourVlogs = async () => { 
         const response = await fetch(`${BASE_URL}/yourvlogs?page=${currentPage+1}`, {
@@ -43,13 +42,7 @@ function YourVlogs() {
 
   return (
     <div className="wrapper pb-6">
-   <div className='text-center'>Vložit nový Vlog <span className="underline cursor-pointer text-blue-600" onClick={() => setOpenDivCreateVlog(true)}>zde</span></div>
 
-   {openDivCreateVlog &&
-  <div className='flex justify-center'>
-    <CreateVlog setOpenDivCreateVlog={setOpenDivCreateVlog}/>
-  </div>
-}
         {!isLoading ? 
             <div className="wrapper grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 mt-20">
                 {

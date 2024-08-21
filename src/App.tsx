@@ -1,6 +1,6 @@
 
 import './App.css';
-import {Routes,Route} from "react-router-dom";
+import {Routes,Route,useLocation } from "react-router-dom";
 import Layout from './components/Layout';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -16,10 +16,12 @@ import Modal from './components/Modal';
 import ScrollToTop from './components/ScrollToTop';
 import TravelTips from './pages/TravelTips';
 import YourVlogs from './components/traveltips/YourVlogs';
+import ProtectedRoutes from './components/ProtectedRoutes';
 
 function App() {
 
   const { theme,modal } = useThemeContext();
+  const location = useLocation();
 
   return (
     <div className={`relative ${theme === 'dark' ? 'bg-darkBackground text-white' : 'bg-lightBackground text-black'}`}>
@@ -34,15 +36,20 @@ function App() {
             <Route path="/register" element={<Register />}/> 
             <Route path="/forgottenpassword" element={<ForgottenPassword />}/> 
             <Route path="/resetpassword" element={<ResetPassword />}/> 
-            <Route path="/profil" element={<Profil />}/> 
+
             <Route path="/traveltips" element={<TravelTips />}/> 
             <Route path="/traveltips/:id" element={<TravelTips />}/> 
-            <Route path="/tvojevlogy" element={<YourVlogs />}/> 
+            
+            <Route element={<ProtectedRoutes />}>
+              <Route path="/profil" element={<Profil />}/> 
+              <Route path="/tvojevlogy" element={<YourVlogs />}/> 
+            </Route>
             
             <Route path="/test" element={<Test />}/> 
          
         </Route>
       </Routes>
+      {(location.pathname === '/login' || location.pathname === '/register' || location.pathname === '/forgottenpassword') && <Home />}
       <Footer/>
     </div>
   );

@@ -4,6 +4,7 @@ import { BiLike,BiDislike  } from "react-icons/bi";
 import { BASE_URL, HTTP_CONFIG } from '../../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCountryContext } from '../../context/countryContext';
+import { fetchData } from '../../hooks/useFetchData';
 
 interface Props {
     message:MessageProps,
@@ -24,12 +25,14 @@ function CreateReplyVote({message,reply}:Props) {
           reply_id:reply.id
       };
     
-      const response = await fetch(`${BASE_URL}/votereply`, {
+      const response = await fetchData(`${BASE_URL}/votereply`,'PUT',newVote)
+
+/*       const response = await fetch(`${BASE_URL}/votereply`, {
           ...HTTP_CONFIG,
           method: 'PUT',
           body: JSON.stringify(newVote),
           credentials: 'include',
-      });
+      }); */
     
       if (!response.ok) {
           throw new Error('Error while sending the message');

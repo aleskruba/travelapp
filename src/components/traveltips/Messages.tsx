@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactPaginate from 'react-paginate';
 import Message from './Message';
 import { useAuthContext } from '../../context/authContext';
@@ -22,7 +22,9 @@ function Messages() {
   const socket = io(SOCKET_URL);
 
 
-
+useEffect(()=>{
+setCurrentPage(0)
+},[chosenCountry])
 
 
   const fetchMessages = async () => {
@@ -35,7 +37,7 @@ function Messages() {
     return response.json();
   };
 
-  const { data, isLoading ,isPlaceholderData,isFetching } = useQuery({
+  const { data,isFetching } = useQuery({
     queryFn: ()=>fetchMessages(),
     queryKey: ['messages', chosenCountry,currentPage],
     placeholderData: keepPreviousData,
@@ -49,7 +51,7 @@ function Messages() {
   };
 
 
-
+  if(isFetching) return <> moment prosím</>
 
   return (
     <div className="flex flex-col px-2 md:px-4 w-full">
@@ -71,7 +73,8 @@ function Messages() {
         </div>
       )}
 
-      {!isLoading ? (
+     
+        <>
         <div className="flex flex-col mt-4 gap-1">
           {data.messages
             .sort((a: { id: number }, b: { id: number }) => b.id - a.id)
@@ -84,11 +87,7 @@ function Messages() {
               />
             ))}
         </div>
-      ) : (
-        <div>... is Loading</div>
-      )}
-
-<ReactPaginate
+        <ReactPaginate
         previousLabel={'←'}
         nextLabel={'→'}
         disabledClassName={'disabled'}
@@ -106,9 +105,11 @@ function Messages() {
         nextClassName={'page-item'}
         nextLinkClassName={'page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100'}
         activeClassName={'active bg-blue-500 text-white'}
+        forcePage={currentPage}
       />
+        </>
 
-{isFetching ? <span> Loading...</span> : null}
+
     </div>
   );
 }

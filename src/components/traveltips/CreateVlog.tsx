@@ -7,6 +7,7 @@ import { useCountryContext } from '../../context/countryContext';
 import { BASE_URL, HTTP_CONFIG } from '../../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Flip, toast } from 'react-toastify';
+import { fetchData } from '../../hooks/useFetchData';
 
 type Props = {
   setOpenDivCreateVlog: (value: boolean) => void;
@@ -34,13 +35,16 @@ function CreateVlog({ setOpenDivCreateVlog }: Props) {
   };
 
   const createVlog = async (newVlog: Partial<VlogsProps>) => {
-    const response = await fetch(`${BASE_URL}/vlog`, {
+
+    const response = await fetchData(`${BASE_URL}/vlog`,'POST',newVlog)
+
+/*     const response = await fetch(`${BASE_URL}/vlog`, {
       ...HTTP_CONFIG, 
       method: 'POST',
       body: JSON.stringify(newVlog),
       credentials: 'include',
     });
-
+ */
     if (!response.ok) {
       throw new Error('Chyba při odeslaní zprávy');
     }

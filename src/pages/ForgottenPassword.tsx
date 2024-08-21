@@ -5,6 +5,7 @@ import { useAuthContext } from "../context/authContext";
 import { Link, useNavigate,useLocation } from "react-router-dom";
 import { BASE_URL,HTTP_CONFIG } from '../constants/config';
 import { Flip, toast } from "react-toastify";
+import { fetchData } from "../hooks/useFetchData";
 
 
 function ForgottenPassword() {
@@ -39,14 +40,13 @@ function ForgottenPassword() {
     setisLoading(true)
 
     try {
-
-   // const response = await axios.post(`${BASE_URL}/sendotp`, values, config);
-    const response = await fetch(`${BASE_URL}/sendemail`, {
+      const response = await fetchData(`${BASE_URL}/sendemail`,'POST',values)
+/*     const response = await fetch(`${BASE_URL}/sendemail`, {
       ...HTTP_CONFIG, // Spread HTTP_CONFIG if needed
       method: 'POST',
       body: JSON.stringify(values),
       credentials: 'include', // Set credentials directly here
-    });
+    }); */
 
     if (response.status === 404) {
       setisLoading(false)

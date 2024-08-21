@@ -10,6 +10,7 @@ import Resizer from "react-image-file-resizer";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import EXIF from 'exif-js';
 import lide from '../assets/images/lide.svg';
+import { fetchData } from '../hooks/useFetchData';
 
 function Profil() {
 
@@ -147,13 +148,13 @@ function Profil() {
         if(updateUser.lastName && (updateUser.lastName.trim().length < 4 || updateUser.lastName.trim().length > 15)) {
           setBackendError('Email  musí mít 4 až 50 znaků F')
         }
-
-        const response = await fetch(`${BASE_URL}/updateprofile`, {
+        const response = await fetchData(`${BASE_URL}/updateprofile`,'PUT',updateUser)
+/*         const response = await fetch(`${BASE_URL}/updateprofile`, {
             ...HTTP_CONFIG, // Spread HTTP_CONFIG if needed
             method: 'PUT',
             body: JSON.stringify(updateUser),
             credentials: 'include', // Set credentials directly here
-        });
+        }); */
 
         if (!response.ok) {
             const errorData = await response.json();
@@ -211,14 +212,14 @@ function Profil() {
               setBackendError('Heslo musí mít 8 až 50 znaků')
               return;
             } 
-
-            const response = await fetch(`${BASE_URL}/updatepassword`, {
+            const response = await fetchData(`${BASE_URL}/updatepassword`,'PUT',{password:updateUser.password, confirmPassword:updateUser.confirmPassword})
+/*             const response = await fetch(`${BASE_URL}/updatepassword`, {
                 ...HTTP_CONFIG, // Spread HTTP_CONFIG if needed
                 method: 'PUT',
                 body: JSON.stringify({password:updateUser.password, confirmPassword:updateUser.confirmPassword} ),
                 credentials: 'include', // Set credentials directly here
             });
-    
+     */
         
             
     

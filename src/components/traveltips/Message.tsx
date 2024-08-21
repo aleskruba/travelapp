@@ -15,6 +15,8 @@ import { useMutation,useQueryClient } from '@tanstack/react-query';
 import Reply from './Reply';
 import CreateReply from './CreateReply';
 import CreateMessageVote from './CreateMessageVote';
+import { fetchData } from '../../hooks/useFetchData';
+import ReactPaginate from 'react-paginate';
 
 type Props = {
   message: MessageProps;
@@ -27,21 +29,26 @@ const Message: React.FC<Props> = ( {
                                     allowedToDelete,
                                     isSubmitted
                            }) => {
-
-  const { user} = useAuthContext();
-  const { toggleModal } = useThemeContext();
+  
+    const ITEMS_PER_PAGE = 4;
+    const [currentPage, setCurrentPage] = useState(0);
+    const { user} = useAuthContext();
+    const { toggleModal } = useThemeContext();
     const [hiddenAnswers,setHiddenAnswes] = useState(true);
-    const [deleted, setDeleted] = useState(false);
- /*    const controls = useAnimation(); */
     const [selectedReplyDivId, setSelectedReplyDivId] = useState<number | null>(null);
     const [showModal, setShowModal] = useState<boolean>(false);
     const [selectedMessageId, setSelectedMessageId] = useState<number | null>(null);
     const { chosenCountry } = useCountryContext();
    // const {votes,handleVote,setVotes} = useVote(chosenCountry);
      const [replyDiv, setReplyDiv] = useState(false);
+
     //const socket = io(SOCKET_URL);
     const imageUrl = message?.user.image ? message?.user.image : '/profile.png';
                 
+    const handlePageChange = ({ selected }: { selected: number }) => {
+      setCurrentPage(selected);
+    };
+  
 
 /*     const shakeAnimation = {
       shake: {
@@ -83,11 +90,14 @@ const handleDeleteMessageClick = (ID: number) => {
 
   const deleteMessageFunction = async (id:number): Promise<any> => {
 
-   const response = await fetch(`${BASE_URL}/message/${id}`,{
+
+    const response = await fetchData(`${BASE_URL}/message/${id}`,'DELETE')
+
+/*    const response = await fetch(`${BASE_URL}/message/${id}`,{
     ...HTTP_CONFIG, 
     method: 'DELETE',
     credentials: 'include',
-   })
+   }) */
    queryClient.invalidateQueries({queryKey: ['messages',chosenCountry]});
 
    if (!response.ok) {
@@ -180,6 +190,14 @@ const countThumbsDown = (message_id:any) =>{
   return counter 
 }
  */
+
+const pageCount = Math.ceil(message.reply.length / ITEMS_PER_PAGE);
+
+// Get items for the current page
+const startIndex = currentPage * ITEMS_PER_PAGE;
+const selectedReplies = message.reply
+  .sort((a, b) => b.id - a.id)
+  .slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
 return (
   <div
@@ -275,18 +293,35 @@ return (
 
 
 
-<div className={`${hiddenAnswers ? 'hidden' : 'block'}`}>
- {message.reply.sort((a, b) => b.id - a.id).map(r=>{
- 
-  return (
-    <Reply 
-      key={r.id}
-      reply={r}
-      message={message}
-      allowedToDelete={allowedToDelete}/>
-  )
- })}
+  <div className={`transition-wrapper ${!hiddenAnswers ? 'open' : ''} dark:bg-slate-600 bg-slate-200 px-2 rounded-lg`}>
+  {selectedReplies.map(r => (
+      <Reply 
+        key={r.id}
+        reply={r}
+        message={message}
+        allowedToDelete={allowedToDelete}
+      />
+    ))}
 
+<ReactPaginate
+      previousLabel={'←'}
+      nextLabel={'→'}
+      disabledClassName={'disabled'}
+      breakLabel={'...'}
+      breakClassName={'break-me'}
+      pageCount={pageCount || 0}
+      marginPagesDisplayed={2}
+      pageRangeDisplayed={8}
+      onPageChange={handlePageChange}
+      containerClassName={'pagination flex justify-center mt-8'}
+      pageClassName={'page-item'}
+      pageLinkClassName={'page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100'}
+      previousClassName={'page-item'}
+      previousLinkClassName={'page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100'}
+      nextClassName={'page-item'}
+      nextLinkClassName={'page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100'}
+      activeClassName={'active bg-blue-500 text-white'}
+    />
 </div>
 
 

@@ -1,4 +1,4 @@
-import React, { FormEvent, useState, useEffect } from 'react';
+import React, { FormEvent, useState, useEffect ,useRef } from 'react';
 import { initialMessageState, MessageProps, UserProps } from '../../types';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
@@ -7,6 +7,7 @@ import DOMPurify from 'dompurify';
 import { BASE_URL, HTTP_CONFIG } from '../../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCountryContext } from '../../context/countryContext';
+import { fetchData } from '../../hooks/useFetchData';
 
 interface CreateMessageProps {
   user: UserProps;
@@ -16,15 +17,39 @@ interface CreateMessageProps {
 
 const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allowedToDelete }) => {
   const queryClient = useQueryClient();
+  const emojiPickerRef = useRef<HTMLDivElement | null>(null);
+  const emojiPickerRefButton = useRef<HTMLDivElement | null>(null);
+  const emojiPickerRefButtonSM = useRef<HTMLDivElement | null>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [message, setMessage] = useState<MessageProps>(initialMessageState);
   const { chosenCountry } = useCountryContext();
 
+  useEffect(() => {
+    const handleClickOutside = (event:any) => {
+      // Check if the clicked target is outside the emoji picker div
+      if ( emojiPickerRef.current && !emojiPickerRef.current.contains(event.target) 
+        && emojiPickerRefButton.current && !emojiPickerRefButton.current.contains(event.target)
+        && emojiPickerRefButtonSM.current && !emojiPickerRefButtonSM.current.contains(event.target)
+    ) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    // Add event listener to handle clicks
+    document.addEventListener('mousedown', handleClickOutside);
+
+    // Cleanup the event listener when the component is unmounted
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [emojiPickerRef]);
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const sanitizedMessage = DOMPurify.sanitize(event.target.value);
     setMessage({ ...message, [event.target.name]: sanitizedMessage });
+    
   };
+
 
   const addEmoji = (event: any) => {
     const sym = event.unified.split("_");
@@ -47,12 +72,15 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allow
   }, []);
 
   const createMessage = async (newMessage: MessageProps) => {
-    const response = await fetch(`${BASE_URL}/message`, {
+
+    const response = await fetchData(`${BASE_URL}/message`,'POST',newMessage)
+
+/*     const response = await fetch(`${BASE_URL}/message`, {
       ...HTTP_CONFIG, 
       method: 'POST',
       body: JSON.stringify(newMessage),
       credentials: 'include',
-    });
+    }); */
 
     if (!response.ok) {
       throw new Error('Chyba při odeslaní zprávy');
@@ -93,21 +121,28 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allow
         </div>
        </div>
       <div className="flex-1 hidden md:flex relative">
-        <textarea
-          name="message"
-          value={message.message}
-          onChange={handleChange}
-          className="w-full py-2 px-4 bg-gray-200 rounded-lg text-black focus:outline-none focus:ring focus:border-blue-500 resize-none"
-          placeholder="Sdlej svůj názor (max 400 znaků)"
-          maxLength={400} 
-
-       />
-       <div className='absolute top-5 right-2 dark:text-black text-xl cursor-pointer ' onClick={() => setShowEmojiPicker(!showEmojiPicker)} ><BsEmojiGrin /></div> 
+      <textarea
+  name="message"
+  value={message.message}
+  onChange={handleChange}
+  className="w-full min-h-28 py-2 pl-2 pr-10 bg-gray-200 dark:text-black rounded-lg focus:outline-none focus:ring focus:border-blue-500 resize-none"
+  style={{ maxWidth: '100%', overflowWrap: 'break-word' }}  
+  placeholder="Sdlej svůj názor (max 400 znaků)"
+  maxLength={400}
+/>
+       <div className={message.message.length >= 400  ? 'hidden' : `absolute bottom-2  right-5 dark:text-black text-xl cursor-pointer `} 
+            onClick={ () => setShowEmojiPicker(!showEmojiPicker)}
+            ref={emojiPickerRefButton}
+         ><BsEmojiGrin /></div> 
 
       </div>
    
       <div>
-        <button type="submit" className={`py-2 px-4 bg-green-500 text-white rounded-lg shadow-md focus:outline-none focus:ring focus:border-green-700 ${!allowedToDelete ? 'cursor-default pointer-events-none opacity-30':'hover:bg-green-600 '}`}>Odešli</button>
+        <button type="submit"   className={`py-2 px-4 bg-green-500 text-white rounded-lg shadow-md focus:outline-none focus:ring focus:border-green-700 ${
+    !message.message.length || !allowedToDelete
+      ? 'opacity-30 cursor-default pointer-events-none'
+      : 'hover:bg-green-600'
+  }`}>Odešli</button>
       </div>
 
     </div>
@@ -117,24 +152,33 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allow
         name="message"
         value={message.message}
         onChange={handleChange}
-        className="w-full py-2 px-4 bg-gray-200 text-black focus:outline-none focus:ring focus:border-blue-500 resize-none"
+        className="w-full  min-h-28 py-2 pl-2 pr-8 bg-gray-200 text-black focus:outline-none focus:ring focus:border-blue-500 resize-none"
         placeholder="Sdlej svůj názor (max 400 znaků)"
-        maxLength={500} 
+        maxLength={400} 
    />
-     <div className='absolute top-5 right-2 dark:text-black text-xl cursor-pointer' onClick={() => setShowEmojiPicker(!showEmojiPicker)} ><BsEmojiGrin /></div> 
+     <div className={message.message.length >= 400  ? 'hidden' : 'absolute bottom-4 right-5 dark:text-black text-xl cursor-pointer'}
+      onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+      ref={emojiPickerRefButtonSM}
+      ><BsEmojiGrin /></div> 
     </div>
 
     {backendError && <div className=" w full bg-gray-200 text-xl font bold text-red-800 mt-2 mb-2 px-2 text-center rounded">{backendError} </div>}
-  </form>
-  <div className='flex justify-center items-center flex-col mt-1 '>
+   {message.message.length >= 400  &&
+    <p className='text-red-800 dark:text-red-200 text-center'>Zpráva je příliš dlouhá !!!!!</p>
+   }
+    </form>
+  <div className='flex justify-center items-center flex-col mt-1 '       ref={emojiPickerRef}>
 
-      {showEmojiPicker && (
+  {showEmojiPicker && message.message.length < 400 && (
        <Picker
+ 
              data={data}
         onEmojiSelect={addEmoji}
    />
     )}
+    
     </div>
+    
   </div>
   )
 }

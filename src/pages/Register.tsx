@@ -10,6 +10,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Image from '../custom/Image';
 import lide from '../assets/images/lide.svg';
 import { useAuthContext } from '../context/authContext';
+import { fetchData } from '../hooks/useFetchData';
 
 interface RegisterCredentials {
   email: string;
@@ -72,12 +73,7 @@ function Register() {
   const handleSubmit = async (values: RegisterCredentials, { resetForm }: any) => {
     try {
       setIsLoding(true);
-      const response = await fetch(`${BASE_URL}/signup`, {
-        ...HTTP_CONFIG,
-        method: 'POST',
-        body: JSON.stringify(values),
-        credentials: 'include',
-      });
+      const response = await fetchData(`${BASE_URL}/signup`,'POST',values)
 
       if (!response.ok && response.status === 401) {
         setIsLoding(false);

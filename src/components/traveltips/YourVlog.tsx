@@ -6,6 +6,7 @@ import { useMutation,useQueryClient } from '@tanstack/react-query';
 import { BASE_URL, HTTP_CONFIG } from '../../constants/config';
 import { Flip, toast } from 'react-toastify';
 import UpdateYourVlog from './UpdateYourVlog';
+import { fetchData } from '../../hooks/useFetchData';
 
 type Vlog = {
     vlog: VlogsProps;
@@ -29,12 +30,14 @@ function YourVlog({ vlog}:Vlog)  {
 
     const deleteVlogFunction = async (id:number): Promise<any> => {
 
-            const response = await fetch(`${BASE_URL}/vlog/${id}`,{
+      const response = await fetchData(`${BASE_URL}/vlog/${id}`,'DELETE') 
+
+/*             const response = await fetch(`${BASE_URL}/vlog/${id}`,{
              ...HTTP_CONFIG, 
              method: 'DELETE',
              credentials: 'include',
-            })
-            queryClient.invalidateQueries({queryKey: ['vlogs']});
+            }) */
+            queryClient.invalidateQueries({queryKey: ['yourvlogs']});
          
             if (!response.ok) {
              throw new Error('Chyba při odeslaní zprávy');
