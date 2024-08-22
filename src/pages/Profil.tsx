@@ -265,23 +265,25 @@ function Profil() {
 
     return (
 
-  <div className="flex items-center h-full pb-4 flex-col pt-8 gap-6 ">
+  <div className="flex items-center h-full pb-4 flex-col pt-8 px-2 gap-6 ">
   
             <Link
                 to={`/tvojevlogy`}
-                className="p-6 rounded-lg shadow-md w-96 flex justify-center items-center font-extrabold bg-gradient-to-br from-teal-600 to-indigo-600 text-white cursor-pointer hover:bg-opacity-90 hover:shadow-lg transition duration-300 ease-in-out"
+                className="p-6 rounded-lg shadow-md w-full md:w-[35rem] flex justify-center items-center font-extrabold bg-gradient-to-br from-slate-200 to-slate-100 dark:from-slate-700 dark:to-slate-600 dark:text-white cursor-pointer hover:shadow-lg dark:hover:from-slate-600 dark:hover:to-slate-500 transition duration-300 ease-in-out"
+
             >
                 Tvoje Vlogy
             </Link>
 
             <Link
                 to={`/tvojespolucesty`}
-                className="mt-4 p-6 rounded-lg shadow-md w-96 flex justify-center items-center font-extrabold bg-gradient-to-br from-green-500 to-teal-600 text-white cursor-pointer hover:bg-opacity-90 hover:shadow-lg transition duration-300 ease-in-out"
+                className="p-6 rounded-lg shadow-md w-full md:w-[35rem] flex justify-center items-center font-extrabold bg-gradient-to-br from-slate-200 to-slate-100 dark:from-slate-700 dark:to-slate-600 dark:text-white cursor-pointer hover:shadow-lg dark:hover:from-slate-600 dark:hover:to-slate-500 transition duration-300 ease-in-out"
+
             >
                 Tvoje Spolucesty
             </Link>
 
-            <div className="bg-gray-100 dark:bg-gray-500 dark:text-gray-100 p-6 rounded-lg shadow-md w-96">
+            <div className="bg-gray-100 dark:bg-gray-500 dark:text-gray-100 p-6 rounded-lg shadow-md w-full md:w-[35rem]">
                 <div className="col-span-full">
                     <label htmlFor="photo" className="text-lg font-semibold mb-2">Foto</label>
                     <div className="mt-2 flex items-center gap-x-3 w-full justify-center"     
@@ -315,7 +317,7 @@ function Profil() {
             </div>
 
             {!updatePassword &&
-                <div className="bg-gray-100 dark:bg-gray-500 dark:text-gray-100 p-6 rounded-lg shadow-md w-96">
+                <div className="bg-gray-100 dark:bg-gray-500 dark:text-gray-100 p-6 rounded-lg shadow-md w-full md:w-[35rem]">
                     {noChange && <div className="text-red-800 text-center">{noChange}</div>}
                     {!updateProfile ? (
                         <div>
@@ -410,7 +412,7 @@ function Profil() {
             }
 
             {!updateProfile &&
-                <div className="bg-gray-100 dark:bg-gray-500 dark:text-gray-100 p-6 rounded-lg shadow-md w-96">
+                <div className="bg-gray-100 dark:bg-gray-500 dark:text-gray-100 p-6 rounded-lg shadow-md w-full md:w-[35rem]">
                     {!updatePassword ? (
                         <div>
                             <div className="text-lg font-semibold mb-2">Heslo</div>
