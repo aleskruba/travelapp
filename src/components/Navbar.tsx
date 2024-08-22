@@ -67,7 +67,7 @@ function Navbar() {
                         <Image src={logo} alt="Logo" className='' />
                     </NavLink>
 
-                    <div className='flex text-xl  gap-2 md:gap-6 justify-center md:justify-start md:w-0 w-[20rem]'>
+                    <div className='flex text-lg  gap-2 md:gap-6 '>
                         <NavLink
                             to="/traveltips"
                             className={({ isActive }) =>
