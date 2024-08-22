@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import Image from '../custom/Image';
 import ThemeComponent from './ThemeComponent';
 import logo from '../assets/images/logo.png';
 import { useAuthContext } from '../context/authContext';
 import { Flip, toast } from 'react-toastify';
 import { BASE_URL } from '../constants/config';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function Navbar() {
@@ -14,7 +13,6 @@ function Navbar() {
     const [visible, setVisible] = useState(true);
     const { user, setUser, setUpdateUser, isLoading } = useAuthContext();
     const navigate = useNavigate();
-    const location = useLocation();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -61,44 +59,68 @@ function Navbar() {
         fetchUserData();
     };
 
-    const isActive = (path:any) => location.pathname === path;
-
     return (
         <>
             <nav className={`relative bg-gray-200 dark:bg-gray-700 top-0 flex justify-between items-center w-full dark:text-white text-yellow-800 md:px-4 md:py-4 font-bold pb-4`}>
                 <div className='flex flex-col md:flex-row md:space-x-16 space-x-2 md:space-y-0 space-y-2 items-start md:items-center'>
-                    <Link to="/" className="md:w-[250px] w-[150px] block">
+                    <NavLink to="/" className="md:w-[250px] w-[150px] block">
                         <Image src={logo} alt="Logo" className='' />
-                    </Link>
+                    </NavLink>
 
-                    <div className='flex gap-2 md:gap-6'>
-                        <Link to="/traveltips" className={`${isActive('/traveltips') ? ' text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`}>
+                    <div className='flex text-xl  gap-2 md:gap-6 justify-center md:justify-start md:w-0 w-[20rem]'>
+                        <NavLink
+                            to="/traveltips"
+                            className={({ isActive }) =>
+                                ` p-4 font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                            }
+                        >
                             TravelTips
-                        </Link>
-                        <Link to="/spolucesty" className={`${isActive('/spolucesty') ?' text-yellow-500': 'dark:hover:text-gray-300 hover:text-yellow-500'}`}>
+                        </NavLink>
+                        <NavLink
+                            to="/spolucesty"
+                            className={({ isActive }) =>
+                                `p-4 font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                            }
+                        >
                             Spolucesty
-                        </Link>
+                        </NavLink>
                     </div>
                 </div>
 
-                {!user ?
+                {!user ? (
                     <div className='flex flex-col md:flex-row md:space-x-4 items-start justify-start pr-8 md:pr-0 '>
-                        <Link to="/login" className={`${isActive('/login') ? ' text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`}>
+                        <NavLink
+                            to="/login"
+                            className={({ isActive }) =>
+                                `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                            }
+                        >
                             Přihlášení
-                        </Link>
-                        <Link to="/register" className={`${isActive('/register') ? ' text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`}>
+                        </NavLink>
+                        <NavLink
+                            to="/register"
+                            className={({ isActive }) =>
+                                `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                            }
+                        >
                             Registrace
-                        </Link>
-                    </div> :
+                        </NavLink>
+                    </div>
+                ) : (
                     <div className='flex flex-col md:flex-row md:space-x-4 items-start justify-start pr-8 md:pr-0 '>
-                        <Link to="/profil" className={`${isActive('/profil') ? ' text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`}>
+                        <NavLink
+                            to="/profil"
+                            className={({ isActive }) =>
+                                `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                            }
+                        >
                             Profil
-                        </Link>
+                        </NavLink>
                         <div onClick={logOutFunction} className="dark:hover:text-gray-300 cursor-pointer hover:text-yellow-500">
                             Odhlásit
                         </div>
                     </div>
-                }
+                )}
 
                 <div className="dark:hover:text-gray-300 hover:text-yellow-500 absolute top-1 right-2">
                     <ThemeComponent />
@@ -108,33 +130,59 @@ function Navbar() {
             {/* BOTTOM NAVBAR */}
             <nav className={`${visible ? 'hidden' : 'fixed'} bg-gray-200 dark:bg-gray-700 bottom-0 flex justify-between items-center w-full dark:text-white text-yellow-800 px-2 md:px-4 md:py-4 md:text-xl font-bold text-base pb-4 z-50`}>
                 <div className='flex gap-4 md:items-center'>
-                    <Link to="/traveltips" className={`${isActive('/traveltips') ? ' text-yellow-500': 'dark:hover:text-gray-300 hover:text-yellow-500'}`}>
+                    <NavLink
+                        to="/traveltips"
+                        className={({ isActive }) =>
+                            `p-4 font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                        }
+                    >
                         TravelTips
-                    </Link>
-                    <Link to="/spolucesty" className={`${isActive('/spolucesty') ? ' text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`}>
+                    </NavLink>
+                    <NavLink
+                        to="/spolucesty"
+                        className={({ isActive }) =>
+                            `p-4 font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                        }
+                    >
                         Spolucesty
-                    </Link>
+                    </NavLink>
                 </div>
 
                 <div className='flex gap-2 pl-2 items-center pr-6 md:pr-0'>
-                    {!user ?
+                    {!user ? (
                         <>
-                            <Link to="/login" className={`${isActive('/login') ? 'dark:text-whitetext-yellow-500': 'dark:hover:text-gray-300 hover:text-yellow-500'}`}>
+                            <NavLink
+                                to="/login"
+                                className={({ isActive }) =>
+                                    `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                                }
+                            >
                                 Přihlášení
-                            </Link>
-                            <Link to="/register" className={`${isActive('/register') ? ' text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`}>
+                            </NavLink>
+                            <NavLink
+                                to="/register"
+                                className={({ isActive }) =>
+                                    `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                                }
+                            >
                                 Registrace
-                            </Link>
-                        </> :
+                            </NavLink>
+                        </>
+                    ) : (
                         <>
-                            <Link to="/profil" className={`${isActive('/profil') ? ' text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`}>
+                            <NavLink
+                                to="/profil"
+                                className={({ isActive }) =>
+                                    `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                                }
+                            >
                                 Profil
-                            </Link>
+                            </NavLink>
                             <div onClick={logOutFunction} className="dark:hover:text-gray-300 hover:text-yellow-500 cursor-pointer">
                                 Odhlásit
                             </div>
                         </>
-                    }
+                    )}
 
                     <div className="dark:hover:text-gray-300 hover:text-yellow-500">
                         <ThemeComponent />
