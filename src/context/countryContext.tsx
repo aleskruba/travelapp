@@ -36,7 +36,7 @@ interface CountryProviderProps {
 
 
 export const CountryProvider: React.FC<CountryProviderProps> = ({ children }) => {
-  const [chosenCountry, setChosenCountry] = useState<ChosenCountry>('');
+  const [chosenCountry, setChosenCountry] = useState<ChosenCountry>('Česká republika');
   const [chosenCountryData, setChosenCountryData] = useState<ChosenCountryData | null>({
     name: '',
     population: '',
