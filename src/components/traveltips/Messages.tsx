@@ -23,8 +23,9 @@ function Messages() {
 
 
 useEffect(()=>{
+  if (chosenCountry ) {
 setCurrentPage(0)
-console.log('useEffect messages')
+}
 },[chosenCountry])
 
 
