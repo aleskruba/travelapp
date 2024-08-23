@@ -9,7 +9,7 @@ function Country() {
 
 
   return (
-    <div className='dark:text-lighTextColor  py-2 md:py-4'>
+    <div className='dark:text-lighTextColor pt-4 py-2 md:py-4'>
       {chosenCountryData && chosenCountry ? <>
         <div>
         <div className='flex justify-around items-center '>

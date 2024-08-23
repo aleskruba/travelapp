@@ -32,7 +32,7 @@ function TravelTips() {
 
   return (
     <div className="flex  flex-col md:flex-row pb-16">
-      <div className="w-full h-[90%] md:w-[250px] md:bg-transparent md:border-r md:border-gray-300 md:rounded text-navbarTextColor   pt-4 flex items-center flex-col">
+      <div className="w-full h-[90%] md:w-[250px] md:bg-transparent md:border-r md:border-gray-300 md:rounded text-navbarTextColor   pt-2 flex items-center flex-col">
         <ComboBox />
         <div className="hidden md:block ">
           <PopularCountries />

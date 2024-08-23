@@ -98,8 +98,9 @@ const ComboBox: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative w-full px-2">
-      <label htmlFor="countryInput" className='md:hidden flex justify-center py-2'>Vyber zemi</label>
+    <div className="relative w-full px-2 ">
+      <label htmlFor="countryInput" 
+             className='md:hidden flex justify-center pb-2 '>Vyber zemi</label>
       <input
         id="countryInput"
         type="text"
@@ -107,11 +108,11 @@ const ComboBox: React.FC = () => {
         maxLength={8}
         value={searchTerm}
         onChange={handleInputChange}
-        className="w-full border rounded px-4 py-2 focus:outline-none text-black font-bold bg-blue-100 focus:bg-white"
+        className="w-full border rounded px-4 py-2 focus:outline-none text-black font-bold bg-blue-100 focus:bg-white "
       />
       {isOpen && (
         <div
-          className="absolute px-4 z-10 mt-1 w-[97%] md:w-[94%] bg-white text-black border rounded shadow-lg"
+          className="absolute px-4  z-10 mt-1 w-[97%] md:w-[94%] bg-white text-black border rounded shadow-lg"
           ref={dropdownRef}
           onClick={handleDropdownClick}
         >
