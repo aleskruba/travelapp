@@ -303,6 +303,7 @@ return (
       />
     ))}
 
+{selectedReplies.length > 0 && 
 <ReactPaginate
       previousLabel={'←'}
       nextLabel={'→'}
@@ -321,7 +322,7 @@ return (
       nextClassName={'page-item'}
       nextLinkClassName={'page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100'}
       activeClassName={'active bg-blue-500 text-white'}
-    />
+    />}
 </div>
 
 

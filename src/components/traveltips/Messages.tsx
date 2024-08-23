@@ -54,6 +54,8 @@ console.log('useEffect messages')
 
   if(isFetching) return <> moment prosím</>
 
+
+
   return (
     <div className="flex flex-col px-2 md:px-4 w-full">
       {user ? (
@@ -88,6 +90,8 @@ console.log('useEffect messages')
               />
             ))}
         </div>
+
+        {data.messages.length > 0 &&
         <ReactPaginate
         previousLabel={'←'}
         nextLabel={'→'}
@@ -107,7 +111,7 @@ console.log('useEffect messages')
         nextLinkClassName={'page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100'}
         activeClassName={'active bg-blue-500 text-white'}
         forcePage={currentPage}
-      />
+      />}
         </>
 
 
