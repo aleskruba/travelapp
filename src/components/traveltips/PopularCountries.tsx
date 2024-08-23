@@ -1,14 +1,16 @@
 
 import { popularCountryNames } from '../../constants/constantsData';
 import { useCountryContext } from '../../context/countryContext';
-
+import { useNavigate } from 'react-router-dom';
 
 function PopularCountries() {
   const { chosenCountry, setChosenCountry } = useCountryContext();
-
+  const navigate = useNavigate();
   const chooseCountryFunction: React.MouseEventHandler<HTMLDivElement> = (event) => {
     const country = event.currentTarget.textContent || '';
-
+    if (window.location.pathname !== `/traveltips/${country}`) {
+      navigate(`/traveltips/${country}`);
+    }
     setChosenCountry(country);
 
     try{

@@ -36,7 +36,10 @@ interface CountryProviderProps {
 
 
 export const CountryProvider: React.FC<CountryProviderProps> = ({ children }) => {
-  const [chosenCountry, setChosenCountry] = useState<ChosenCountry>('Česká republika');
+
+  const storedCountry = localStorage.getItem('traveltipsCountry') || 'Česká republika';
+
+  const [chosenCountry, setChosenCountry] = useState<ChosenCountry>(storedCountry);
   const [chosenCountryData, setChosenCountryData] = useState<ChosenCountryData | null>({
     name: '',
     population: '',
@@ -48,8 +51,12 @@ export const CountryProvider: React.FC<CountryProviderProps> = ({ children }) =>
     flag:'',
   } ) ;
 
+  useEffect(() => {
+    if (chosenCountry) {
+      localStorage.setItem('traveltipsCountry', chosenCountry);
+    }
+  }, [chosenCountry]);
 
-  
 
   return (
     <CountryContext.Provider value={{ chosenCountry, setChosenCountry, chosenCountryData, setChosenCountryData }}>
