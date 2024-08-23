@@ -99,7 +99,9 @@ const ComboBox: React.FC = () => {
 
   return (
     <div className="relative w-full px-2">
+      <label htmlFor="countryInput" className='md:hidden flex justify-center py-2'>Vyber zemi</label>
       <input
+        id="countryInput"
         type="text"
         placeholder={chosenCountry ? chosenCountry : 'vyber stát .... '}
         maxLength={8}
