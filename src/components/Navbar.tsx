@@ -133,7 +133,7 @@ function Navbar() {
                     <NavLink
                         to="/traveltips"
                         className={({ isActive }) =>
-                            `p-4 font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                            `p-2 font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                         }
                     >
                         TravelTips
@@ -141,7 +141,7 @@ function Navbar() {
                     <NavLink
                         to="/spolucesty"
                         className={({ isActive }) =>
-                            `p-4 font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                            `p-2 font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                         }
                     >
                         Spolucesty
