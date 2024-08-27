@@ -52,7 +52,7 @@ function CreateMessageVote({message}:Props) {
 
     const countThumbsUp = (message_id:any) =>{
         let counter = 0;
-        message.votes.forEach(vote => {
+        message?.votes?.forEach(vote => {
           if (vote.message_id === message_id && vote.vote_type === 'thumb_up') {
                   counter++
                 }
@@ -62,15 +62,15 @@ function CreateMessageVote({message}:Props) {
       
       const countThumbsDown = (message_id:any) =>{
         let counter = 0;
-        message.votes.forEach(vote => {
+        message?.votes?.forEach(vote => {
           if (vote.message_id === message_id && vote.vote_type === 'thumb_down') {
                   counter++
                 }
               }) ;
         return counter 
       } 
-      const hasVotedUp = message.votes.some(vote => vote.user_id === user?.id && vote.vote_type === 'thumb_up');
-      const hasVotedDown = message.votes.some(vote => vote.user_id === user?.id && vote.vote_type === 'thumb_down');
+      const hasVotedUp = message?.votes?.some(vote => vote.user_id === user?.id && vote.vote_type === 'thumb_up');
+      const hasVotedDown = message?.votes?.some(vote => vote.user_id === user?.id && vote.vote_type === 'thumb_down');
 
     return (
     

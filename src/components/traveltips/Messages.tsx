@@ -43,7 +43,8 @@ setCurrentPage(0)
     queryFn: ()=>fetchMessages(),
     queryKey: ['messages', chosenCountry,currentPage],
     placeholderData: keepPreviousData,
-
+    refetchOnWindowFocus:true, // automaticly refetch data while changing window , default is true       
+    staleTime:10000,
   });
 
 
@@ -51,9 +52,6 @@ setCurrentPage(0)
     setCurrentPage(selected);
      window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
-
-  if(isFetching) return <> moment prosím</>
 
 
 
@@ -64,6 +62,7 @@ setCurrentPage(0)
           user={user}
           backendError={backendError}
           allowedToDelete={allowedToDelete}
+          currentPage={currentPage}
         />
       ) : (
         <div className="p-4 bg-blue-100 text-blue-800 border border-blue-300 rounded-md shadow-lg">
@@ -80,7 +79,7 @@ setCurrentPage(0)
      
         <>
         <div className="flex flex-col mt-4 gap-1">
-          {data.messages
+          {data && data.messages
             .sort((a: { id: number }, b: { id: number }) => b.id - a.id)
             .map((message: any, idx: number) => (
               <Message
@@ -92,7 +91,7 @@ setCurrentPage(0)
             ))}
         </div>
 
-        {data.messages.length > 0 &&
+        {data &&  !isFetching && data.messages.length > 0 &&
         <ReactPaginate
         previousLabel={'←'}
         nextLabel={'→'}

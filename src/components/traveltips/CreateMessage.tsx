@@ -13,9 +13,10 @@ interface CreateMessageProps {
   user: UserProps;
   backendError: string;
   allowedToDelete: boolean;
+  currentPage:number;
 }
 
-const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allowedToDelete }) => {
+const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allowedToDelete,currentPage }) => {
   const queryClient = useQueryClient();
   const emojiPickerRef = useRef<HTMLDivElement | null>(null);
   const emojiPickerRefButton = useRef<HTMLDivElement | null>(null);
@@ -71,39 +72,125 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allow
     setShowEmojiPicker(false);
   }, []);
 
-  const createMessage = async (newMessage: MessageProps) => {
+  const createMessage = async ({ message, country, id, user_id,image,firstName }: any) => {
+    const data = {
+      message,
+      country,
+      id,
+      user_id,
+      user: {
+        image, 
+        firstName
+      }
+    };
+  
 
-    const response = await fetchData(`${BASE_URL}/message`,'POST',newMessage)
+  
+    try {
+      const response = await fetch(`${BASE_URL}/message`, {
+        ...HTTP_CONFIG,
+        method: 'POST',
+        body: JSON.stringify(data),
+        credentials: 'include',
+      });
+  
+      if (!response.ok) {
+        throw new Error('Error occurred while sending message');
+      }
+  
+      const responseData = await response.json();
 
-/*     const response = await fetch(`${BASE_URL}/message`, {
-      ...HTTP_CONFIG, 
-      method: 'POST',
-      body: JSON.stringify(newMessage),
-      credentials: 'include',
-    }); */
-
-    if (!response.ok) {
-      throw new Error('Chyba při odeslaní zprávy');
+  
+      return responseData;
+    } catch (error) {
+      // Log any errors in the fetch call
+      console.error('Error in createMessage:', error);
+      throw error;  // Ensure the error is propagated to the mutation's `onError`
     }
-
-    return response.json();
   };
 
-  const createMessageMutation = useMutation({
+/*   const createMessageMutation = useMutation({
     mutationFn: createMessage,
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['messages',chosenCountry]});
+      queryClient.invalidateQueries({queryKey: ['messages']});
       setMessage(initialMessageState);
     }
   });
 
+ */
+/*   const handleSubmit = () => {
+    const newMessage = {
+      message: message.message,
+      id: Math.random(),
+      country: chosenCountry,
+      user_id: user.id,
+    };
+  
+    // Log the new message data
+    console.log('New message to be sent:', newMessage);
+  
+    // Trigger the mutation and send the message to the backend
+    createMessageMutation.mutate(newMessage);
+  }; */
+
+
+  const createMessageMutation = useMutation({
+    mutationFn: createMessage,
+    onMutate: async (newMessage) => {
+      // Cancel any outgoing queries to prevent them from overwriting optimistic update
+      await queryClient.cancelQueries({ queryKey: ['messages', chosenCountry, currentPage] });
+  
+      // Get the previous messages
+      const previousMessages = queryClient.getQueryData(['messages', chosenCountry, currentPage]);
+  
+      // Optimistically update the cache with the new message and sort by id
+      queryClient.setQueryData(['messages', chosenCountry, currentPage], (old: any) => {
+        // Create a new array with the new message added
+        const updatedMessages = [...(old?.messages || []), newMessage];
+        
+        // Sort messages by ID to ensure proper order
+        updatedMessages.sort((a: { id: number }, b: { id: number }) => b.id - a.id);
+        
+        return {
+          ...old,
+          messages: updatedMessages,
+        };
+      });
+  
+      // Return the context with the previous messages for rollback
+      return { previousMessages };
+    },
+    onSuccess: () => {
+      setMessage(initialMessageState);
+    },
+    onError: (err, newMessage, context) => {
+      // Rollback to the previous messages in case of an error
+      queryClient.setQueryData(['messages', chosenCountry, currentPage], context?.previousMessages);
+    },
+    onSettled: () => {
+      // Always refetch the messages to sync with the server
+      queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry, currentPage] });
+    },
+  });
+  
+  //console.log(createMessageMutation.variables)
+  
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const newMessage = { ...message, 
+    const tempId = Date.now();
+    const newMessage = {          message:message.message, 
+                                  id: tempId,
                                   country: chosenCountry, 
-                                  user_id: user.id };
+                                  user_id: user.id,
+                                  user: { 
+                                    image: user.image, 
+                                    firstName: user.firstName 
+                                  }
+                                };
 
     try {
+ 
       createMessageMutation.mutate(newMessage);
     } catch (e) {
       console.error(e);
@@ -144,6 +231,7 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allow
       : 'hover:bg-green-600'
   }`}>Odešli</button>
       </div>
+      
 
     </div>
  
@@ -166,7 +254,8 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allow
    {message.message.length >= 400  &&
     <p className='text-red-800 dark:text-red-200 text-center'>Zpráva je příliš dlouhá !!!!!</p>
    }
-    </form>
+
+    </form> 
   <div className='flex justify-center items-center flex-col mt-1 '       ref={emojiPickerRef}>
 
   {showEmojiPicker && message.message.length < 400 && (
