@@ -63,7 +63,7 @@ function Navbar() {
         <>
             <nav className={`relative bg-gray-200 dark:bg-gray-700 top-0 flex justify-between items-center w-full dark:text-white text-yellow-800 md:px-4 md:py-4 font-bold pb-4`}>
                 <div className='flex flex-col md:flex-row md:space-x-16 space-x-2 md:space-y-0 space-y-2 items-start md:items-center'>
-                    <NavLink to="/" className="md:w-[250px] w-[150px] pl-4 block">
+                    <NavLink to="/" className="md:w-[250px] w-[150px] pl-4 pt-2 block">
                         <Image src={logo} alt="Logo" className='' />
                     </NavLink>
 
