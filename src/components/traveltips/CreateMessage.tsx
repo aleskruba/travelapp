@@ -11,12 +11,11 @@ import { fetchData } from '../../hooks/useFetchData';
 
 interface CreateMessageProps {
   user: UserProps;
-  backendError: string;
-  allowedToDelete: boolean;
   currentPage:number;
+  currentPageReply:number;
 }
 
-const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allowedToDelete,currentPage }) => {
+const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,currentPageReply }) => {
   const queryClient = useQueryClient();
   const emojiPickerRef = useRef<HTMLDivElement | null>(null);
   const emojiPickerRefButton = useRef<HTMLDivElement | null>(null);
@@ -24,6 +23,7 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allow
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [message, setMessage] = useState<MessageProps>(initialMessageState);
   const { chosenCountry } = useCountryContext();
+  const [backendError,setBackendError] = useState<string | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event:any) => {
@@ -103,48 +103,25 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allow
   
       return responseData;
     } catch (error) {
-      // Log any errors in the fetch call
+ 
       console.error('Error in createMessage:', error);
       throw error;  // Ensure the error is propagated to the mutation's `onError`
     }
   };
 
-/*   const createMessageMutation = useMutation({
-    mutationFn: createMessage,
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['messages']});
-      setMessage(initialMessageState);
-    }
-  });
-
- */
-/*   const handleSubmit = () => {
-    const newMessage = {
-      message: message.message,
-      id: Math.random(),
-      country: chosenCountry,
-      user_id: user.id,
-    };
-  
-    // Log the new message data
-    console.log('New message to be sent:', newMessage);
-  
-    // Trigger the mutation and send the message to the backend
-    createMessageMutation.mutate(newMessage);
-  }; */
 
 
   const createMessageMutation = useMutation({
     mutationFn: createMessage,
     onMutate: async (newMessage) => {
       // Cancel any outgoing queries to prevent them from overwriting optimistic update
-      await queryClient.cancelQueries({ queryKey: ['messages', chosenCountry, currentPage] });
+      await queryClient.cancelQueries({ queryKey: ['messages', chosenCountry, currentPage,currentPageReply] });
   
       // Get the previous messages
-      const previousMessages = queryClient.getQueryData(['messages', chosenCountry, currentPage]);
+      const previousMessages = queryClient.getQueryData(['messages', chosenCountry, currentPage,currentPageReply]);
   
       // Optimistically update the cache with the new message and sort by id
-      queryClient.setQueryData(['messages', chosenCountry, currentPage], (old: any) => {
+      queryClient.setQueryData(['messages', chosenCountry, currentPage,currentPageReply], (old: any) => {
         // Create a new array with the new message added
         const updatedMessages = [...(old?.messages || []), newMessage];
         
@@ -161,15 +138,16 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allow
       return { previousMessages };
     },
     onSuccess: () => {
+      backendError && setBackendError(null)
       setMessage(initialMessageState);
     },
     onError: (err, newMessage, context) => {
-      // Rollback to the previous messages in case of an error
-      queryClient.setQueryData(['messages', chosenCountry, currentPage], context?.previousMessages);
+      setBackendError('Něco se pokazilo, zpráva nebyla vytvořena')
+      queryClient.setQueryData(['messages', chosenCountry, currentPage,currentPageReply], context?.previousMessages);
     },
     onSettled: () => {
       // Always refetch the messages to sync with the server
-      queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry, currentPage] });
+      queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry, currentPage,currentPageReply] });
     },
   });
   
@@ -226,7 +204,7 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allow
    
       <div>
         <button type="submit"   className={`py-2 px-4 bg-green-500 text-white rounded-lg shadow-md focus:outline-none focus:ring focus:border-green-700 ${
-    !message.message.length || !allowedToDelete
+    !message.message.length 
       ? 'opacity-30 cursor-default pointer-events-none'
       : 'hover:bg-green-600'
   }`}>Odešli</button>
@@ -250,7 +228,7 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, backendError, allow
       ><BsEmojiGrin /></div> 
     </div>
 
-    {backendError && <div className=" w full bg-gray-200 text-xl font bold text-red-800 mt-2 mb-2 px-2 text-center rounded">{backendError} </div>}
+    {backendError && <div className=" w full text-base font bold dark:text-red-200 text-red-800 mt-2 mb-2 px-2 text-center rounded">{backendError} </div>}
    {message.message.length >= 400  &&
     <p className='text-red-800 dark:text-red-200 text-center'>Zpráva je příliš dlouhá !!!!!</p>
    }

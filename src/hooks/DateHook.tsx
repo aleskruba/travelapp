@@ -15,15 +15,15 @@ const useRelativeDate = (date: Moment) => {
     if (diffMinutes < 1) {
       displayText = 'před chvílí';
     } else if (diffDays === 0) { // Check if it's today
-      displayText = 'a dnes';
+      displayText = 'dnes';
     } else if (diffDays === 1) { // Check if it's yesterday
-      displayText = 'vcera';
+      displayText = 'včera';
     } else if (diffDays > 1) { // Check for other past days
-      displayText = `pred ${diffDays} dny`;
+      displayText = `před ${diffDays} dny`;
     } else if (diffMonths === 1) { // Check if it's one month ago
-      displayText = 'pred mesicem';
+      displayText = 'před měsicem';
     } else if (diffMonths > 1) { // Check for other past months
-      displayText = `pred ${diffMonths} mesici`;
+      displayText = `před ${diffMonths} měsici`;
     } else { // For dates in the future or more than a day ago
       displayText = moment(date).format('YY DD-MM HH:mm');
     }

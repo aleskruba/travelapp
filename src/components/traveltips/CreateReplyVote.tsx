@@ -54,7 +54,7 @@ function CreateReplyVote({message,reply}:Props) {
 
     const countThumbsUp = (reply_id:any) =>{
         let counter = 0;
-        reply.votesreply.forEach(vote => {
+        reply?.votesreply?.forEach(vote => {
           if (vote.reply_id === reply_id && vote.vote_type === 'thumb_up') {
                   counter++
                 }
@@ -64,15 +64,15 @@ function CreateReplyVote({message,reply}:Props) {
       
       const countThumbsDown = (reply_id:any) =>{
         let counter = 0;
-        reply.votesreply.forEach(vote => {
+        reply?.votesreply?.forEach(vote => {
           if (vote.reply_id === reply_id && vote.vote_type === 'thumb_down') {
                   counter++
                 }
               }) ;
         return counter 
       } 
-      const hasVotedUp =   reply.votesreply.some(vote => vote.user_id === user?.id && vote.vote_type === 'thumb_up');
-      const hasVotedDown =  reply.votesreply.some(vote => vote.user_id === user?.id && vote.vote_type === 'thumb_down');
+      const hasVotedUp =   reply?.votesreply?.some(vote => vote.user_id === user?.id && vote.vote_type === 'thumb_up');
+      const hasVotedDown =  reply?.votesreply?.some(vote => vote.user_id === user?.id && vote.vote_type === 'thumb_down');
 
     return (
     
@@ -86,12 +86,12 @@ function CreateReplyVote({message,reply}:Props) {
 
             </div>
                
-  <div>{ countThumbsUp(reply.id)}</div> 
+  <div>{ countThumbsUp(reply?.id)}</div> 
           </div> 
           <div className='flex flex-col'>    
             <div onClick={() => mutation.mutate('thumb_down')} 
                  className={`
-                  ${user?.id === reply.user_id  ? 'opacity-20 pointer-events-none' : hasVotedDown ? 'opacity-70 pointer-events-none scale-150 rotate-10  dark:text-red-300 text-red-900' : `cursor-pointer transition-transform
+                  ${user?.id === reply?.user_id  ? 'opacity-20 pointer-events-none' : hasVotedDown ? 'opacity-70 pointer-events-none scale-150 rotate-10  dark:text-red-300 text-red-900' : `cursor-pointer transition-transform
                     `} `} >
                 
               <BiDislike />

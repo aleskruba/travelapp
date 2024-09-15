@@ -51,7 +51,7 @@ const Modal: React.FC = () => {
                 className="object-cover w-full h-auto rounded"
                 initial={{ filter: 'blur(10px)' }}
                 animate={{ filter: isBlurred ? 'blur(0px)' : 'blur(0px)' }}
-                transition={{ duration: 1 }}
+                transition={{ duration: 0.5 }}
                 onAnimationComplete={() => setIsBlurred(false)}
               />
             )}

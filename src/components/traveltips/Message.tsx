@@ -5,7 +5,6 @@ import { GoTriangleDown ,GoTriangleUp } from "react-icons/go";
 import { MessageProps } from '../../types';
 import { useAuthContext } from '../../context/authContext';
 import { BASE_URL, HTTP_CONFIG, SOCKET_URL} from '../../constants/config';
-/* import { motion, useAnimation } from 'framer-motion'; */
 import useVote from '../../hooks/useVote';
 import { useCountryContext } from '../../context/countryContext';
 import { useThemeContext } from '../../context/themeContext';
@@ -17,21 +16,20 @@ import CreateReply from './CreateReply';
 import CreateMessageVote from './CreateMessageVote';
 import { fetchData } from '../../hooks/useFetchData';
 import ReactPaginate from 'react-paginate';
+import useRelativeDate from '../../hooks/DateHook';
 
 type Props = {
   message: MessageProps;
-  allowedToDelete:boolean
-  isSubmitted:boolean
+  currentPage:number;
+  currentPageReply:number;
+  setCurrentPageReply:React.Dispatch<React.SetStateAction<number>>
+
 };
 
-const Message: React.FC<Props> = ( {
-                                    message,
-                                    allowedToDelete,
-                                    isSubmitted
-                           }) => {
+const Message: React.FC<Props> = ({message,currentPage,currentPageReply,setCurrentPageReply}) => {
   
     const ITEMS_PER_PAGE = 4;
-    const [currentPage, setCurrentPage] = useState(0);
+
     const { user} = useAuthContext();
     const { toggleModal } = useThemeContext();
     const [hiddenAnswers,setHiddenAnswes] = useState(true);
@@ -41,12 +39,20 @@ const Message: React.FC<Props> = ( {
     const { chosenCountry } = useCountryContext();
    // const {votes,handleVote,setVotes} = useVote(chosenCountry);
      const [replyDiv, setReplyDiv] = useState(false);
+     const [backendError,setBackendError] = useState<string | null>(null);
 
+
+       // Convert Date object to Moment object
+    const replyDateMoment = moment(message.date);
+
+    // Use the custom hook to get the relative date
+    const displayDateText = useRelativeDate(replyDateMoment);
+    
     //const socket = io(SOCKET_URL);
     const imageUrl = message?.user?.image ? message?.user?.image : '/profile.png';
                 
     const handlePageChange = ({ selected }: { selected: number }) => {
-      setCurrentPage(selected);
+      setCurrentPageReply(selected);
     };
   
 
@@ -57,126 +63,72 @@ const Message: React.FC<Props> = ( {
 
     const queryClient = useQueryClient();
 
-
-  const deleteMessageFunction = async (id:number): Promise<any> => {
-
-  const response = await fetchData(`${BASE_URL}/message/${id}`,'DELETE')
-
-  queryClient.invalidateQueries({queryKey: ['messages', chosenCountry, currentPage]});
-
-   if (!response.ok) {
-    throw new Error('Chyba při odeslaní zprávy');
-  }
-  const data = response.json();
-  return data;
-  }
-
-  
-  const deleteMessageMutation = useMutation({
-    mutationFn: deleteMessageFunction,
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['messages', chosenCountry, currentPage]});
-      setShowModal(false)
-    }
-  });
-
-
-
-/* const handleVoteClick = async (voteType: 'thumb_up' | 'thumb_down',message_id:any) => {
-
-  if (!user) {
-    navigate('/login')
-
-  } 
-
-  if (voteType === 'thumb_up') {
-  setLiked(true);
-  setTimeout(() => {
-    setLiked(false);
-  }, 500); 
-}
-else if (voteType === 'thumb_down') {
-  setdisLiked(true);
-  setTimeout(() => {
-    setdisLiked(false);
-  }, 500); 
-}
-
-  try {
-    handleVote(voteType,message_id);
-
-    const newValue = votes.map(vote => {
-      if (vote.message_id === message_id && vote.user_id === user?.id) {
-        return { ...vote, vote_type: voteType };
+    const deleteMessageFunction = async (id: number): Promise<any> => {
+      setBackendError(null);
+      const response = await fetchData(`${BASE_URL}/message/${id}`, 'DELETE');
+    
+      if (!response.ok) {
+        throw new Error('Error while deleting the message');
       }
-      return vote;
+    
+      // Wait for the response to be parsed as JSON.
+      const data = await response.json();
+      return data;
+    };
+    
+    const deleteMessageMutation = useMutation({
+      mutationFn: deleteMessageFunction,
+      onSuccess: () => {
+        // Invalidate the queries to refetch the updated data after deletion.
+        queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry, currentPage,currentPageReply] });
+        setShowModal(false);
+      },
+      onError: (error) => {
+        setShowModal(false);
+        setBackendError('Něco se pokazilo , zpráva nebyla smazána')
+        console.error('Error deleting message:', error);
+        // Handle error state, such as showing a toast notification
+      },
+      onSettled: () => {
+        // This will run after either success or error
+        queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry, currentPage,currentPageReply] });
+      },
     });
     
-    const voteExists = votes.some(vote => vote.message_id === message_id && vote.user_id === user?.id);
-    
-    if (!voteExists && user) {
-      newValue.push({
-        message_id: message_id,
-        user_id: user?.id ,
-        vote_type: voteType,
-      });
-    }
-    
-    setVotes(newValue);
-    
 
-    // Optionally, update state or UI after voting
-  } catch (error) {
-    console.error('Error handling vote:', error);
-  }
-};
-
-
-const countThumbsUp = (message_id:any) =>{
-  let counter = 0;
-  votes.forEach(vote => {
-    if (vote.message_id === message_id && vote.vote_type === 'thumb_up') {
-            counter++
-          }
-      }) ;
-  return counter 
-}
-
-const countThumbsDown = (message_id:any) =>{
-  let counter = 0;
-  votes.forEach(vote => {
-    if (vote.message_id === message_id && vote.vote_type === 'thumb_down') {
-            counter++
-          }
-        }) ;
-  return counter 
-}
- */
 
 const pageCount = Math.ceil(message?.reply?.length / ITEMS_PER_PAGE);
 
-const startIndex = currentPage * ITEMS_PER_PAGE;
+const startIndex = currentPageReply * ITEMS_PER_PAGE;
 
-const selectedReplies =  message.reply ? (message.reply
+const selectedReplies =  message?.reply 
+ ? (message?.reply
   .sort((a, b) => b.id - a.id)
   .slice(startIndex, startIndex + ITEMS_PER_PAGE))
 : (null);
+
+
+
 return (
   <div
-  className='flex flex-col dark:bg-gray-500 dark:text-gray-100 px-4 py-2 shadow-2xl rounded-lg'
+  className='relative flex flex-col dark:bg-gray-500 dark:text-gray-100 px-4 py-2 shadow-2xl rounded-lg'
   id={message?.id.toString()}
 > 
-
+<div className='absolute right-1 bottom-1 text-red-500 dark:text-red-200 font-thin'>
+                    {backendError && backendError}
+                  </div>
 
     <div className="flex flex-col md:flex-row md:items-center gap-4 relative z-auto">
       <div className="flex  items-center gap-2"> 
          {message?.user_id === user?.id &&
-                 
-                 <div className={`${!isSubmitted && allowedToDelete ? '' : 'pointer-events-none '} absolute top-1 right-1 min-w-[25px] text-red-500  cursor-pointer hover:text-red-300`} 
+                 <>
+                 <div className={` absolute top-1 right-1 min-w-[25px] text-red-500  cursor-pointer hover:text-red-300`} 
                       onClick={ ()=>handleDeleteMessageClick(message?.id)}
                       >
             <FaRegTrashAlt /> 
                   </div>
+            
+                  </>
                   }
       <div
           className={'w-14 h-14 overflow-hidden rounded-full cursor-pointer'}
@@ -190,10 +142,12 @@ return (
         <div className="flex flex-row gap-4 md:gap-2"> 
         <p className="text-gray-600 dark:bg-gray-500 dark:text-gray-100 font-semibold">{message?.user?.firstName?.slice(0, 10)  }</p>
         <p className="text-gray-600 dark:bg-gray-500 dark:text-gray-100  shrink-0 whitespace-nowrap overflow-hidden text-ellipsis">
-      {moment(message?.date).format('DD-MM YYYY ')}</p>
-
-     
-        </div>
+     {/*  {moment(message?.date).format('DD-MM YYYY ')}
+ */}
+      {  displayDateText}
+           
+      </p>
+   </div>
       </div>
         <div className="md:px-4 pt-4 break-all" >
           <p className="">{message?.message} </p>
@@ -226,11 +180,12 @@ return (
       setReplyDiv={setReplyDiv}
       message={message}
       setSelectedReplyDivId={setSelectedReplyDivId}
-
+      currentPage={currentPage}
+      currentPageReply={currentPageReply}
 />
 }  
     </div>
-    
+    {typeof(message.reply) !== 'string' && 
     <div className='flex gap-4' onClick={()=>setHiddenAnswes(!hiddenAnswers)}>
         {message?.reply?.filter(r => r.message_id === message.id).length > 0 && <>
           {hiddenAnswers ?
@@ -251,7 +206,7 @@ return (
   }
 </h4>      
   </div>
-
+                           }
 
 
 
@@ -261,7 +216,8 @@ return (
         key={r.id}
         reply={r}
         message={message}
-        allowedToDelete={allowedToDelete}
+        currentPage={currentPage}
+        currentPageReply={currentPageReply}
       />
     ))}
 

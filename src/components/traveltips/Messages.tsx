@@ -1,36 +1,38 @@
 import { useEffect, useState } from 'react';
-import ReactPaginate from 'react-paginate';
 import Message from './Message';
 import { useAuthContext } from '../../context/authContext';
 import { useCountryContext } from '../../context/countryContext';
 import { BASE_URL, SOCKET_URL } from '../../constants/config';
 import CreateMessage from './CreateMessage';
 import { io } from 'socket.io-client';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { keepPreviousData, useQuery  } from '@tanstack/react-query';
 
-/* const ITEMS_PER_PAGE = 8;
- */
 function Messages() {
+
   const { user } = useAuthContext();
-  const [currentPage, setCurrentPage] = useState(0);
+
+  const [searchParams, setSearchParams] = useSearchParams();
   const { chosenCountry } = useCountryContext();
-  const [backendError, setBackendError] = useState('');
-  const [allowedToDelete, setAllowedToDelete] = useState(true);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [currentPageReply, setCurrentPageReply] = useState(0);
   const navigate = useNavigate();
-  const socket = io(SOCKET_URL);
+//  const socket = io(SOCKET_URL);
 
+const currentPage = parseInt(searchParams.get('page') || '1', 10) - 1;
 
-useEffect(()=>{
+/* useEffect(()=>{
   if (chosenCountry ) {
-setCurrentPage(0)
+setCurrentPage((parseInt(searchParams.get('page') || '1', 10) - 1))
 }
-},[chosenCountry])
+},[chosenCountry]) */
 
+useEffect(() => {
+  setSearchParams({ page: (currentPage + 1).toString() }); // Convert number to string
 
-  const fetchMessages = async () => {
-    const response = await fetch(`${BASE_URL}/messages/${chosenCountry}?page=${currentPage+1}`);
+}, [currentPage, setSearchParams]);
+
+  const fetchMessages = async (page = 0) => {
+    const response = await fetch(`${BASE_URL}/messages/${chosenCountry}?page=${page+1}`);
 
   
     if (!response.ok) {
@@ -39,20 +41,23 @@ setCurrentPage(0)
     return response.json();
   };
 
-  const { data,isFetching } = useQuery({
-    queryFn: ()=>fetchMessages(),
-    queryKey: ['messages', chosenCountry,currentPage],
+  const { data,isLoading,isError,isPlaceholderData } = useQuery({
+    queryFn: ()=>fetchMessages(currentPage),
+    queryKey: ['messages', chosenCountry,currentPage,currentPageReply],
     placeholderData: keepPreviousData,
     refetchOnWindowFocus:true, // automaticly refetch data while changing window , default is true       
     staleTime:10000,
   });
 
 
-  const handlePageChange = ({ selected }: { selected: number }) => {
-    setCurrentPage(selected);
-     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Něco se pokazilo , spolucety nebyly načteny </span>;
+  }
 
 
   return (
@@ -60,9 +65,8 @@ setCurrentPage(0)
       {user ? (
         <CreateMessage
           user={user}
-          backendError={backendError}
-          allowedToDelete={allowedToDelete}
           currentPage={currentPage}
+          currentPageReply={currentPageReply}
         />
       ) : (
         <div className="p-4 bg-blue-100 text-blue-800 border border-blue-300 rounded-md shadow-lg">
@@ -85,33 +89,42 @@ setCurrentPage(0)
               <Message
                 key={message.id}
                 message={message}
-                allowedToDelete={allowedToDelete}
-                isSubmitted={isSubmitted}
-              />
+                currentPage={currentPage}
+                currentPageReply={currentPageReply}
+                setCurrentPageReply={setCurrentPageReply}
+                />
             ))}
         </div>
-
-        {data &&  !isFetching && data.messages.length > 0 &&
-        <ReactPaginate
-        previousLabel={'←'}
-        nextLabel={'→'}
-        disabledClassName={'disabled'}
-        breakLabel={'...'}
-        breakClassName={'break-me'}
-        pageCount={data?.totalPages || 0}
-        marginPagesDisplayed={2}
-        pageRangeDisplayed={8}
-        onPageChange={handlePageChange}
-        containerClassName={'pagination flex justify-center mt-8'}
-        pageClassName={'page-item'}
-        pageLinkClassName={'page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100'}
-        previousClassName={'page-item'}
-        previousLinkClassName={'page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100'}
-        nextClassName={'page-item'}
-        nextLinkClassName={'page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100'}
-        activeClassName={'active bg-blue-500 text-white'}
-        forcePage={currentPage}
-      />}
+        <div className="flex items-center justify-center space-x-4 py-2">
+        <span className="text-gray-700 dark:text-gray-200 font-medium">
+          Aktuální stránka: {currentPage + 1} of {data.totalPages}
+        </span>
+       
+        <button
+          onClick={() =>
+            setSearchParams({ page: Math.max(currentPage, 1).toString() }) // Convert result to string
+          }
+          disabled={currentPage === 0}
+          className={`px-4 py-2 rounded-md border text-sm font-medium transition-colors duration-200 ${
+            currentPage === 0
+              ? 'bg-gray-200 text-gray-500 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed'
+              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:border-gray-500'
+          }`}
+        >
+          Minulá stránka
+        </button>
+        <button
+          onClick={() => setSearchParams({ page: (currentPage + 2).toString() })}
+          disabled={isPlaceholderData || currentPage + 1 >= data.totalPages}
+          className={`px-4 py-2 rounded-md border text-sm font-medium transition-colors duration-200 ${
+            isPlaceholderData || currentPage + 1 >= data.totalPages
+              ? 'bg-gray-200 text-gray-500 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed'
+              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:border-gray-500'
+          }`}
+        >
+          Další stránka
+        </button>
+      </div>
         </>
 
 

@@ -153,3 +153,16 @@ export type ChosenCountryData = {
   flag:string;
 };
 
+
+export type TourProps = {
+  id: number;
+  destination?: string | null; 
+  date?: string | null; 
+  tourdate?: string | null; 
+  tourdateEnd?: string | null; 
+  tourtype?: string | null;
+  fellowtraveler?: string | null; 
+  aboutme?: string | null; 
+  user_id?: number | null; 
+  user: UserProps;
+};

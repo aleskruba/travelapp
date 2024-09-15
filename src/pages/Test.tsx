@@ -11,7 +11,7 @@ function Test() {
 
         axios.get('http://localhost:5252/api/checksession', config)
             .then(response => {
-                console.log(response.data);
+             
                 if (response.status === 200 && response.data.message === 'success') {
                     setSessionValid(true);
                 } else {

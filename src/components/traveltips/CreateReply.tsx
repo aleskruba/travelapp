@@ -13,10 +13,12 @@ import { fetchData } from '../../hooks/useFetchData';
   interface Props {
     setReplyDiv: React.Dispatch<boolean>; 
     message:MessageProps
+    currentPage:number;
     setSelectedReplyDivId:React.Dispatch<React.SetStateAction<number | null>>
+    currentPageReply:number
 }
 
-function CreateReply({setReplyDiv,message,setSelectedReplyDivId}:Props) {
+function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,currentPageReply}:Props) {
       
       const queryClient = useQueryClient();
        const { user} = useAuthContext();
@@ -24,7 +26,7 @@ function CreateReply({setReplyDiv,message,setSelectedReplyDivId}:Props) {
        const replyEmojiPickerRef = useRef<HTMLDivElement | null>(null);
        const emojiPickerRefButton = useRef<HTMLDivElement | null>(null);
        const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-       const [backendError,setBackendError] = useState('');
+       const [backendError,setBackendError] = useState<string | null>(null);
        const [reply, setReply] = useState<ReplyProps>(initialSingleReplyState);
   
 
@@ -73,17 +75,22 @@ function CreateReply({setReplyDiv,message,setSelectedReplyDivId}:Props) {
       };
       
 
-      const createReply = async (newReply: ReplyProps) => {
+      const createReply = async ({ message, message_id, id, user_id,image,firstName }: any) => {
 
-        const response = await fetchData(`${BASE_URL}/reply`,'POST',newReply)
-/* 
-        const response = await fetch(`${BASE_URL}/reply`, {
-          ...HTTP_CONFIG, 
-          method: 'POST',
-          body: JSON.stringify(newReply),
-          credentials: 'include',
-        }); */
-    
+        const data = {
+          message,
+          message_id,
+          id,
+          user_id,
+          user: {
+            image, 
+            firstName
+          }
+        };
+      
+
+        const response = await fetchData(`${BASE_URL}/reply`,'POST',data)
+
         if (!response.ok) {
           throw new Error('Chyba při odeslaní zprávy');
         }
@@ -93,20 +100,69 @@ function CreateReply({setReplyDiv,message,setSelectedReplyDivId}:Props) {
 
       const createReplyMutation = useMutation({
         mutationFn: createReply,
+        onMutate: async (newMessage) => {
+          // Cancel any outgoing queries to prevent them from overwriting optimistic update
+          await queryClient.cancelQueries({ queryKey: ['messages', chosenCountry, currentPage,currentPageReply] });
+      
+          // Get the previous messages
+          const previousMessages = queryClient.getQueryData(['messages', chosenCountry, currentPage,currentPageReply]);
+      
+          // Optimistically update the cache with the new message and sort by id
+          queryClient.setQueryData(['messages', chosenCountry, currentPage,currentPageReply], (old: any) => {
+            // Update only the reply of the specific message by ID
+            const updatedMessages = (old?.messages || []).map((mes: any) => {
+              if (mes.id === message.id) {
+                console.log(message);
+                // Update the reply array for the message with matching ID
+                return {
+                  ...mes,
+                  reply: [...(mes.reply || []), newMessage], // Add the newMessage object to the reply array
+                };
+              }
+              return mes; // Return other messages unchanged
+            });
+          
+            return {
+              ...old,
+              messages: updatedMessages,
+            };
+          });
+      
+          // Return the context with the previous messages for rollback
+          return { previousMessages };
+        },
         onSuccess: () => {
-          queryClient.invalidateQueries({queryKey: ['messages',chosenCountry]});
+           backendError && setBackendError(null)
+          queryClient.invalidateQueries({queryKey: ['messages',chosenCountry,currentPage,currentPageReply]});
           setReply(initialSingleReplyState);
-          setReplyDiv(false)
-        }
+           setReplyDiv(false) 
+        },
+        onError: (err, newMessage, context) => {
+          setBackendError('Něco se pokazilo, zpráva nebyla vytvořena')
+         },
+        onSettled: () => {
+          // Always refetch the messages to sync with the server
+          queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry,currentPage,currentPageReply] });
+        },
       });
 
       const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
+        const tempId = Date.now();
         if (user) {
-        const newReply = { ...reply, user_id: user.id, 
-                                     message_id: message.id };
-       
+/*         const newReply = { ...reply, user_id: user.id, 
+                                     message_id: message.id }; */
+        
+        const newReply = {                                     
+                                    id: tempId,  
+                                    message:reply.message, 
+                                    message_id: message.id,
+                                    user_id: user.id,
+                                      user: { 
+                                        image: user.image, 
+                                        firstName: user.firstName 
+                                      }
+                                                                     };
     
         try {
           createReplyMutation.mutate(newReply);
@@ -158,7 +214,8 @@ function CreateReply({setReplyDiv,message,setSelectedReplyDivId}:Props) {
 
     </div>
   </div>
-  <div>{backendError ? backendError : ''}</div>
+  <div>    {backendError && <div className=" w full text-base font bold dark:text-red-200 text-red-800 mt-2 mb-2 px-2 text-center rounded">{backendError} </div>}
+</div>
   <div className='flex justify-center mt-2 '  ref={replyEmojiPickerRef}>
 
   {showEmojiPicker && reply.message.length < 400 && (
