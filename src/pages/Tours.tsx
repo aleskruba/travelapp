@@ -99,7 +99,7 @@ console.log(countries?.length)
       
 
       <div className="wrapper grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 mt-20">
-          <div className={`${(!debouncedValue) ? '' : 'opacity-30 pointer-events-none'}`}>
+          <div className={`${(!text) ? '' : 'opacity-30 pointer-events-none'}`}>
                <SearchComponent availableDestinations={availableDestinations} 
                           countries={countries}
                           setCountries={setCountries}
