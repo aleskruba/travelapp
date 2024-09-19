@@ -11,6 +11,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import EXIF from 'exif-js';
 import lide from '../assets/images/lide.svg';
 import { fetchData } from '../hooks/useFetchData';
+import google from '../assets/images/google.png';
 
 function Profil() {
 
@@ -361,7 +362,8 @@ function Profil() {
                                     type="email"
                                     placeholder="Email"
                                     name={updateUser?.googleEmail ? '' : 'email'}
-                                    className={`w-full border rounded-md p-2 text-black ${updateUser?.googleEmail ? 'bg-gradient-to-r from-red-700 via-yellow-600 to-blue-200 text-white pointer-events-none' : ''}`}
+                                    className={`w-full border rounded-md p-2 text-black ${user
+                                        ?.googleEmail ? 'bg-gradient-to-r from-red-700 via-yellow-600 to-blue-200 text-white pointer-events-none' : ''}`}
                                     onChange={handleChange}
                                     value={updateUser?.email ?? ''}
                                     maxLength={35}
@@ -369,7 +371,7 @@ function Profil() {
                                 />
                                 {updateUser?.googleEmail && (
                                     <img
-                                        src="google.png"
+                                        src={google}
                                         alt="Google Logo"
                                         style={{
                                             position: 'absolute',

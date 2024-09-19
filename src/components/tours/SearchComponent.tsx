@@ -9,14 +9,18 @@ import makeAnimated from 'react-select/animated';
 
 interface CountryProps {
   availableDestinations?: CountryOption[]; // Allow undefined
+  countries: any;
+  setCountries:React.Dispatch<React.SetStateAction<any[] | undefined>>
+
 }
 
-const SearchComponent: React.FC<CountryProps> = ({ availableDestinations }) => {
+const SearchComponent: React.FC<CountryProps> = ({ availableDestinations,countries, setCountries}) => {
 
     const animatedComponents = makeAnimated();
 
     const handleChange = (selectedOption: any) => {
-      console.log(selectedOption); 
+     // console.log(selectedOption); 
+      setCountries(selectedOption)
     };
 
     
