@@ -22,37 +22,92 @@ function Tours() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [availableDestinations, setAvailableDestinations] = useState<CountryOption[]>([]);
   const [text, setText] = useState<string>('');
-  const { debouncedValue,debounceLoading } = useDebounce(text, 2000);
+  const { debouncedValue, debounceLoading } = useDebounce(text, 1000);
   
-  const [countries,setCountries] = useState<any[] | undefined>();
-
-console.log(countries?.length)
+  const [countries, setCountries] = useState<any[] | undefined>();
+  const [tourTypes, setTourTypes] = useState<any[] | undefined>();
+  const [tourDates, setTourDates] = useState<any | undefined>();
 
   // Get the current page from URL query params; default to 1
   const currentPage = parseInt(searchParams.get('page') || '1', 10) - 1;
 
-  useEffect(()=>{
-    setSearchParams({ page: (1).toString() });
-  },[countries])
+  useEffect(() => {
+    // Update the searchParams whenever countries or search text changes
+    const params = new URLSearchParams();
+    
+    // Add countries to the params
+    if (countries && countries.length > 0) {
+      const countryValues = countries.map(country => country.value).join(',');
+      params.set('countries', countryValues);
+    }
+
+    if (tourTypes && tourTypes.length > 0) {
+      const tourTypesValues = tourTypes.map(type => type.value).join(',');
+      params.set('tourtypes', tourTypesValues);
+    }
+
+    if (tourDates) {
+      params.set('tourdates', tourDates.value);
+    }
+    
+    // Add the search text
+    if (debouncedValue) {
+      params.set('search', debouncedValue);
+    }
+
+    // Add the current page
+    params.set('page', (currentPage + 1).toString());
+
+    // Update the URL with the new parameters
+    setSearchParams(params);
+  }, [countries, tourTypes,tourDates,debouncedValue, currentPage, setSearchParams]);
 
   const fetchTours = async (page = 0) => {
-    
-    const countryValues = countries?.map(country => country.value).join(',');
-
-    const response = await fetch(`${BASE_URL}/tours/?page=${page + 1}&search=${debouncedValue}&countries=${countries !== undefined ? countryValues : ''}`);
-    console.log('fetched');
-
-    if (!response.ok) {
-      setBackendError('Něco se pokazilo , spolucety nebyly načteny');
-      return;
+    const params = new URLSearchParams();
+  
+    // Set the page parameter
+    params.set('page', (page + 1).toString());
+  
+    // Set the search parameter if debouncedValue exists
+    if (debouncedValue) {
+      params.set('search', debouncedValue);
     }
-    backendError && setBackendError(null);
-    return response.json();
-  };
+  
+    // Set the countries parameter if countries array is defined
+    if (countries && countries.length > 0) {
+      const countryValues = countries.map(country => country.value).join(',');
+      params.set('countries', countryValues);
+    }
 
+    if (tourTypes && tourTypes.length > 0) {
+      const tourTypesValues = tourTypes.map(t => t.value).join(',');
+      params.set('tourtypes', tourTypesValues);
+    }
+
+    if (tourDates) {
+      params.set('tourdates', tourDates.value);
+    }
+    // Construct the full URL with the base URL and the query string
+    const url = `${BASE_URL}/tours/?${params.toString()}`;
+ 
+    try {
+      const response = await fetch(url);
+  
+      if (!response.ok) {
+        throw new Error('Něco se pokazilo, spolucesty nebyly načteny');
+      }
+  
+      backendError && setBackendError(null);
+      return await response.json();
+    } catch (error: any) {
+      setBackendError(error.message);
+      return null;
+    }
+  };
+  
   const { data, isLoading, isError, isPlaceholderData } = useQuery({
     queryFn: () => fetchTours(currentPage),
-    queryKey: ['tours', currentPage, debouncedValue,countries],
+    queryKey: ['tours', currentPage, debouncedValue, countries,tourTypes,tourDates],
     retry: 2,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: true,
@@ -60,8 +115,6 @@ console.log(countries?.length)
   });
 
   useEffect(() => {
-    setSearchParams({ page: (currentPage + 1).toString() }); // Convert number to string
-
     if (data?.allDestinations) {
       // Create an array with { value, label } format
       const formattedDestinations = data.allDestinations.map((destination: any) => ({
@@ -72,12 +125,7 @@ console.log(countries?.length)
       // Update state with the new array
       setAvailableDestinations(formattedDestinations);
     }
-
-  }, [currentPage, data, setSearchParams]);
-
-/*   if (isLoading || debounceLoading) {
-    return <span>Moment prosím...</span>;
-  } */
+  }, [data]);
 
   if (isError) {
     return <span>Něco se pokazilo , spolucety nebyly načteny</span>;
@@ -87,33 +135,40 @@ console.log(countries?.length)
     keyword.destination.toLowerCase().includes(debouncedValue ? debouncedValue.toLowerCase() : '')
   ) || [];
 
-
   return (
     <div className='px-2 '>
       <div className='text-center text-blue-500 '>
-        {!user ?
+        {!user ? 
           'Pouze přihlášení uživatelé mohou vkládat Vlogy' :
           <Link to={'./createtour'}>Vytvoř spolucestu <span className="underline cursor-pointer text-blue-600" >zde</span></Link>
         }
       </div>
-      
 
       <div className="wrapper grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 mt-20">
-          <div className={`${(!text) ? '' : 'opacity-30 pointer-events-none'}`}>
-               <SearchComponent availableDestinations={availableDestinations} 
+        <div className={`${(!text) ? '' : 'opacity-30 pointer-events-none'}`}>
+          <SearchComponent availableDestinations={availableDestinations} 
                           countries={countries}
                           setCountries={setCountries}
+          />
+        </div>     
+
+        <div className={`${(!countries || countries.length < 1) ? '' : 'opacity-30 pointer-events-none'}`}>
+          <SearchDebounceComponent 
+                          text={text} 
+                          setText={setText} />
+        </div>
+
+        <SearchTourTypeComponent 
+                          tourTypes={tourTypes}
+                          setTourTypes={setTourTypes}
                           />
-                       </div>     
-                       <div className={`${(!countries || countries.length < 1) ? '' : 'opacity-30 pointer-events-none'}`}>
-                        <SearchDebounceComponent text={text} setText={setText} />
-                      </div>
-
-        <SearchTourTypeComponent />
-        <SearchDateComponent />
-
+        <SearchDateComponent
+                        tourDates={tourDates}
+                        setTourDates={setTourDates}
+                      />
       </div>
-        {isLoading || debounceLoading && 'Moment prosim'}
+
+      {isLoading || debounceLoading && 'Moment prosim'}
 
       <div className="wrapper grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 mt-20">
         {userDataFiltered
@@ -128,12 +183,12 @@ console.log(countries?.length)
           Aktuální stránka: {currentPage + 1} of {data?.totalPages}
         </span>
         <button
-          onClick={() =>
+          onClick={() => 
             setSearchParams({ page: Math.max(currentPage, 1).toString() }) // Convert result to string
           }
           disabled={currentPage === 0}
           className={`px-4 py-2 rounded-md border text-sm font-medium transition-colors duration-200 ${
-            currentPage === 0
+            currentPage === 0 
               ? 'bg-gray-200 text-gray-500 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed'
               : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:border-gray-500'
           }`}
@@ -144,7 +199,7 @@ console.log(countries?.length)
           onClick={() => setSearchParams({ page: (currentPage + 2).toString() })}
           disabled={isPlaceholderData || currentPage + 1 >= data?.totalPages}
           className={`px-4 py-2 rounded-md border text-sm font-medium transition-colors duration-200 ${
-            isPlaceholderData || currentPage + 1 >= data?.totalPages
+            isPlaceholderData || currentPage + 1 >= data?.totalPages 
               ? 'bg-gray-200 text-gray-500 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed'
               : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:border-gray-500'
           }`}

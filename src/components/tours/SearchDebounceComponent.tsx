@@ -11,7 +11,7 @@ function SearchDebounceComponent({text, setText}:DebounceProps) {
 const changeHandler = (e: ChangeEvent<HTMLInputElement>) =>{
 
     setText(e.target.value)
-    console.log(e.target.value)
+
 }
 
     return (

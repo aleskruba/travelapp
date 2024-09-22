@@ -3,7 +3,12 @@ import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { typeOfTour } from '../../constants/constantsData';
 
-function SearchTourTypeComponent() {
+interface TourTypeProps {
+  tourTypes: any;
+  setTourTypes:React.Dispatch<React.SetStateAction<any[] | undefined>>
+}
+
+function SearchTourTypeComponent({tourTypes,setTourTypes}:TourTypeProps) {
 
 
     const animatedComponents = makeAnimated();
@@ -14,7 +19,7 @@ function SearchTourTypeComponent() {
       }));
 
       const handleChange = (selectedOption: any) => {
-        console.log(selectedOption); 
+        setTourTypes(selectedOption)
       };
 
   return (

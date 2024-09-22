@@ -1,10 +1,23 @@
+import { useState } from 'react';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 
-function SearchDateComponent() {
+interface TourTypeProps {
+  tourDates: any;
+  setTourDates:React.Dispatch<React.SetStateAction<any[] | undefined>>
+}
+
+const Checkbox = ({ children, ...props }: JSX.IntrinsicElements['input']) => (
+  <label style={{ marginRight: '1em' }}>
+    <input type="checkbox" {...props} />
+    {children}
+  </label>
+);
+
+function SearchDateComponent({tourDates,setTourDates}:TourTypeProps) {
 
     const animatedComponents = makeAnimated();
-
+    const [isClearable, setIsClearable] = useState(true);
     const formattedDates = [];
     const currentDate = new Date();
 
@@ -15,21 +28,22 @@ function SearchDateComponent() {
 
     const monthName = futureDate.toLocaleString('default', { month: 'long' });
     
-    formattedDates.push(`${monthName} ${year}`);
+    formattedDates.push(`${monthName}-${year}`);
     }
 
     const formattedDateInTour = formattedDates.map((t:any) => ({
-        value: t,
+        value: t,          
         label: t,
       }));
     
       const handleChange = (selectedOption: any) => {
-        console.log(selectedOption); 
+        setTourDates(selectedOption); 
       };
+
       
   return (
     <Select
-      closeMenuOnSelect={true}
+     isClearable={isClearable}
       components={animatedComponents}
       placeholder="Vyber termin cesty ..."
       options={formattedDateInTour}

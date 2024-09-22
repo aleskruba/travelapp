@@ -71,8 +71,8 @@ const truncateText = (text: string, maxLength: number): string => {
        <span className='italic dark:text-yellow-200 text-yellow-800'>Hledám </span>      {tour.fellowtraveler && truncateText(tour.fellowtraveler, 50)}
   </div>
 
-  <div className='flex justify-start px-2 pb-2 items-center text-base dark:bg-purple-900  bg-purple-200 absolute bottom-0 w-full'> {tour.tourtype && JSON.parse(tour.tourtype).splice(0,3).map((item:string,index: number)=>(
-      <span key={index}>       {item} {tour.tourtype && index <  JSON.parse(tour.tourtype).splice(0,3).length - 1 && ' ,'} </span>))}
+  <div className='flex justify-start px-2 pb-2 items-center text-xs dark:bg-purple-900  bg-purple-200 absolute bottom-0 w-full'> {tour.tourtype && JSON.parse(tour.tourtype).splice(0,3).map((item:string,index: number)=>(
+      <span key={index}>       {item} {tour.tourtype && index <  JSON.parse(tour.tourtype).splice(0,3).length - 1 && ' ,'} </span>))}{tour.tourtype && JSON.parse(tour.tourtype).length > 3 &&  `, ... a další ${JSON.parse(tour.tourtype).length-3}`}
   </div>
  
   <div>
