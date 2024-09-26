@@ -39,8 +39,22 @@ const truncateText = (text: string, maxLength: number): string => {
     return text.slice(0, maxLength) + '...';
   };
 
+
+  const tourtypeString = tour.tourtype;
+
+  // Initialize tourtypeArray as an empty array
+  let tourtypeArray: string[] = [];
+  
+  // Check if tourtypeString is valid before parsing
+  if (typeof tourtypeString === 'string') {
+      tourtypeArray = JSON.parse(tourtypeString);
+  }
+  
+ 
+  
+
     return (
-<div className="box border border-black dark:border-white rounded-md p-2 text-center grid grid-rows-[subgrid] row-span-4  1px solid relative">
+<div className="box border border-black  dark:border-white rounded-md p-2 pb-4 text-center grid grid-rows-[subgrid] row-span-4  1px solid relative ">
 
      <div className='flex  justify-between pl-2 pr-8'>
         <div className='flex flex-col gap-2' >
@@ -71,9 +85,17 @@ const truncateText = (text: string, maxLength: number): string => {
        <span className='italic dark:text-yellow-200 text-yellow-800'>Hledám </span>      {tour.fellowtraveler && truncateText(tour.fellowtraveler, 50)}
   </div>
 
-  <div className='flex justify-start px-2 pb-2 items-center text-xs dark:bg-purple-900  bg-purple-200 absolute bottom-0 w-full'> {tour.tourtype && JSON.parse(tour.tourtype).splice(0,3).map((item:string,index: number)=>(
-      <span key={index}>       {item} {tour.tourtype && index <  JSON.parse(tour.tourtype).splice(0,3).length - 1 && ' ,'} </span>))}{tour.tourtype && JSON.parse(tour.tourtype).length > 3 &&  `, ... a další ${JSON.parse(tour.tourtype).length-3}`}
-  </div>
+  <div className='flex justify-start px-2   items-center text-xs dark:bg-purple-900 bg-purple-200 absolute bottom-1 w-full'>
+  {tourtypeArray &&
+    tourtypeArray.slice(0, 3).map((item: string, index: number) => (
+      <span key={index}>
+        {item}
+        {index < tourtypeArray.slice(0, 3).length - 1 && ', '}
+      </span>
+    ))}
+  {tourtypeArray && tourtypeArray.length > 3 && `, ... a další ${tourtypeArray.length - 3}`}
+</div>
+
  
   <div>
 

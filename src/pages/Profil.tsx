@@ -269,7 +269,7 @@ function Profil() {
   <div className="flex items-center h-full pb-4 flex-col pt-8 px-2 gap-6 ">
   
             <Link
-                to={`/tvojevlogy`}
+                to={`/yourvlogs`}
                 className="p-6 rounded-lg shadow-md w-full md:w-[35rem] flex justify-center items-center font-extrabold bg-gradient-to-br from-slate-200 to-slate-100 dark:from-slate-700 dark:to-slate-600 dark:text-white cursor-pointer hover:shadow-lg dark:hover:from-slate-600 dark:hover:to-slate-500 transition duration-300 ease-in-out"
 
             >
@@ -277,7 +277,7 @@ function Profil() {
             </Link>
 
             <Link
-                to={`/tvojespolucesty`}
+                to={`/yourtours`}
                 className="p-6 rounded-lg shadow-md w-full md:w-[35rem] flex justify-center items-center font-extrabold bg-gradient-to-br from-slate-200 to-slate-100 dark:from-slate-700 dark:to-slate-600 dark:text-white cursor-pointer hover:shadow-lg dark:hover:from-slate-600 dark:hover:to-slate-500 transition duration-300 ease-in-out"
 
             >

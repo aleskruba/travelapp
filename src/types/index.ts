@@ -157,12 +157,26 @@ export type ChosenCountryData = {
 export type TourProps = {
   id: number;
   destination?: string | null; 
-  date?: string | null; 
-  tourdate?: string | null; 
-  tourdateEnd?: string | null; 
-  tourtype?: string | null;
+  date?: string | Date |null; 
+  tourdate?: string |  Date |null; 
+  tourdateEnd?: string | Date | null; 
+  tourtype?: string[] | null;
   fellowtraveler?: string | null; 
   aboutme?: string | null; 
   user_id?: number | null; 
   user: UserProps;
+};
+
+
+export const initialToureState: TourProps = {
+  id: 0,
+  destination: null,
+  date: new Date(),
+  tourdate: new Date(),
+  tourdateEnd: new Date(),
+  tourtype: null,
+  fellowtraveler: null,
+  aboutme: null,
+  user_id: null,
+  user: initialUserState
 };

@@ -18,6 +18,9 @@ import TravelTips from './pages/TravelTips';
 import YourVlogs from './components/traveltips/YourVlogs';
 import ProtectedRoutes from './components/ProtectedRoutes';
 import Tours from './pages/Tours';
+import CreateTour from './pages/CreateTour';
+import YourTours from './pages/YourTours';
+import UpdateTour from './pages/UpdateTour';
 
 function App() {
 
@@ -40,11 +43,15 @@ function App() {
 
             <Route path="/traveltips" element={<TravelTips />}/> 
             <Route path="/traveltips/:id" element={<TravelTips />}/> 
-            <Route path="/spolucesty" element={<Tours />}/> 
+            <Route path="/tours" element={<Tours />}/> 
+            
             
             <Route element={<ProtectedRoutes />}>
               <Route path="/profil" element={<Profil />}/> 
-              <Route path="/tvojevlogy" element={<YourVlogs />}/> 
+              <Route path="/createtour" element={<CreateTour />}/> 
+              <Route path="/yourvlogs" element={<YourVlogs />}/> 
+              <Route path="/yourtours" element={<YourTours />}/> 
+              <Route path="/yourtours/:id" element={<UpdateTour />}/> 
               
             </Route>
             

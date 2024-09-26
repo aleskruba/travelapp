@@ -140,11 +140,11 @@ function Tours() {
       <div className='text-center text-blue-500 '>
         {!user ? 
           'Pouze přihlášení uživatelé mohou vkládat Vlogy' :
-          <Link to={'./createtour'}>Vytvoř spolucestu <span className="underline cursor-pointer text-blue-600" >zde</span></Link>
+          <Link to={'../createtour'}>Vytvoř spolucestu <span className="underline cursor-pointer text-blue-600" >zde</span></Link>
         }
       </div>
 
-      <div className="wrapper grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 mt-20">
+      <div className="wrapper grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4 mt-20 dark:text-gray-600 md:px-20">
         <div className={`${(!text) ? '' : 'opacity-30 pointer-events-none'}`}>
           <SearchComponent availableDestinations={availableDestinations} 
                           countries={countries}
@@ -168,15 +168,17 @@ function Tours() {
                       />
       </div>
 
-      {isLoading || debounceLoading && 'Moment prosim'}
+      {isLoading || debounceLoading && <div className='flex justify-center'>Moment prosim...</div> }
 
-      <div className="wrapper grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 mt-20">
-        {userDataFiltered
-          .sort((a: { id: number }, b: { id: number }) => b.id - a.id)
-          .map((tour: any) => (
-            <Tour key={tour.id} tour={tour} />
-          ))}
-      </div>
+
+        <div className="wrapper grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 mt-20 md:px-20">
+          {userDataFiltered
+            .sort((a: { id: number }, b: { id: number }) => b.id - a.id)
+            .map((tour: any) => (
+              <Tour key={tour.id} tour={tour} />
+            ))}
+        </div>
+
 
       <div className="flex items-center justify-center space-x-4 py-2">
         <span className="text-gray-700 dark:text-gray-200 font-medium">

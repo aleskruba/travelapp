@@ -77,7 +77,7 @@ function Navbar() {
                             TravelTips
                         </NavLink>
                         <NavLink
-                            to="/spolucesty"
+                            to="/tours"
                             className={({ isActive }) =>
                                 `p-4 font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                             }
@@ -139,7 +139,7 @@ function Navbar() {
                         TravelTips
                     </NavLink>
                     <NavLink
-                        to="/spolucesty"
+                        to="/tours"
                         className={({ isActive }) =>
                             `p-2 font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                         }

@@ -21,7 +21,7 @@ const changeHandler = (e: ChangeEvent<HTMLInputElement>) =>{
   value={text}
   onChange={changeHandler}
   placeholder="Hledej zemi ... (debounce method)"
-  className='w-full h-full px-2 border-1.5 rounded placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+  className='w-full h-full px-2 border-1.5 rounded  placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
 />
 </div>
   )
