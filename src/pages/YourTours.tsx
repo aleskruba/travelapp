@@ -6,7 +6,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { keepPreviousData, useQuery,useMutation,useQueryClient } from '@tanstack/react-query';
 import Tour from '../components/tours/Tour';
 import Button from '../components/customButton/Button';
-import { ImArrowDown } from "react-icons/im";
+import { ImArrowUp } from "react-icons/im";
 import ConfirmationModal from '../components/ConfirmationModal';
 import { Flip, toast } from 'react-toastify';
 import { fetchData } from '../hooks/useFetchData';
@@ -138,10 +138,10 @@ function YourTours() {
                         );
                     } else {
                         return (
-                            <div className='flex flex-col justify-center gap-2' key={tour.id}>
-                                <div className='flex justify-center items-center gap-2'>Prošlá splucesta <ImArrowDown /></div>
+                            <div className='flex flex-col justify-center gap-2 relative' key={tour.id}>
+                                <div className='flex justify-center font-bold items-center gap-2 absolute top-16 right-14'>Prošlá splucesta <ImArrowUp /></div>
                                 <div className='flex flex-col gap-0'>
-                                    <div className='opacity-50'>
+                                    <div className='opacity-30'>
                                         <Tour tour={tour} />
                                     </div>
                                     <div className="flex justify-center space-x-2 w-full border-dashed border-current dark:border-white border-b-2 border-r-2 border-l-2 pb-2 pt-2 rounded-md">
