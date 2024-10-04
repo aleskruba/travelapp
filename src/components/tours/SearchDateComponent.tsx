@@ -4,7 +4,7 @@ import makeAnimated from 'react-select/animated';
 
 interface TourTypeProps {
   tourDates: any;
-  setTourDates:React.Dispatch<React.SetStateAction<any[] | undefined>>
+  setTourDates:React.Dispatch<any>
 }
 
 const Checkbox = ({ children, ...props }: JSX.IntrinsicElements['input']) => (
@@ -45,6 +45,7 @@ function SearchDateComponent({tourDates,setTourDates}:TourTypeProps) {
     <Select
      isClearable={isClearable}
       components={animatedComponents}
+      defaultValue={tourDates}
       placeholder="Vyber termin cesty ..."
       options={formattedDateInTour}
       onChange={handleChange} 

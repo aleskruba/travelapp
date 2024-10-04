@@ -11,4 +11,12 @@
     opacity: 1;
     overflow-y: auto; /* Enable scroll when open */
   }
+
+
+  .blended-image {
+    filter: blur(0);
+    mask-image: radial-gradient(circle, rgba(255, 255, 255, 1) 10%, rgba(255, 255, 255, 0) 70%);
+    transition: filter 1s ease-in-out;
+    object-fit: contain;
+  }
   

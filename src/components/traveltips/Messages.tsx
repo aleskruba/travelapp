@@ -52,7 +52,7 @@ useEffect(() => {
 
 
   if (isLoading) {
-    return <span>Loading...</span>;
+    return    <div className='flex justify-center items-center '>Moment prosim...</div>
   }
 
   if (isError) {

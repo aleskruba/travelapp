@@ -9,6 +9,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Image from '../custom/Image';
 import lide from '../assets/images/lide.svg';
+import fun from '../assets/images/fun.png';
 import { useAuthContext } from '../context/authContext';
 import { fetchData } from '../hooks/useFetchData';
 
@@ -48,21 +49,22 @@ function Register() {
 
   const validationSchema = Yup.object({
     email: Yup.string()
-      .required('Required!')
-      .email('Invalid email format')
-      .max(50, 'Email must be at most 50 characters'),
+      .required('Povinné!')
+      .email('Neplatný formát emailu')
+      .max(50, 'Email může mít maximálně 50 znaků'),
     password: Yup.string()
-      .required('Required')
-      .min(6, 'Password must be at least 6 characters')
-      .max(50, 'Password must be at most 50 characters')
+      .required('Povinné!')
+      .min(6, 'Heslo musí mít alespoň 6 znaků')
+      .max(50, 'Heslo může mít maximálně 50 znaků')
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]/,
-        'Password must contain at least one lowercase letter, one uppercase letter, and one digit'
+        'Heslo musí obsahovat alespoň jedno malé písmeno, jedno velké písmeno a jednu číslici'
       ),
     confirmPassword: Yup.string()
-      .oneOf([Yup.ref('password')], 'Passwords must match')
-      .required('Required')
+      .oneOf([Yup.ref('password')], 'Hesla se musí shodovat')
+      .required('Povinné!')
   });
+  
 
   const initialValues = {
     email: '',
@@ -267,7 +269,7 @@ function Register() {
           </Link>  </h5>
 
           <div className='h-[100px]'>
-            <Image className='flex mt-4  w-full h-full object-cover' src={lide} alt="lide" />
+            <Image className='flex mt-4  w-full h-full object-cover' src={fun} alt="lide" />
           </div>
         </div>
       </div>

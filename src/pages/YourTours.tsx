@@ -1,8 +1,7 @@
 import React from 'react'
 import { useEffect, useState } from 'react';
-import { useAuthContext } from '../context/authContext';
 import { BASE_URL } from '../constants/config';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { keepPreviousData, useQuery,useMutation,useQueryClient } from '@tanstack/react-query';
 import Tour from '../components/tours/Tour';
 import Button from '../components/customButton/Button';
@@ -10,6 +9,7 @@ import { ImArrowUp } from "react-icons/im";
 import ConfirmationModal from '../components/ConfirmationModal';
 import { Flip, toast } from 'react-toastify';
 import { fetchData } from '../hooks/useFetchData';
+import { useTourContext } from '../context/tourContext';
 
 function YourTours() {
     const queryClient = useQueryClient();
@@ -17,8 +17,30 @@ function YourTours() {
     const [backendError, setBackendError] = useState<string | null>(null);
     const [selectedTourId, setSelectedTourId] = useState<number | null>(null);
     const [showModal, setShowModal] = useState<boolean>(false);
-    
+    const {setYourToursLength } = useTourContext();
+
+    const url = `${BASE_URL}/yourtours`;
+
     const fetchTours = async () => {
+
+        try {
+        const response = await fetchData(url,'GET');
+    
+        if (!response.ok) {
+              setBackendError('Chyba při získaní dat');
+             return null;
+        }
+  
+        backendError && setBackendError(null);
+        
+        return response.json();
+        }catch (err) {
+          setBackendError('Chyba při získaní dat');
+          return null;
+        }
+          };
+
+/*     const fetchTours = async () => {
         const url = `${BASE_URL}/yourtours`;
         try {
           const response = await fetch(url, {
@@ -36,7 +58,7 @@ function YourTours() {
           return null;
         }
     };
-
+ */
     const { data, isLoading, isError } = useQuery({
         queryFn: () => fetchTours(),
         queryKey: ['yourtours'],
@@ -45,6 +67,14 @@ function YourTours() {
         refetchOnWindowFocus: true,
         staleTime: 100000,
     });
+
+  
+
+    useEffect(() => {
+        if (data && data.yourtours) {
+            setYourToursLength(data.yourtours.length);
+        }
+    }, [data]);
 
     const deleteTourFunction = async (id: number): Promise<any> => {
         const response = await fetchData(`${BASE_URL}/tour/${id}`, 'DELETE');
@@ -90,9 +120,6 @@ function YourTours() {
         }
     });
 
-    const handleEditTourClick = (id: number) => {
-        console.log(id);
-    };
 
     const handleDeleteTourClick = (ID: number) => {
         setSelectedTourId(ID);
@@ -100,7 +127,7 @@ function YourTours() {
     };
 
     if (isLoading) {
-        return <span>Moment prosím ...</span>;
+        return <div className='flex justify-center items-center h-screen'><span>Moment prosím ...</span></div>;
     }
 
     if (isError) {
@@ -145,8 +172,12 @@ function YourTours() {
                                         <Tour tour={tour} />
                                     </div>
                                     <div className="flex justify-center space-x-2 w-full border-dashed border-current dark:border-white border-b-2 border-r-2 border-l-2 pb-2 pt-2 rounded-md">
-                                        <Link to={`${tour.id}`} className='px-4 py-2 rounded font-semibold focus:outline-none bg-blue-500 text-white hover:bg-blue-600'>Upravit</Link>
-                                        <Button onClick={() => (tour.id)} color="red">Smazat</Button>
+                                        <Link to={`${tour.id}`} 
+                                              className='px-4 py-2 rounded font-semibold focus:outline-none bg-blue-500 text-white hover:bg-blue-600'>
+                                        Upravit
+                                        </Link>
+                                      
+                                        <Button  onClick={() => handleDeleteTourClick(tour.id)} color="red">Smazat</Button>
                                     </div>
                                 </div>
                             </div>

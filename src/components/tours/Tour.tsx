@@ -78,11 +78,11 @@ const truncateText = (text: string, maxLength: number): string => {
     </div>
   </div>
   <div className="text-left border border-dotted 1px dark:border-white border-black p-2 rounded-sm">
-       <span className='italic dark:text-yellow-200 text-yellow-800'>O Mně </span>      {tour.aboutme && truncateText(tour.aboutme, 50)}
+       <span className='italic dark:text-yellow-200 text-yellow-800'>O Mně </span>      {tour.aboutme && truncateText(tour.aboutme, 30)}
   </div>
 
   <div className="text-left border border-dotted 1px dark:border-white border-black 1px solid p-2 rounded-sm mb-4">
-       <span className='italic dark:text-yellow-200 text-yellow-800'>Hledám </span>      {tour.fellowtraveler && truncateText(tour.fellowtraveler, 50)}
+       <span className='italic dark:text-yellow-200 text-yellow-800'>Hledám </span>      {tour.fellowtraveler && truncateText(tour.fellowtraveler, 30)}
   </div>
 
   <div className='flex justify-start px-2   items-center text-xs dark:bg-purple-900 bg-purple-200 absolute bottom-1 w-full'>

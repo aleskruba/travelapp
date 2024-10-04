@@ -7,6 +7,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Image from '../custom/Image';
 import lide from '../assets/images/lide.svg';
+import men from '../assets/images/men.png';
+import fun from '../assets/images/fun.png';
 import { BASE_URL, HTTP_CONFIG } from '../constants/config';
 import { useAuthContext } from '../context/authContext';
 import { useGoogleLogin } from '@react-oauth/google';
@@ -48,14 +50,15 @@ function Login() {
 
   const validationSchema = Yup.object({
     email: Yup.string()
-      .required('Required!')
-      .email('Invalid email format')
-      .max(50, 'Email must be at most 50 characters'),
+      .required('Povinné!')
+      .email('Neplatný formát emailu')
+      .max(50, 'Email může mít maximálně 50 znaků'),
     password: Yup.string()
-      .required('Required')
-      .min(6, 'Password must be at least 6 characters')
-      .max(50, 'Password must be at most 50 characters'),
+      .required('Povinné!')
+      .min(6, 'Heslo musí mít alespoň 6 znaků')
+      .max(50, 'Heslo může mít maximálně 50 znaků'),
   });
+  
 
   const initialValues = {
     email: '',
@@ -169,7 +172,9 @@ function Login() {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
       <div className='flex flex-wrap items-center overflow-y-auto min-h-[600px] mt-20'>
-        <div className={` ${isLoding ? 'opacity-30 pointer-events-none' : ''}relative bg-white px-4 py-4 rounded-lg flex items-center justify-center flex-col `}>
+        {isLoding ? <h1>moment prosím....</h1> : 
+        <div className={` ${isLoding ? 'opacity-10 pointer-events-none' : ''}relative bg-white px-4 py-4 rounded-lg flex items-center justify-center flex-col `}>
+          
           <h1 className='mt-4 text-black poppins-extrabold text-3xl'>Příhlášení</h1>
 
           <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
@@ -228,9 +233,11 @@ function Login() {
           </h5>
           <h5 className='text-gray-600'>Zapomenuté heslo: <Link to='/forgottenpassword' className='text-gray-600 underline cursor-pointer'>Klikni zde</Link></h5>
           <div className='h-[100px]'>
-            <Image className='flex mt-4 w-full h-full object-cover' src={lide} alt="lide" />
+            <Image className='flex mt-4 w-full h-full object-cover' src={fun} alt="lide" />
           </div>
         </div>
+
+          }
       </div>
     </div>
   );

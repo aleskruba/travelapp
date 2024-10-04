@@ -5,7 +5,7 @@ import { typeOfTour } from '../../constants/constantsData';
 
 interface TourTypeProps {
   tourTypes: any;
-  setTourTypes:React.Dispatch<React.SetStateAction<any[] | undefined>>
+  setTourTypes:React.Dispatch<React.SetStateAction<any[]>>
 }
 
 function SearchTourTypeComponent({tourTypes,setTourTypes}:TourTypeProps) {
@@ -20,6 +20,7 @@ function SearchTourTypeComponent({tourTypes,setTourTypes}:TourTypeProps) {
 
       const handleChange = (selectedOption: any) => {
         setTourTypes(selectedOption)
+    
       };
 
   return (
@@ -27,6 +28,7 @@ function SearchTourTypeComponent({tourTypes,setTourTypes}:TourTypeProps) {
     <Select
       closeMenuOnSelect={false}
       components={animatedComponents}
+          defaultValue={tourTypes}
       isMulti
       placeholder="Vyber typ cesty ..."
       options={formattedTypeOdTour}

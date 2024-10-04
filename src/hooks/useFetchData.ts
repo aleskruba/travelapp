@@ -5,6 +5,7 @@ export async function fetchData(url: string, method: string, credentials?: any) 
     ...HTTP_CONFIG,
     method,
     credentials: 'include',
+    
   };
 
    if (method === 'POST' || method === 'PUT') {

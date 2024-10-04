@@ -12,6 +12,7 @@ import {
 } from '@tanstack/react-query'
 import { AuthProvider } from './context/authContext';
 import { CountryProvider } from './context/countryContext';
+import { TourProvider } from './context/tourContext';
 
 const queryClient = new QueryClient()
 
@@ -24,13 +25,14 @@ root.render(
     <GoogleOAuthProvider clientId="85802491961-b7t13blg4rkgqbira2i00fni49cg8rmm.apps.googleusercontent.com">
       <AuthProvider>
         <ThemeProvider>
+          <TourProvider>
           <CountryProvider>
               <Routes>
                   <Route path="/*" element={<App/>} />
               </Routes>
             </CountryProvider>
-            <ToastContainer 
-                  /> 
+            <ToastContainer /> 
+          </TourProvider>
         </ThemeProvider>
       </AuthProvider>
       </GoogleOAuthProvider>

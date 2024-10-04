@@ -5,6 +5,7 @@ import DOMPurify from 'dompurify';
 import { typeOfTour } from '../constants/constantsData';
 import { countryNames } from '../constants/constantsData';
 import { useAuthContext } from '../context/authContext';
+import { useTourContext } from '../context/tourContext';
 import { useNavigate } from "react-router-dom";
 import { initialToureState, TourProps } from '../types';
 import { BASE_URL, HTTP_CONFIG } from '../constants/config';
@@ -14,6 +15,7 @@ import {  Flip, toast } from 'react-toastify';
 
 function CreateTour() {
     const queryClient = useQueryClient();
+    const {yourToursLength } = useTourContext();
     const { user } = useAuthContext();
      const [allowSubmitButton, setAllowSubmitButton] = useState(false);
     const [errors, setErrors] = useState('');
@@ -28,6 +30,7 @@ function CreateTour() {
     const [backendError,setBackendError] = useState<string | null>(null);
     const navigate = useNavigate();
     const [tour, setTour] = useState<TourProps>(initialToureState);
+
     
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -97,8 +100,8 @@ function CreateTour() {
           
             if (!response.ok) throw new Error('Error occurred while creating tour');
             return response.json();
-          },
-          
+          },   
+
         onSuccess: () => {
           setBackendError(null);
           setTour(initialToureState);
@@ -144,9 +147,7 @@ function CreateTour() {
       
         const hasCompleted = !newTour.destination || newTour.tourtype.length === 0 || !newTour.fellowtraveler || !newTour.aboutme || !selectedDate ;
         if (hasCompleted) { setErrors('Nejsou vyplněna všechna pole')}
-        console.log(newTour);  // This should log the correctly updated tour object
-      
-        // Ensure that you're passing both the tour and user_id if needed
+   
         createTourMutation.mutate({ tour: newTour, user_id: tour.user_id });
       };
       
@@ -231,6 +232,19 @@ function CreateTour() {
         
           };
 
+          if (yourToursLength && yourToursLength >= 4) {
+            setTimeout(function () {
+                navigate(`../yourtours`);
+            }, 1000); // Navigate after 1 second
+            return (
+              <div className='flex h-screen justify-center items-center'>
+                <span>Již máš vytvořené 4 spolucesty, což je maximální počet...
+
+                </span>
+              </div>);
+        }
+        
+    
   return (
     <div className="text-black dark:text-white">
     <div className="container mx-auto px-4 py-8">

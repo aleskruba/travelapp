@@ -21,6 +21,8 @@ import Tours from './pages/Tours';
 import CreateTour from './pages/CreateTour';
 import YourTours from './pages/YourTours';
 import UpdateTour from './pages/UpdateTour';
+import TourDetail from './pages/TourDetail';
+
 
 function App() {
 
@@ -52,7 +54,7 @@ function App() {
               <Route path="/yourvlogs" element={<YourVlogs />}/> 
               <Route path="/yourtours" element={<YourTours />}/> 
               <Route path="/yourtours/:id" element={<UpdateTour />}/> 
-              
+              <Route path="/tours/:id" element={<TourDetail />}/> 
             </Route>
             
             <Route path="/test" element={<Test />}/> 

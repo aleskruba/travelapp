@@ -22,19 +22,52 @@ function Tours() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [availableDestinations, setAvailableDestinations] = useState<CountryOption[]>([]);
   const [text, setText] = useState<string>('');
-  const { debouncedValue, debounceLoading } = useDebounce(text, 1000);
-  
-  const [countries, setCountries] = useState<any[] | undefined>();
-  const [tourTypes, setTourTypes] = useState<any[] | undefined>();
-  const [tourDates, setTourDates] = useState<any | undefined>();
+  const { debouncedValue, debounceLoading } = useDebounce(text, 500);
+
+  const countriesParam = searchParams.get('countries');
+  const tourTypesParam = searchParams.get('tourtypes');
+  const tourDatesParam = searchParams.get('tourdates');
+
+  const [countries, setCountries] = useState<any[]>(countriesParam ? 
+    countriesParam.split(',').map(value => ({ value, label: value })) : []);
+  const [tourTypes, setTourTypes] = useState<any[]>(tourTypesParam ? 
+      tourTypesParam.split(',').map(value => ({ value, label: value })) : []
+  );
+  const [tourDates, setTourDates] = useState<any>(
+    tourDatesParam ? { value: tourDatesParam, label: tourDatesParam } : null
+  );
 
   // Get the current page from URL query params; default to 1
   const currentPage = parseInt(searchParams.get('page') || '1', 10) - 1;
 
+
+
+  useEffect(() => {
+    // Sync local state with URL search params on mount
+
+    const searchParam = searchParams.get('search');
+
+    if (countriesParam) {
+      setCountries(countriesParam.split(',').map(value => ({ value, label: value })));
+    }
+
+    if (tourTypesParam) {
+      setTourTypes(tourTypesParam.split(',').map(value => ({ value, label: value })));
+    }
+
+    if (tourDatesParam) {
+      setTourDates({ value: tourDatesParam });
+    }
+
+    if (searchParam) {
+      setText(searchParam);
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     // Update the searchParams whenever countries or search text changes
     const params = new URLSearchParams();
-    
+
     // Add countries to the params
     if (countries && countries.length > 0) {
       const countryValues = countries.map(country => country.value).join(',');
@@ -60,7 +93,7 @@ function Tours() {
 
     // Update the URL with the new parameters
     setSearchParams(params);
-  }, [countries, tourTypes,tourDates,debouncedValue, currentPage, setSearchParams]);
+  }, [countries, tourTypes, tourDates, debouncedValue, currentPage, setSearchParams]);
 
   const fetchTours = async (page = 0) => {
     const params = new URLSearchParams();
@@ -87,16 +120,16 @@ function Tours() {
     if (tourDates) {
       params.set('tourdates', tourDates.value);
     }
+    
     // Construct the full URL with the base URL and the query string
     const url = `${BASE_URL}/tours/?${params.toString()}`;
- 
+
     try {
       const response = await fetch(url);
-  
       if (!response.ok) {
         throw new Error('Něco se pokazilo, spolucesty nebyly načteny');
       }
-  
+
       backendError && setBackendError(null);
       return await response.json();
     } catch (error: any) {
@@ -107,7 +140,7 @@ function Tours() {
   
   const { data, isLoading, isError, isPlaceholderData } = useQuery({
     queryFn: () => fetchTours(currentPage),
-    queryKey: ['tours', currentPage, debouncedValue, countries,tourTypes,tourDates],
+    queryKey: ['tours', currentPage, debouncedValue, countries, tourTypes, tourDates],
     retry: 2,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: true,
@@ -127,17 +160,22 @@ function Tours() {
     }
   }, [data]);
 
+  if (isLoading) {
+    return <div className='flex justify-center items-center h-full'>Moment prosim...</div>;
+  }
+
   if (isError) {
     return <span>Něco se pokazilo , spolucety nebyly načteny</span>;
   }
 
   const userDataFiltered = data?.tours.filter((keyword: any) =>
-    keyword.destination.toLowerCase().includes(debouncedValue ? debouncedValue.toLowerCase() : '')
+    keyword.destination.toLowerCase().startsWith(debouncedValue ? debouncedValue.toLowerCase() : '')
   ) || [];
+  
 
   return (
     <div className='px-2 '>
-      <div className='text-center text-blue-500 '>
+      <div className='text-center text-blue-500 pt-4'>
         {!user ? 
           'Pouze přihlášení uživatelé mohou vkládat Vlogy' :
           <Link to={'../createtour'}>Vytvoř spolucestu <span className="underline cursor-pointer text-blue-600" >zde</span></Link>
@@ -168,49 +206,43 @@ function Tours() {
                       />
       </div>
 
-      {isLoading || debounceLoading && <div className='flex justify-center'>Moment prosim...</div> }
-
-
-        <div className="wrapper grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 mt-20 md:px-20">
-          {userDataFiltered
+      <div className="wrapper grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 mt-20 md:px-20">
+        {userDataFiltered.length === 0 ? (
+          <div className='flex justify-center items-center pb-10'>Žádná shoda</div>
+        ) : (
+          userDataFiltered
             .sort((a: { id: number }, b: { id: number }) => b.id - a.id)
             .map((tour: any) => (
-              <Tour key={tour.id} tour={tour} />
-            ))}
-        </div>
+              <Link to={`../tours/${tour.id}`} key={tour.id}>
+                <Tour tour={tour} />
+              </Link>
+            ))
+        )}
+      </div>
 
-
-      <div className="flex items-center justify-center space-x-4 py-2">
+      <div className="flex flex-col gap-2 items-center justify-center  space-x-4 py-2 pt-12 pb-12">
         <span className="text-gray-700 dark:text-gray-200 font-medium">
           Aktuální stránka: {currentPage + 1} of {data?.totalPages}
         </span>
+        <div className='flex gap-2'>
         <button
           onClick={() => 
-            setSearchParams({ page: Math.max(currentPage, 1).toString() }) // Convert result to string
-          }
+            currentPage > 0 && navigate(`?page=${currentPage}`)}
           disabled={currentPage === 0}
-          className={`px-4 py-2 rounded-md border text-sm font-medium transition-colors duration-200 ${
-            currentPage === 0 
-              ? 'bg-gray-200 text-gray-500 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed'
-              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:border-gray-500'
-          }`}
+          className='rounded-md px-4 py-2 w-28 bg-gray-200 text-black hover:bg-gray-300'
         >
-          Minulá stránka
+          Předchozí
         </button>
         <button
-          onClick={() => setSearchParams({ page: (currentPage + 2).toString() })}
-          disabled={isPlaceholderData || currentPage + 1 >= data?.totalPages}
-          className={`px-4 py-2 rounded-md border text-sm font-medium transition-colors duration-200 ${
-            isPlaceholderData || currentPage + 1 >= data?.totalPages 
-              ? 'bg-gray-200 text-gray-500 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed'
-              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:border-gray-500'
-          }`}
+          onClick={() => 
+            currentPage < (data?.totalPages - 1) && navigate(`?page=${currentPage + 2}`)}
+          disabled={currentPage >= data?.totalPages - 1}
+          className='rounded-md px-4 py-2 w-28 bg-gray-200 text-black hover:bg-gray-300'
         >
-          Další stránka
+          Další
         </button>
+        </div>
       </div>
-
-      <p>{isError && backendError}</p>
     </div>
   );
 }

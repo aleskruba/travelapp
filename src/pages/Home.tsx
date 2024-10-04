@@ -1,6 +1,8 @@
 import React from 'react'
 import Image from '../custom/Image'
 import lide from '../assets/images/lide.svg';
+import double from '../assets/images/double.png';
+import fun from '../assets/images/fun.png';
 import { useAuthContext } from '../context/authContext';
 
 function Home() {
@@ -32,9 +34,15 @@ function Home() {
 <p>Nechte se inspirovat našimi stránkami a připravte se na nezapomenutelné zážitky, které vás čekají na cestách po světě!</p>
 
       </div>
-      <div className='flex flex-1 justify-center mb-4'>
-        <Image src={lide} alt="" className="float-right" />
-      </div>
+      <div className="flex flex-1 justify-center mb-4">
+  <Image 
+            src={fun} 
+            alt="fun" 
+            className="min-w-[300px] max-w-[400px] w-full h-auto object-contain"
+            // Optional, if you want to maintain the aspect ratio
+          />
+        </div>
+
     </div>
 
 

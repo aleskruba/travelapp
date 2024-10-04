@@ -1,8 +1,8 @@
-import React from 'react'
+import React from 'react';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 
- interface CountryOption {
+interface CountryOption {
   readonly value: string;
   readonly label: string;
 }
@@ -10,35 +10,28 @@ import makeAnimated from 'react-select/animated';
 interface CountryProps {
   availableDestinations?: CountryOption[]; // Allow undefined
   countries: any;
-  setCountries:React.Dispatch<React.SetStateAction<any[] | undefined>>
-
+  setCountries: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
-const SearchComponent: React.FC<CountryProps> = ({ availableDestinations,countries, setCountries}) => {
+const SearchComponent: React.FC<CountryProps> = ({ availableDestinations, countries, setCountries }) => {
+  const animatedComponents = makeAnimated();
 
-    const animatedComponents = makeAnimated();
+  const handleChange = (selectedOption: any) => {
+    setCountries(selectedOption); // Update the countries state with selected options
+  };
 
-    const handleChange = (selectedOption: any) => {
-     // console.log(selectedOption); 
-      setCountries(selectedOption)
-    };
-
-    
   return (
-
     <Select
       closeMenuOnSelect={false}
       components={animatedComponents}
-      defaultValue={[availableDestinations && availableDestinations[4]]}
+      defaultValue={countries} // Set defaultValue based on countries state
       isMulti
       placeholder="Vyber zemi ..."
       options={availableDestinations}
-      onChange={handleChange} 
-      />
+      onChange={handleChange}
+    />
+  );
+};
 
-  )
-}
-
-export default SearchComponent
-
+export default SearchComponent;
 
