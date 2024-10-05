@@ -22,6 +22,7 @@ import CreateTour from './pages/CreateTour';
 import YourTours from './pages/YourTours';
 import UpdateTour from './pages/UpdateTour';
 import TourDetail from './pages/TourDetail';
+import NotFound404 from './pages/NotFound404';
 
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
             </Route>
             
             <Route path="/test" element={<Test />}/> 
+            <Route path='*' element={<NotFound404 />} />
          
         </Route>
       </Routes>

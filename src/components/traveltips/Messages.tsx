@@ -41,7 +41,7 @@ useEffect(() => {
     return response.json();
   };
 
-  const { data,isLoading,isError,isPlaceholderData } = useQuery({
+  const { data,isLoading,isError,isFetching,isPlaceholderData } = useQuery({
     queryFn: ()=>fetchMessages(currentPage),
     queryKey: ['messages', chosenCountry,currentPage,currentPageReply],
     placeholderData: keepPreviousData,
@@ -51,7 +51,7 @@ useEffect(() => {
 
 
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return    <div className='flex justify-center items-center '>Moment prosim...</div>
   }
 

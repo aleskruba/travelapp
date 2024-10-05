@@ -247,6 +247,10 @@ function CreateTour() {
     
   return (
     <div className="text-black dark:text-white">
+          <div className='flex justify-end p-4'>
+      <button className='bg-gray-200 hover:bg-gray-300 darK:bg-gray-700 darK:hover:bg-gray-800 px-4 py-2 dark:text-black rounded-md'
+              onClick={()=>navigate(-1)}>Zpět</button>
+    </div>
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-center mb-8">Jak vytvořit Spolucestu</h1>
       <h2 className="text-xl font-semibold mb-4">1. Začněte Registrací:</h2>

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuthContext } from '../context/authContext';
 import { BASE_URL } from '../constants/config';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery ,useQueryClient} from '@tanstack/react-query';
 import Tour from '../components/tours/Tour';
 import SearchComponent from '../components/tours/SearchComponent';
 import SearchTourTypeComponent from '../components/tours/SearchTourTypeComponent';
@@ -40,6 +40,8 @@ function Tours() {
   // Get the current page from URL query params; default to 1
   const currentPage = parseInt(searchParams.get('page') || '1', 10) - 1;
 
+  const queryClient = useQueryClient();
+  queryClient.invalidateQueries({ queryKey: ['tour'] })
 
 
   useEffect(() => {
@@ -161,7 +163,7 @@ function Tours() {
   }, [data]);
 
   if (isLoading) {
-    return <div className='flex justify-center items-center h-full'>Moment prosim...</div>;
+    return <div className='flex justify-center items-center h-screen'>Moment prosim...</div>;
   }
 
   if (isError) {
@@ -226,21 +228,24 @@ function Tours() {
         </span>
         <div className='flex gap-2'>
         <button
-          onClick={() => 
-            currentPage > 0 && navigate(`?page=${currentPage}`)}
-          disabled={currentPage === 0}
-          className='rounded-md px-4 py-2 w-28 bg-gray-200 text-black hover:bg-gray-300'
-        >
-          Předchozí
-        </button>
-        <button
-          onClick={() => 
-            currentPage < (data?.totalPages - 1) && navigate(`?page=${currentPage + 2}`)}
-          disabled={currentPage >= data?.totalPages - 1}
-          className='rounded-md px-4 py-2 w-28 bg-gray-200 text-black hover:bg-gray-300'
-        >
-          Další
-        </button>
+    onClick={() => currentPage > 0 && navigate(`?page=${currentPage}`)}
+    disabled={currentPage === 0}
+    className={`rounded-md px-4 py-2 w-28 bg-gray-200 text-black hover:bg-gray-300
+      ${currentPage === 0 ? 'opacity-30 pointer-events-none' : ''}`}
+  >
+    Předchozí
+  </button>
+
+  <button
+    onClick={() =>
+      currentPage < (data?.totalPages - 1) && navigate(`?page=${currentPage + 2}`)
+    }
+    disabled={currentPage >= data?.totalPages - 1}
+    className={`rounded-md px-4 py-2 w-28 bg-gray-200 text-black hover:bg-gray-300
+      ${currentPage >= data?.totalPages - 1 ? 'opacity-30 pointer-events-none' : ''}`}
+  >
+    Další
+  </button>
         </div>
       </div>
     </div>

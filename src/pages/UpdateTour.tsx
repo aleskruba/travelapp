@@ -452,9 +452,12 @@ const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
           <form onSubmit={onSubmitFunction}>
             <div className="mb-4">
             
-            <label className="block text-sm font-bold mb-2" htmlFor="destination">Destinace:</label>
+            <div className='flex flex-col '>
+              <h1 className="block text-xl font-bold mb-2">Destinace: {data.tour.destination}</h1>
+              <span className='text-xs dark:text-red-200 text-red-500 leading-tight '>Destinace nelze měnit </span>
+            </div>
 <div className="relative w-full px-2">
-<input
+{/* <input
   type="text"
   placeholder={chosenCountry ? chosenCountry : "vyber zemi"}
   maxLength={8}
@@ -493,7 +496,7 @@ const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       </div>
     )}
   </div>
-)}
+)} */}
 </div>
 
 
