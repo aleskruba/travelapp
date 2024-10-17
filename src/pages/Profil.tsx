@@ -1,5 +1,5 @@
 import { useState, ChangeEvent, FormEvent, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link,Navigate, useNavigate} from 'react-router-dom';
 import { useAuthContext } from '../context/authContext';
 import { useThemeContext } from '../context/themeContext';
 import { UserProps } from '../types';
@@ -13,8 +13,11 @@ import lide from '../assets/images/lide.svg';
 import { fetchData } from '../hooks/useFetchData';
 import google from '../assets/images/google.png';
 import Button from '../components/customButton/Button';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 function Profil() {
+
+    const navigate = useNavigate()
 
     const [updateProfile, setUpdateProfile] = useState(false);
     const [updatePassword, setUpdatePassword] = useState(false);
@@ -24,6 +27,7 @@ function Profil() {
     const [backendImageError, setBackendImageError] = useState('');
     const [noChange, setNoChange] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [showModal, setShowModal] = useState<boolean>(false);
 
     useEffect(()=>{
         setUpdateUser(user);
@@ -70,7 +74,7 @@ function Profil() {
                 reader.readAsDataURL(selectedFile);
 
                 // Check file size
-                const maxSize = 150 * 1024; // Convert KB to bytes
+               // const maxSize = 150 * 1024; // Convert KB to bytes
 
                 const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
                 if (!allowedTypes.includes(selectedFile.type)) {
@@ -264,7 +268,61 @@ function Profil() {
 }
  }
         
+ const handleDeleteAccountClick = () => {
 
+    setShowModal(true);
+  };
+
+const deleteAccount = async () =>{
+
+    try{
+    const response = await fetchData(`${BASE_URL}/deleteprofile`,'DELETE',{
+        
+    })
+
+    console.log(response);
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to delete account');
+            }
+    
+            const data = await response.json();
+            console.log(data)
+            setShowModal(false)
+            setUser(null);
+            navigate('/')
+       
+            toast.success('Účet byl úspěšme smazán', {
+                position: "top-left",
+                autoClose: 1500,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                transition: Flip,
+            });
+           
+     
+            }catch(e){
+                console.error(e)
+                toast.error('Chyba při smazání profilu', {
+                    position: "top-left",
+                    autoClose: 1500,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    transition: Flip,
+                });
+    
+            }
+          }
+    
     return (
 
   <div className="flex items-center h-full pb-4 flex-col pt-8 px-2 gap-6 ">
@@ -488,7 +546,24 @@ function Profil() {
                 </div>
             }
 
-            
+<div className="bg-gray-100 dark:bg-gray-500 dark:text-gray-100 p-6 rounded-lg shadow-md w-full md:w-[35rem]">
+                             <Button 
+                                type="button" 
+                                color="red" 
+                                className="w-full"
+                                onClick={handleDeleteAccountClick}
+                                >
+                                Smazat účet
+                            </Button>
+                                </div>
+
+
+        <ConfirmationModal
+            show={showModal}
+            onClose={() => setShowModal(false)}
+            onConfirm={() => deleteAccount() }
+            message="Chceš opravdu smazat svůj účet ? "
+      />                     
         </div>
 
     );
