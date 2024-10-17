@@ -33,7 +33,7 @@ useEffect(() => {
 
   const fetchMessages = async (page = 0) => {
     const response = await fetch(`${BASE_URL}/messages/${chosenCountry}?page=${page+1}`);
-
+    console.log('fetched')
   
     if (!response.ok) {
       throw new Error('Chyba při získaní dat');

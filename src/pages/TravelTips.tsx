@@ -6,6 +6,7 @@ import { countriesData } from '../constants/constantsData';
 import Country from '../components/traveltips/Country';
 import Messages from '../components/traveltips/Messages';
 import Vlogs from '../components/traveltips/Vlogs';
+import Button from '../components/customButton/Button';
 
 function TravelTips() {
 
@@ -43,14 +44,13 @@ function TravelTips() {
         <Country/>
         <div className="flex justify-center py-4 dark:text-white">
           {chosenCountry && (
-            <button
-              onClick={() => {
-                setSelectComp(!selectComp);
-              }}
-              className="bg-green-500 py-3 px-4 rounded-lg shadow-md transform transition duration-300 hover:scale-105 text-xl text-white"
-            >
-              {selectComp ? "Cestovatelské vlogy - klikni zde" : "Fórum -  klikni zde"}
-            </button>
+         <Button
+         onClick={() => setSelectComp(!selectComp)}
+         color="green" // Assuming you want to use a green color, you might need to add it to your Button component
+         className="py-3 px-4 rounded-lg shadow-md transform transition duration-300 hover:scale-105 text-xl"
+       >
+         {selectComp ? "Cestovatelské vlogy - klikni zde" : "Fórum - klikni zde"}
+       </Button>
           )}
         </div>
       {chosenCountry ? 

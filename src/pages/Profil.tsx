@@ -12,6 +12,7 @@ import EXIF from 'exif-js';
 import lide from '../assets/images/lide.svg';
 import { fetchData } from '../hooks/useFetchData';
 import google from '../assets/images/google.png';
+import Button from '../components/customButton/Button';
 
 function Profil() {
 
@@ -387,29 +388,34 @@ function Profil() {
 
                             {user?.googleEmail ? <span className='text-xs text-violet-700'>pokud jsi přihlášený s Googlem nemůžeš měnit email</span> : ''}
                             {backendError && <div className="text-red-800">{backendError}</div>}
-                            <input
-                                type="submit"
-                                value="Ulož"
-                                className="w-full bg-blue-500 text-white rounded-md p-2 hover:bg-blue-600 cursor-pointer"
-                            />
+                            <Button 
+                                    type="submit" 
+                                    color="blue" 
+                                    className="w-full"
+                                    >
+                                    Ulož
+                                    </Button>
                         </form>
                     )}
 
-                    {!updateProfile ? (
-                        <button
-                            onClick={() => { setUpdateProfile(true); setBackendError('') }}
-                            className="mt-4 w-full bg-blue-500 text-white rounded-md p-2 hover:bg-blue-600 cursor-pointer"
+                        {!updateProfile ? (
+                        <Button
+                            onClick={() => { setUpdateProfile(true); setBackendError(''); }}
+                            color="blue"
+                            className="mt-4 w-full"
                         >
                             Aktualizovat Profil
-                        </button>
-                    ) : (
-                        <button
-                            onClick={() => { setUpdateProfile(false); setBackendError('') }}
-                            className="mt-4 w-full bg-gray-500 text-white rounded-md p-2 hover:bg-gray-600 cursor-pointer"
+                        </Button>
+                        ) : (
+                        <Button
+                            onClick={() => { setUpdateProfile(false); setBackendError(''); }}
+                            color="gray"
+                            className="mt-4 w-full border-1.5"
                         >
                             Zrušit
-                        </button>
-                    )}
+                        </Button>
+                        )}
+
                 </div>
             }
 
@@ -450,29 +456,35 @@ function Profil() {
                             </div>
 
                             {backendError && <div className="text-red-800">{backendError}</div>}
-                            <input
-                                type="submit"
-                                value="Ulož"
-                                className="w-full bg-blue-500 text-white rounded-md p-2 hover:bg-blue-600 cursor-pointer"
-                            />
+                            <Button 
+                                type="submit" 
+                                color="blue" 
+                                className="w-full"
+                                >
+                                Ulož
+                                </Button>
+
                         </form>
                     )}
 
-                    {!updatePassword ? (
-                        <button
-                            onClick={() => { setUpdatePassword(true); setBackendError('') }}
-                            className="mt-4 w-full bg-blue-500 text-white rounded-md p-2 hover:bg-blue-600 cursor-pointer"
+                        {!updatePassword ? (
+                        <Button
+                            onClick={() => { setUpdatePassword(true); setBackendError(''); }}
+                            color="blue"
+                            className="mt-4 w-full"
                         >
                             Změnit heslo
-                        </button>
-                    ) : (
-                        <button
+                        </Button>
+                        ) : (
+                        <Button
                             onClick={() => { setUpdatePassword(false); setBackendError(''); }}
-                            className="mt-4 w-full bg-gray-500 text-white rounded-md p-2 hover:bg-gray-600 cursor-pointer"
+                            color="gray"
+                            className="mt-4 w-full border-1.5"
                         >
                             Zrušit
-                        </button>
-                    )}
+                        </Button>
+                        )}
+
                 </div>
             }
 

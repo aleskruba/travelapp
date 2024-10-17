@@ -1,37 +1,35 @@
 import React, { useState } from 'react';
-import { MessageProps, ReplyProps } from '../../types';
+import { TourMessageProps, TourReplyProps } from '../../types';
 import { useAuthContext } from '../../context/authContext';
 import { useThemeContext } from '../../context/themeContext';
-import { useCountryContext } from '../../context/countryContext';
+import { useTourContext } from '../../context/tourContext';
 import { FaRegTrashAlt } from "react-icons/fa";
 import moment from 'moment'; // Import moment
 import { io } from 'socket.io-client';
 import { BASE_URL, HTTP_CONFIG, SOCKET_URL } from '../../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import ConfirmationModal from '../ConfirmationModal';
-import CreateReplyVote from './CreateReplyVote';
 import { fetchData } from '../../hooks/useFetchData';
 import useRelativeDate from '../../hooks/DateHook';
 
 type Props = {
-  reply: ReplyProps;
-  message: MessageProps;
+  reply: TourReplyProps;
+  message: TourMessageProps;
   currentPage:number;
   currentPageReply:number
 };
 
-
-const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply}) => {
+const TourReply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply}) => {
   const { user } = useAuthContext();
   const { toggleModal } = useThemeContext();
   const [selectedReplyId, setSelectedReplyId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
-  const { chosenCountry } = useCountryContext();
   const [backendError, setBackendError] = useState<string | null>(null);
   const imageUrl = reply?.user.image ? reply?.user.image : '/profile.png';
-
+  const {isPrivate,privateIdsArray} = useTourContext()
   // Convert Date object to Moment object
   const replyDateMoment = moment(reply.date);
+  console.log(privateIdsArray)
 
   // Use the custom hook to get the relative date
   const displayDateText = useRelativeDate(replyDateMoment);
@@ -44,15 +42,12 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply})
   const queryClient = useQueryClient();
 
   const deleteMessageFunction = async (id: number): Promise<any> => {
+    const response = await fetchData(`${BASE_URL}/tourreply/${id}`, 'DELETE');
 
-    console.log('delete reply',id)
-    const response = await fetchData(`${BASE_URL}/reply/${id}`, 'DELETE');
-  
     if (!response.ok) {
-      throw new Error('Error while deleting the reply');
+      throw new Error('Chyba při odeslaní zprávy');
     }
-  
-    const data = await response.json();
+    const data = response.json();
     return data;
   };
 
@@ -62,22 +57,22 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply})
 
       console.log('onMutate delete reply',id)
       // Cancel any outgoing refetches to prevent overwriting the optimistic update
-      await queryClient.cancelQueries({ queryKey: ['messages', chosenCountry, currentPage, currentPageReply] });
+      await queryClient.cancelQueries({ queryKey: ['tourmessages', currentPage,currentPageReply]  });
   
       // Get the previous messages from the cache
-      const previousMessages = queryClient.getQueryData(['messages', chosenCountry, currentPage, currentPageReply]);
+      const previousMessages = queryClient.getQueryData(['tourmessages', currentPage,currentPageReply] );
   
       // Optimistically update the cache by removing the deleted reply
-      queryClient.setQueryData(['messages', chosenCountry, currentPage, currentPageReply], (oldData: { messages: MessageProps[] } | undefined) => {
+      queryClient.setQueryData(['tourmessages', currentPage,currentPageReply] , (oldData: { tourmessages: TourMessageProps[] } | undefined) => {
         if (!oldData) return oldData;
   
         return {
           ...oldData,
-          messages: oldData.messages.map((mes) => {
+          tourmessages: oldData.tourmessages.map((mes) => {
             if (mes.id === message.id) {
               return {
                 ...mes,
-                reply: mes.reply.filter((rep) => rep.id !== id),
+                tourreply: mes.tourreply.filter((rep) => rep.id !== id),
               };
             }
             return mes;
@@ -94,7 +89,7 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply})
       setShowModal(false);
   
       // Rollback cache to the previous state
-      queryClient.setQueryData(['messages', chosenCountry, currentPage, currentPageReply], context?.previousMessages);
+      queryClient.setQueryData(['tourmessages', currentPage,currentPageReply] , context?.previousMessages);
     },
     onSuccess: () => {
       backendError && setBackendError(null);
@@ -102,7 +97,7 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply})
     },
     onSettled: (data, error) => {
       if (error) {
-        queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry, currentPage, currentPageReply] });
+        queryClient.invalidateQueries({ queryKey: ['tourmessages', currentPage,currentPageReply]  });
       } else {
         // Optionally, validate if data from the server is consistent with the cache.
       }
@@ -110,12 +105,21 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply})
   });
 
   return (
-    <div className="relative shadow-xl rounded-lg" id={reply?.id.toString()}>
-      
+        <div
+          className={`relative shadow-xl rounded-lg ${
+            (reply.messagetype === 1 || (privateIdsArray.includes(reply.id)))
+              ? 'dark:bg-shinyDarkBackground bg-shinyLightBackground text-red-500 dark:text-red-200'
+              : ''
+          }`}
+          id={reply?.id.toString()}
+        >
+
+    
+     <span className='px-2'>{    (reply.messagetype === 1 || (privateIdsArray.includes(reply.id)))  && ` soukromá zašifrovaná zpráva  , vidí ji pouze  ${message.user.firstName === user?.firstName ?  reply.user.firstName :message.user.firstName } a ty` } </span> 
       <div className="absolute right-1 bottom-1 text-red-500 dark:text-red-200 font-thin">
         {backendError && backendError}
       </div>
-      <div key={reply.id} className="flex flex-col pt-2 border-t border-gray-400 dark:text-gray-100 relative">
+      <div key={reply.id} className="flex flex-col pt-2  dark:text-gray-100 relative">
         <div className={`flex items-center gap-6 md:gap-2 cursor-pointer mt-1 ${reply.user_id === user?.id ? 'pl-1' : 'p3-6'}`}>
           {reply.user_id === user?.id && (
             <div className="text-red-500 hover:text-red-300 absolute top-3 right-1" onClick={() => handleDeleteClick(reply.id)}>
@@ -130,22 +134,19 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply})
             />
           </div>
           <div className="flex gap-1">
-            <p className={`${reply.user_id === user?.id ? 'text-red-600 dark:text-red-200' : 'text-gray-600 dark:text-gray-100'} font-bold`}>
+            <p className={`${reply.user_id === user?.id ? 'text-gray-700 dark:text-gray-200' : 'text-gray-600 dark:text-gray-100'} font-bold`}>
               {reply.user.firstName ? reply.user.firstName.slice(0, 10) : ''}
             </p>
             <p className="text-gray-600 dark:text-gray-100 italic">{displayDateText}</p>
           </div>
         </div>
         <div className="md:pl-14 break-all">
-          <p className={`${reply.user_id === user?.id ? 'text-red-600 dark:text-red-200' : 'text-gray-600 dark:text-gray-100'}`}>
+          <p className={`${reply.user_id === user?.id ? 'text-gray-700 dark:text-gray-200' : 'text-gray-600 dark:text-gray-100'}`}>
             {reply.message}
           </p>
         </div>
       </div>
 
-      <div className="flex gap-4">
-        <CreateReplyVote message={message} reply={reply} currentPage={currentPage} currentPageReply={currentPageReply}/>
-      </div>
       <ConfirmationModal
         show={showModal}
         onClose={() => setShowModal(false)}
@@ -156,4 +157,4 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply})
   );
 };
 
-export default Reply;
+export default TourReply;

@@ -20,6 +20,10 @@ module.exports = {
           hover: '#b91c1c',    // hover:bg-red-700
         },
       },
+      backgroundImage: {
+        shinyDarkBackground: "linear-gradient(180.2deg, rgb(120, 85, 137) -6.9%, rgb(35, 9, 31) 76.7%)",
+        shinyLightBackground:"linear-gradient(to top, #fff1eb 0%, #ace0f9 100%)"
+      },
       borderWidth: {
         '1.5': '1.5px',  // Adds a custom 1.5px border
       },

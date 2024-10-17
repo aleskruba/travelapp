@@ -6,6 +6,7 @@ import { Link, useNavigate,useLocation } from "react-router-dom";
 import { BASE_URL,HTTP_CONFIG } from '../constants/config';
 import { Flip, toast } from "react-toastify";
 import { fetchData } from "../hooks/useFetchData";
+import Button from "../components/customButton/Button";
 
 
 function ForgottenPassword() {
@@ -141,21 +142,25 @@ function ForgottenPassword() {
                       {backendError && (
                         <div className="text-red-500">{backendError}</div>
                       )}
-                      <div className="flex justify-center gap-4 mt-4">
-                        <input
-                          type="submit"
-                          className={
-                            isLoading 
-                              ? 'px-4 py-2 rounded-md cursor-pointer bg-blue-500 opacity-50 pointer-events-none w-[120px]' 
-                              : `px-4 py-2 rounded-md cursor-pointer transition duration-300 w-[120px] ${isFormValid ? 'bg-blue-500 text-gray-700 hover:bg-blue-600' : 'bg-gray-300 text-gray-500 opacity-50 cursor-not-allowed'}`
-                          }
-                          
-                          value="Odeslat"
-                        /> 
-                        <button onClick={handleBack} type="button" className="px-4 py-2 text-center bg-gray-300 text-gray-700 rounded-md cursor-pointer hover:bg-gray-400 transition duration-300 w-[120px]">
-                        Zpět
-                      </button>
-                      </div>
+               <div className="flex justify-center gap-4 mt-4">
+              <Button
+                type="submit"
+                color={isLoading ? "blue" : isFormValid ? "blue" : "gray"}
+                className={`px-4 py-2 rounded-md transition duration-300 w-[120px] ${isLoading ? 'opacity-50 pointer-events-none' : isFormValid ? 'text-gray-700 hover:bg-blue-600' : 'bg-gray-300 text-gray-500 opacity-50 cursor-not-allowed'}`}
+                disabled={isLoading || !isFormValid}
+              >
+                Odeslat
+              </Button>
+              <Button
+                onClick={handleBack}
+                type="button"
+                color="gray"
+                className="px-4 py-2 text-center transition duration-300 w-[120px]"
+              >
+                Zpět
+              </Button>
+            </div>
+
                     </Form>
                   );
                 }}

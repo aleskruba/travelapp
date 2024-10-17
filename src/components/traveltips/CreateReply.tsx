@@ -9,6 +9,7 @@ import { BsEmojiGrin } from "react-icons/bs";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {  initialSingleReplyState, MessageProps, ReplyProps } from '../../types';
 import { fetchData } from '../../hooks/useFetchData';
+import Button from '../customButton/Button';
 
   interface Props {
     setReplyDiv: React.Dispatch<boolean>; 
@@ -101,48 +102,77 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,curr
       const createReplyMutation = useMutation({
         mutationFn: createReply,
         onMutate: async (newMessage) => {
-          // Cancel any outgoing queries to prevent them from overwriting optimistic update
+                   // Cancel any outgoing queries to prevent them from overwriting optimistic update
           await queryClient.cancelQueries({ queryKey: ['messages', chosenCountry, currentPage,currentPageReply] });
       
-          // Get the previous messages
           const previousMessages = queryClient.getQueryData(['messages', chosenCountry, currentPage,currentPageReply]);
       
           // Optimistically update the cache with the new message and sort by id
-          queryClient.setQueryData(['messages', chosenCountry, currentPage,currentPageReply], (old: any) => {
-            // Update only the reply of the specific message by ID
-            const updatedMessages = (old?.messages || []).map((mes: any) => {
-              if (mes.id === message.id) {
-                console.log(message);
-                // Update the reply array for the message with matching ID
-                return {
-                  ...mes,
-                  reply: [...(mes.reply || []), newMessage], // Add the newMessage object to the reply array
-                };
-              }
-              return mes; // Return other messages unchanged
+          queryClient.setQueryData(['messages', chosenCountry, currentPage, currentPageReply], (old: any) => {
+            if (!old) return old;
+        
+            // Map through existing messages and update the reply array in the matching message
+            const updatedMessages = old.messages.map((mes: any) => {
+                if (mes.id === message.id) {
+                    return {
+                        ...mes,
+                        reply: [...mes.reply, newMessage], // Add the newMessage to the reply array
+                    };
+                }
+                return mes; // Return other messages unchanged
             });
-          
+        
+            // Return the updated object with modified messages array
             return {
-              ...old,
-              messages: updatedMessages,
+                ...old,
+                messages: updatedMessages,
             };
-          });
-      
+        });
+        
+   
           // Return the context with the previous messages for rollback
           return { previousMessages };
         },
-        onSuccess: () => {
-           backendError && setBackendError(null)
-          queryClient.invalidateQueries({queryKey: ['messages',chosenCountry,currentPage,currentPageReply]});
+        onSuccess: (data, variables) => {
+          backendError && setBackendError(null);
           setReply(initialSingleReplyState);
-           setReplyDiv(false) 
+          setReplyDiv(false);
+        
+          queryClient.setQueryData(['messages', chosenCountry, currentPage, currentPageReply], (old: any) => {
+            if (!old) return old;
+        
+            const updatedMessages = old.messages.map((msg: any) => {
+                // Only update the message that matches message.id
+                if (msg.id === message.id) {
+                    // Map through replies to find and update the specific reply
+                    const updatedReplies = msg.reply.map((rep: any) =>
+                        rep.id === variables.id ? { ...rep, id: data.message.id } : rep
+                    );
+        
+                    // Return the updated message with the modified replies array
+                    return { ...msg, reply: updatedReplies };
+                }
+                // Return the message as-is if it doesn't match the target message.id
+                return msg;
+            });
+        
+            // Return the updated old object with the modified messages array
+            return { ...old, messages: updatedMessages };
+        });
+        
+
         },
-        onError: (err, newMessage, context) => {
+        
+
+        onError: (err, context) => {
           setBackendError('Něco se pokazilo, zpráva nebyla vytvořena')
-         },
-        onSettled: () => {
-          // Always refetch the messages to sync with the server
+          queryClient.setQueryData(['messages', chosenCountry, currentPage,currentPageReply], context?.previousMessages);
+          console.log(err)
+        },
+        onSettled: (data, error) => {
+          if (error) {
           queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry,currentPage,currentPageReply] });
+          }
         },
       });
 
@@ -196,7 +226,7 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,curr
     <div className={showEmojiPicker ? 'hidden':"flex justify-center space-x-4"}>
       
  
-        <button
+{/*         <button
           type="submit"
           className={`${
             !reply.message.length
@@ -206,11 +236,29 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,curr
         >
           Odešli
       </button>
-      <button className="bg-gray-300 w-[80px] text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 focus:outline-none focus:ring focus:border-gray-500" 
+ */}
+      <Button 
+              type="submit"   
+              color='green'
+              className={`${!reply.message.length ? 'opacity-30 cursor-default pointer-events-none': '' } rounded-md shadow-md w-[100px]  focus:ring `}
+             >
+              
+              Odešli
+          </Button>
+ {/*      <button className="bg-gray-300 w-[80px] text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 focus:outline-none focus:ring focus:border-gray-500" 
               onClick={() => {setReplyDiv(false);setSelectedReplyDivId(null)}}
               type='button'>
         Zpět
-      </button>
+      </button> */}
+      <Button 
+       
+       color='gray'
+       className={` rounded-md shadow-md w-[100px] focus:ring `}
+       onClick={() => {setReplyDiv(false);setSelectedReplyDivId(null)}}
+      >
+       
+       Zpět
+   </Button>
 
     </div>
   </div>

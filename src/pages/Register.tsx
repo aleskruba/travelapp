@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { BASE_URL, HTTP_CONFIG } from '../constants/config';
@@ -8,10 +8,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useGoogleLogin } from '@react-oauth/google';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Image from '../custom/Image';
-import lide from '../assets/images/lide.svg';
 import fun from '../assets/images/fun.png';
 import { useAuthContext } from '../context/authContext';
 import { fetchData } from '../hooks/useFetchData';
+import Button from '../components/customButton/Button';
 
 interface RegisterCredentials {
   email: string;
@@ -234,28 +234,41 @@ function Register() {
 
                   {backendError && <div className="text-red-500">{backendError}</div>}
                   <div className="flex space-x-4">
-                    <input type="submit"
-                      className={`px-4 py-2 rounded-md cursor-pointer transition duration-300 w-[120px] ${isFormValid ? 'bg-blue-500 text-gray-700 hover:bg-blue-600' : 'bg-gray-300 text-gray-500 opacity-50 cursor-not-allowed'}`}
-                      value="Registrovat" />
-                    <button onClick={handleBack}
-                      type="button"
-                      className="px-4 py-2 text-center bg-gray-300 text-gray-700 rounded-md cursor-pointer hover:bg-gray-400 transition duration-300 w-[120px]">
-                      Zpět
-                    </button>
-                  </div>
+                <Button
+                  type="submit"
+                  color={isFormValid ? "blue" : "gray"}
+                  className={`${isFormValid ? "text-gray-700" : "text-gray-200 opacity-50 cursor-not-allowed"} transition duration-300`}
+                  width="120px"
+                  disabled={!isFormValid}
+                >
+                  Registrovat
+                </Button>
+                <Button
+                  onClick={handleBack}
+                  type="button"
+                  color="gray"
+                  className="transition duration-300"
+                  width="120px"
+                >
+                  Zpět
+                </Button>
+              </div>
+
                 </Form>
               );
             }}
           </Formik>
 
           <div className='mt-4 w-[80%]  bg-gray-200 flex items-center justify-center rounded-lg cursor-pointer'>
-            <button
-              className="bg-blue-500 hover:bg-blue-700  font-bold py-2  rounded"
-              onClick={() => login()}
-              style={{ width: '100%' }}
-            >
-              Zaregistovat se s  Google 🚀
-            </button>
+                    <Button
+            color="blue"
+            className="font-bold"
+            width="100%"
+            onClick={() => login()}
+          >
+            Zaregistovat se s Google 🚀
+          </Button>
+
           </div>
           {backendErrorGoogle && <div className="text-red-500">{backendErrorGoogle}</div>}
 

@@ -54,6 +54,7 @@ export type ReplyVoteProps = {
 };
 
 
+
 export const initialUserState: UserProps = {
   id: 0,
   username: '',
@@ -179,4 +180,61 @@ export const initialToureState: TourProps = {
   aboutme: null,
   user_id: null,
   user: initialUserState
+};
+
+
+export type TourMessageProps = {
+  id: number;
+  date: Date;
+  message: string;
+  user_id: number | null;
+  tour_id: number | null;
+  user: UserProps;
+  tourreply: TourReplyProps[];
+}
+
+export type TourReplyProps = {
+  id: number;
+  date: Date;
+  message: string;
+  messagetype:number;
+  user_id: number | null;
+  tourmessage_id: number | null;
+  user: UserProps;
+};
+
+
+export const initialSingleTourReplyState: TourReplyProps = {
+  id: 0,
+  date: new Date(),
+  message: '',
+  messagetype:0,
+  user_id: null,
+  tourmessage_id: null,
+  user: initialUserState,
+
+};
+
+export const initialTourReplyState: TourReplyProps[] = [
+  {
+    id: 0,
+    date: new Date(),
+    message: '',
+    messagetype:0,
+    user_id: null,
+    tourmessage_id: null,
+    user: initialUserState,
+
+  },
+];
+
+export const initialTourMessageState: TourMessageProps = {
+  id: 0,
+  date: new Date(),
+  message: '',
+  user_id: null,
+  tour_id: null,
+  user: initialUserState,
+  tourreply: initialTourReplyState,
+
 };

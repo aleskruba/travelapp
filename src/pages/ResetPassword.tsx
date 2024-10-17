@@ -7,6 +7,7 @@ import { Flip, toast } from "react-toastify";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { fetchData } from "../hooks/useFetchData";
+import Button from "../components/customButton/Button";
 
 interface NewPasswordCredentials {
   password: string;
@@ -209,15 +210,24 @@ function ResetPassword() {
                     <ErrorMessage name="confirmPassword" component="div" className="text-red-500" />
                     {backendError && <div className="text-red-500">{backendError}</div>}
                     <div className="flex space-x-4">
-                      <input type="submit"
-                        className={`px-4 py-2 rounded-md cursor-pointer transition duration-300 w-[120px] ${isFormValid ? 'bg-blue-500 text-gray-700 hover:bg-blue-600' : 'bg-gray-300 text-gray-500 opacity-50 cursor-not-allowed'}`}
-                        value="Uložit" />
-                      <button onClick={() => navigate('/')}
-                        type="button"
-                        className="px-4 py-2 text-center bg-gray-300 text-gray-700 rounded-md cursor-pointer hover:bg-gray-400 transition duration-300 w-[120px]">
-                        Zpět
-                      </button>
-                    </div>
+                  <Button
+                    type="submit"
+                    color={isFormValid ? "blue" : "gray"}
+                    className={`px-4 py-2 rounded-md transition duration-300 w-[120px] ${isFormValid ? 'text-gray-700 hover:bg-blue-600' : 'opacity-50 cursor-not-allowed'}`}
+                    disabled={!isFormValid}
+                  >
+                    Uložit
+                  </Button>
+                  <Button
+                    onClick={() => navigate('/')}
+                    type="button"
+                    color="gray"
+                    className="px-4 py-2 text-center transition duration-300 w-[120px]"
+                  >
+                    Zpět
+                  </Button>
+                </div>
+
                   </Form>
                 );
               }}

@@ -1,32 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import moment from "moment";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
-import { MessageProps } from "../../types";
+import { TourMessageProps } from "../../types";
 import { useAuthContext } from "../../context/authContext";
 import { BASE_URL, HTTP_CONFIG, SOCKET_URL } from "../../constants/config";
-import useVote from "../../hooks/useVote";
-import { useCountryContext } from "../../context/countryContext";
 import { useThemeContext } from "../../context/themeContext";
 import { io } from "socket.io-client";
 import ConfirmationModal from "../ConfirmationModal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Reply from "./Reply";
-import CreateReply from "./CreateReply";
-import CreateMessageVote from "./CreateMessageVote";
+import TourReply from "./TourReply";
+import CreateTourReply from "./CreateTourReply";
 import { fetchData } from "../../hooks/useFetchData";
 import ReactPaginate from "react-paginate";
 import useRelativeDate from "../../hooks/DateHook";
 import Button from "../customButton/Button";
 
 type Props = {
-  message: MessageProps;
+  message: TourMessageProps;
   currentPage: number;
   currentPageReply: number;
   setCurrentPageReply: React.Dispatch<React.SetStateAction<number>>;
 };
 
-const Message: React.FC<Props> = ({
+const TourMessage: React.FC<Props> = ({
   message,
   currentPage,
   currentPageReply,
@@ -44,8 +40,6 @@ const Message: React.FC<Props> = ({
   const [selectedMessageId, setSelectedMessageId] = useState<number | null>(
     null
   );
-  const { chosenCountry } = useCountryContext();
-  // const {votes,handleVote,setVotes} = useVote(chosenCountry);
   const [replyDiv, setReplyDiv] = useState(false);
   const [backendError, setBackendError] = useState<string | null>(null);
 
@@ -71,8 +65,7 @@ const Message: React.FC<Props> = ({
 
   const deleteMessageFunction = async (id: number): Promise<any> => {
     setBackendError(null);
-    console.log(id);
-    const response = await fetchData(`${BASE_URL}/message/${id}`, "DELETE");
+    const response = await fetchData(`${BASE_URL}/tourmessage/${id}`, "DELETE");
 
     if (!response.ok) {
       throw new Error("Error while deleting the message");
@@ -83,48 +76,33 @@ const Message: React.FC<Props> = ({
     return data;
   };
 
-  /*  const deleteMessageMutation = useMutation({
-      mutationFn: deleteMessageFunction,
-      onSuccess: () => {
-        // Invalidate the queries to refetch the updated data after deletion.
-        queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry, currentPage,currentPageReply] });
-        setShowModal(false);
-      },
-      onError: (error) => {
-        setShowModal(false);
-        setBackendError('Něco se pokazilo , zpráva nebyla smazána')
-        console.error('Error deleting message:', error);
-        // Handle error state, such as showing a toast notification
-      },
-      onSettled: () => {
-        // This will run after either success or error
-        queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry, currentPage,currentPageReply] });
-      },
-    }); */ const deleteMessageMutation = useMutation({
+  const deleteMessageMutation = useMutation({
     mutationFn: deleteMessageFunction,
     onMutate: async (id) => {
       console.log("onMutate", id);
       // Cancel any outgoing refetches (so they don't overwrite optimistic update)
       await queryClient.cancelQueries({
-        queryKey: ["messages", chosenCountry, currentPage, currentPageReply],
+        queryKey: ["tourmessages", currentPage, currentPageReply],
       });
 
       // Get the previous messages from the cache
       const previousMessages = queryClient.getQueryData([
-        "messages",
-        chosenCountry,
+        "tourmessages",
         currentPage,
         currentPageReply,
       ]);
 
       // Optimistically update the cache by removing the deleted message
       queryClient.setQueryData(
-        ["messages", chosenCountry, currentPage, currentPageReply],
-        (oldData: { messages: any[] }) => {
+        ["tourmessages", currentPage, currentPageReply],
+        (oldData: { tourmessages: any[] }) => {
           if (!oldData) return oldData;
+          console.log(oldData);
           return {
             ...oldData,
-            messages: oldData.messages.filter((message) => message.id !== id),
+            tourmessages: oldData.tourmessages.filter(
+              (message) => message.id !== id
+            ),
           };
         }
       );
@@ -144,7 +122,7 @@ const Message: React.FC<Props> = ({
 
       // Rollback cache to the previous state
       queryClient.setQueryData(
-        ["messages", chosenCountry, currentPage, currentPageReply],
+        ["tourmessages", currentPage, currentPageReply],
         context?.previousMessages
       );
     },
@@ -152,7 +130,7 @@ const Message: React.FC<Props> = ({
       // Only refetch if the mutation failed or if the server response indicates a need for it.
       if (error) {
         queryClient.invalidateQueries({
-          queryKey: ["messages", chosenCountry, currentPage, currentPageReply],
+          queryKey: ["tourmessages", currentPage, currentPageReply],
         });
       } else {
         // Optionally, validate if data from the server is consistent with the cache.
@@ -161,25 +139,19 @@ const Message: React.FC<Props> = ({
     },
   });
 
-  const pageCount = Math.ceil(message?.reply?.length / ITEMS_PER_PAGE);
+  const pageCount = Math.ceil(message?.tourreply?.length / ITEMS_PER_PAGE);
 
   const startIndex = currentPageReply * ITEMS_PER_PAGE;
 
-  const selectedReplies = message?.reply
-    ? message?.reply
+  const selectedReplies = message?.tourreply
+    ? message?.tourreply
         .sort((a, b) => b.id - a.id)
         .slice(startIndex, startIndex + ITEMS_PER_PAGE)
     : null;
 
-  const handleClick = () => {
-    setReplyDiv(true);
-    setHiddenAnswes(false);
-    setSelectedReplyDivId(message.id);
-  };
-
   return (
     <div
-      className="relative flex flex-col dark:bg-gray-600 dark:text-gray-100 pl-4 py-2 shadow-2xl rounded-lg "
+      className="relative flex flex-col dark:bg-gray-600  dark:text-gray-100 px-4 py-2 shadow-2xl rounded-lg"
       id={message?.id.toString()}
     >
       <div className="absolute right-1 bottom-1 text-red-500 dark:text-red-200 font-thin">
@@ -191,7 +163,7 @@ const Message: React.FC<Props> = ({
           {message?.user_id === user?.id && (
             <>
               <div
-                className={` absolute top-1 right-0 min-w-[25px] text-red-500  cursor-pointer hover:text-red-300`}
+                className={` absolute top-1 right-1 min-w-[25px] text-red-500  cursor-pointer hover:text-red-300`}
                 onClick={() => handleDeleteMessageClick(message?.id)}
               >
                 <FaRegTrashAlt />
@@ -220,29 +192,29 @@ const Message: React.FC<Props> = ({
             </p>
           </div>
         </div>
-        <div className="md:px-8  pb-2 p md:pb-0 break-all">
+        <div className="md:px-4 pt-4 break-all">
           <p className="">{message?.message} </p>
         </div>
       </div>
 
       <div className="flex  gap-2 flex-col md:flex-row ">
-        <div className="flex gap-4 md:pt-2 ">
-          <CreateMessageVote message={message}   currentPage={currentPage} currentPageReply={currentPageReply} />
-
-          <div className="flex gap-4 pt-2 pb-2">
-            {!replyDiv && user?.id !== message.user_id && (
-              <Button
-                color="answer"
-                className=" px-4 py-1 text-sm	rounded-full focus:ring "
-                onClick={handleClick}
-              >
-                Odpověz
-              </Button>
-            )}
-          </div>
+        <div className="flex gap-4 pt-2 pb-2">
+          {!replyDiv && user?.id !== message.user_id && (
+            <Button
+              color="answer"
+              className=" px-4 py-1 text-sm	rounded-full focus:ring "
+              onClick={() => {
+                setReplyDiv(true);
+                setHiddenAnswes(false);
+                setSelectedReplyDivId(message.id);
+              }}
+            >
+              Odpověz
+            </Button>
+          )}
         </div>
         {replyDiv && message.id === selectedReplyDivId && (
-          <CreateReply
+          <CreateTourReply
             setReplyDiv={setReplyDiv}
             message={message}
             setSelectedReplyDivId={setSelectedReplyDivId}
@@ -251,26 +223,26 @@ const Message: React.FC<Props> = ({
           />
         )}
       </div>
-      {typeof message.reply !== "string" && (
+      {typeof message.tourreply !== "string" && (
         <div
           className="flex gap-4"
           onClick={() => setHiddenAnswes(!hiddenAnswers)}
         >
-          {message?.reply?.filter((r) => r.message_id === message.id).length >
-            0 && <>{hiddenAnswers ? <GoTriangleDown /> : <GoTriangleUp />}</>}
-
           <h4 className="text-sm font-bold cursor-pointer">
-            {message?.reply?.filter((r) => r.message_id === message.id).length >
-            1
+            {message?.tourreply?.filter((r) => r.tourmessage_id === message.id)
+              .length > 1
               ? `${
-                  message?.reply?.filter((r) => r.message_id === message.id)
-                    .length
+                  message?.tourreply?.filter(
+                    (r) => r.tourmessage_id === message.id
+                  ).length
                 } odpovědí`
-              : message?.reply?.filter((r) => r.message_id === message.id)
-                  .length > 0
+              : message?.tourreply?.filter(
+                  (r) => r.tourmessage_id === message.id
+                ).length > 0
               ? `${
-                  message?.reply?.filter((r) => r.message_id === message.id)
-                    .length
+                  message?.tourreply?.filter(
+                    (r) => r.tourmessage_id === message.id
+                  ).length
                 } odpověď`
               : ""}
           </h4>
@@ -280,10 +252,10 @@ const Message: React.FC<Props> = ({
       <div
         className={`transition-wrapper ${
           !hiddenAnswers ? "open" : ""
-        } dark:bg-slate-600 bg-slate-200 px-2 rounded-lg pb-4`}
+        }  dark:bg-slate-600 bg-slate-200 px-2  pb-4`}
       >
         {selectedReplies?.map((r) => (
-          <Reply
+          <TourReply
             key={r.id}
             reply={r}
             message={message}
@@ -333,4 +305,4 @@ const Message: React.FC<Props> = ({
   );
 };
 
-export default Message;
+export default TourMessage;

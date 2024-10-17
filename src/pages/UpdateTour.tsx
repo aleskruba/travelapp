@@ -1,20 +1,22 @@
-import React, { useState, FormEvent, ChangeEvent ,useRef, useEffect} from 'react';
+import  { useState, FormEvent, ChangeEvent , useEffect} from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import DOMPurify from 'dompurify';
 import { typeOfTour } from '../constants/constantsData';
-import { countryNames } from '../constants/constantsData';
+/* import { countryNames } from '../constants/constantsData'; */
 import { useAuthContext } from '../context/authContext';
 import { useNavigate } from "react-router-dom";
 import { initialToureState, TourProps } from '../types';
-import { BASE_URL, HTTP_CONFIG } from '../constants/config';
+import { BASE_URL} from '../constants/config';
 import {  Flip, toast } from 'react-toastify';
 import { useParams} from 'react-router-dom';
 import { keepPreviousData, useQuery,useMutation,useQueryClient } from '@tanstack/react-query';
-import { spawn } from 'child_process';
 import { fetchData } from '../hooks/useFetchData';
+import Button from '../components/customButton/Button';
 
 function UpdateTour() {
+
+
 
     let { id } = useParams<string>();
 
@@ -23,14 +25,14 @@ function UpdateTour() {
     const [isChanged, setIsChanged] = useState(false);
     const [allowSubmitButton, setAllowSubmitButton] = useState(false);
     const [errors, setErrors] = useState('');
-    const [isOpen, setIsOpen] = useState<boolean>(false);
-    const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
-    const [chosenCountry, setChosenCountry] = useState('');
-    const [searchTerm, setSearchTerm] = useState<string>('');
+/*     const [isOpen, setIsOpen] = useState<boolean>(false); */
+   /*  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1); */
+   /*  const [chosenCountry, setChosenCountry] = useState(''); */
+/*     const [searchTerm, setSearchTerm] = useState<string>(''); */
     const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [selectedDateEnd, setSelectedDateEnd] = useState<Date | null>(null);
-    const dropdownRef = useRef<HTMLDivElement>(null);
+/*     const dropdownRef = useRef<HTMLDivElement>(null); */
     const [backendError,setBackendError] = useState<string | null>(null);
     const navigate = useNavigate();
     const [tour, setTour] = useState<TourProps>(initialToureState);
@@ -42,6 +44,7 @@ function UpdateTour() {
 
       try {
       const response = await fetchData(url,'GET');
+ 
   
       if (!response.ok) {
             setBackendError('Chyba při získaní dat');
@@ -75,10 +78,10 @@ function UpdateTour() {
         return null;
       }
   };
- */
+ *//* 
   queryClient.invalidateQueries({ queryKey: ['yourtour'] })
-
-  const { data, isSuccess ,isLoading, isError,isFetching } = useQuery({
+ */
+  const { data, isSuccess ,isLoading, isError } = useQuery({
       queryFn: () => fetchTour(),
       queryKey: ['yourtour'],
       retry: 2,
@@ -88,19 +91,7 @@ function UpdateTour() {
   });
 
 
-  useEffect(() => {
-    if (isSuccess) {
-         setUpdateTour(data.tour)
-         setSelectedTypes(JSON.parse(data.tour.tourtype))
-         setSelectedDate(new Date(data.tour.tourdate))
-         setSelectedDateEnd(new Date(data.tour.tourdateEnd))
-         setChosenCountry(data.tour.destination)
-  
-    }
-
-  },[data])
-
-
+ 
 
 
   const checkDestinationChanges = (updatedText: TourProps, originalText: TourProps): boolean =>{ 
@@ -180,8 +171,23 @@ const checkChanges = (updated: TourProps, original: TourProps): boolean=> {
 
 useEffect(() => {
   if (isSuccess) {
+       setUpdateTour(data.tour)
+       setSelectedTypes(JSON.parse(data.tour.tourtype))
+       setSelectedDate(new Date(data.tour.tourdate))
+       setSelectedDateEnd(new Date(data.tour.tourdateEnd))
+    /*    setChosenCountry(data.tour.destination) */
+       setIsChanged(checkChanges(updateTour, data?.tour));
+       checkAllField(updateTour)
+
+  }
+
+},[data])
+
+useEffect(() => {
+  if (isSuccess) {
   setIsChanged(checkChanges(updateTour, data?.tour));
   checkAllField(updateTour)
+
   }
 }, [updateTour]);
 
@@ -301,6 +307,7 @@ const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
           setBackendError(null);
           setTour(initialToureState);
           queryClient.invalidateQueries({ queryKey: ['tours'] });
+          queryClient.invalidateQueries({ queryKey: ['yourtour'] });
           queryClient.invalidateQueries({ queryKey: ['yourtours'] });
           toast.success('Spoluceta byla úspěšně uložena', {
             position: "top-left",
@@ -333,7 +340,7 @@ const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     
       const onSubmitFunction = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-      
+
         const newTour = { 
           ...updateTour, 
           tourtype: selectedTypes,
@@ -342,28 +349,28 @@ const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       
         const hasCompleted = !newTour.destination || newTour.tourtype.length === 0 || !newTour.fellowtraveler || !newTour.aboutme || !selectedDate ;
         if (hasCompleted) { setErrors('Nejsou vyplněna všechna pole')}
-        console.log(newTour);  // This should log the correctly updated tour object
-      
+   
         // Ensure that you're passing both the tour and user_id if needed
         createTourMutation.mutate({ tour: newTour, user_id: tour.user_id });
+        queryClient.invalidateQueries({ queryKey: ['tours'] });
       };
       
-    const handleDropdownClick = (e: React.MouseEvent<HTMLDivElement>) => {
+/*     const handleDropdownClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!dropdownRef.current || !dropdownRef.current.contains(e.target as Node)) {
           setIsOpen(false);
         }
-      };
+      }; */
     
-      const handleSelectCountry = (country: string) => {
+    /*   const handleSelectCountry = (country: string) => {
 
         setChosenCountry(country);
         setIsOpen(false);
         setSearchTerm('');
         setUpdateTour(prevState => ({ ...prevState, destination: country}));
 
-      };
+      }; */
       
-      const maxDisplayedCountries = 15;
+/*       const maxDisplayedCountries = 15;
 
       let filteredCountries = countryNames.filter((country) => {
         const normalizedCountry = country.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -378,8 +385,8 @@ const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     
       if (filteredCountries.length > maxDisplayedCountries) {
         filteredCountries = filteredCountries.slice(0, maxDisplayedCountries);
-      }
-
+      } */
+/* 
       useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
           if (isOpen) {
@@ -406,7 +413,7 @@ const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
         };
       }, [isOpen, highlightedIndex, filteredCountries]);
     
-      // Add event listener to handle clicks outside of the dropdown
+   
       useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
           if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -420,15 +427,15 @@ const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
           };
-        }, []);
+        }, []); */
 
-        const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+ /*        const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             setSearchTerm(e.target.value);
             setIsOpen(true)
             
             setHighlightedIndex(-1); // Reset highlighted index when input changes
         
-          };
+          }; */
 
           if (isLoading ) {
             return <span>Moment prosím ...</span>;
@@ -441,8 +448,15 @@ const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
   return (
     <div className="text-black dark:text-white">
     <div className='flex justify-end p-4'>
-      <button className='bg-gray-200 hover:bg-gray-300 darK:bg-gray-700 darK:hover:bg-gray-800 p-2 dark:text-black rounded-md'
-              onClick={()=>navigate('../yourtours')}>Zpět na tvoje spolucesty</button>
+          <Button
+        color="gray" // Set to gray to correspond with your styling
+        className="gray hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 p-2 rounded-md"
+        type="button" // Button type set to button
+        onClick={() => navigate('../yourtours')}
+      >
+        Zpět na tvoje spolucesty
+      </Button>
+
     </div>
    
     <div>
@@ -619,19 +633,23 @@ const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
             </div>
             <div className='text-lightError pb-4 text-xl '>{errors ? errors : ''}</div>
             <div className='flex gap-4'>
-            <button
-             className={` ${ isChanged && allowSubmitButton ? ':hover:bg-blue-700  cursor-pointer':' opacity-30  cursor-default py-2 px-4 pointer-events-none ' } bg-blue-500 min-w-[150px]  text-whitefont-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline `}
-              type="submit"
-            >
-              Odeslat
-            </button>
-            <button
-             className={` hover:bg-gray-700  bg-gray-500 text-white cursor-pointer  min-w-[150px]  text-whitefont-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ' `}
-              type="button"
-              onClick={()=>navigate('../yourtours')}
-            >
-              Zpět
-            </button>
+                    <Button
+          color={isChanged && allowSubmitButton ? 'blue' : 'blue'} // Use 'blue' for both states; styling is managed through className
+          className={`min-w-[150px] py-2 px-4 rounded focus:outline-none focus:shadow-outline ${isChanged && allowSubmitButton ? 'hover:bg-blue-700 cursor-pointer' : 'opacity-30 cursor-default pointer-events-none'}`}
+          type="submit"
+        >
+          Odeslat
+        </Button>
+
+        <Button
+          color="gray" // Set color to gray for the back button
+          className="min-w-[150px] py-2 px-4 rounded focus:outline-none focus:shadow-outline bg-gray-500 text-white hover:bg-gray-700 cursor-pointer"
+          type="button"
+          onClick={() => navigate('../yourtours')}
+        >
+          Zpět
+        </Button>
+
             </div>
 
           </form>

@@ -8,7 +8,7 @@ export async function fetchData(url: string, method: string, credentials?: any) 
     
   };
 
-   if (method === 'POST' || method === 'PUT') {
+   if (method === 'POST' || method === 'PUT'  ) {
     options.body = JSON.stringify(credentials);
   }
 

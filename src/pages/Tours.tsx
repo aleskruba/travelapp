@@ -9,6 +9,8 @@ import SearchTourTypeComponent from '../components/tours/SearchTourTypeComponent
 import SearchDateComponent from '../components/tours/SearchDateComponent';
 import SearchDebounceComponent from '../components/tours/SearchDebounceComponent';
 import useDebounce from '../hooks/useDebounce';
+import { fetchData } from '../hooks/useFetchData';
+import Button from '../components/customButton/Button';
 
 interface CountryOption {
   readonly value: string;
@@ -19,14 +21,16 @@ function Tours() {
   const { user } = useAuthContext();
   const navigate = useNavigate();
   const [backendError, setBackendError] = useState<string | null>(null);
+  const [backendServerError, setBackendServerError] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [availableDestinations, setAvailableDestinations] = useState<CountryOption[]>([]);
   const [text, setText] = useState<string>('');
-  const { debouncedValue, debounceLoading } = useDebounce(text, 500);
+  const { debouncedValue } = useDebounce(text, 500);
 
   const countriesParam = searchParams.get('countries');
   const tourTypesParam = searchParams.get('tourtypes');
   const tourDatesParam = searchParams.get('tourdates');
+
 
   const [countries, setCountries] = useState<any[]>(countriesParam ? 
     countriesParam.split(',').map(value => ({ value, label: value })) : []);
@@ -37,7 +41,6 @@ function Tours() {
     tourDatesParam ? { value: tourDatesParam, label: tourDatesParam } : null
   );
 
-  // Get the current page from URL query params; default to 1
   const currentPage = parseInt(searchParams.get('page') || '1', 10) - 1;
 
   const queryClient = useQueryClient();
@@ -45,7 +48,6 @@ function Tours() {
 
 
   useEffect(() => {
-    // Sync local state with URL search params on mount
 
     const searchParam = searchParams.get('search');
 
@@ -58,13 +60,14 @@ function Tours() {
     }
 
     if (tourDatesParam) {
-      setTourDates({ value: tourDatesParam });
+      setTourDates({ value: tourDatesParam, label:tourDatesParam });
+
     }
 
     if (searchParam) {
       setText(searchParam);
     }
-  }, [searchParams]);
+  }, [searchParams,countriesParam, tourDatesParam, tourTypesParam]);
 
   useEffect(() => {
     // Update the searchParams whenever countries or search text changes
@@ -85,31 +88,25 @@ function Tours() {
       params.set('tourdates', tourDates.value);
     }
     
-    // Add the search text
     if (debouncedValue) {
       params.set('search', debouncedValue);
     }
 
-    // Add the current page
     params.set('page', (currentPage + 1).toString());
 
-    // Update the URL with the new parameters
     setSearchParams(params);
   }, [countries, tourTypes, tourDates, debouncedValue, currentPage, setSearchParams]);
 
   const fetchTours = async (page = 0) => {
     const params = new URLSearchParams();
   
-    // Set the page parameter
     params.set('page', (page + 1).toString());
   
-    // Set the search parameter if debouncedValue exists
     if (debouncedValue) {
       params.set('search', debouncedValue);
     }
   
-    // Set the countries parameter if countries array is defined
-    if (countries && countries.length > 0) {
+      if (countries && countries.length > 0) {
       const countryValues = countries.map(country => country.value).join(',');
       params.set('countries', countryValues);
     }
@@ -123,24 +120,29 @@ function Tours() {
       params.set('tourdates', tourDates.value);
     }
     
-    // Construct the full URL with the base URL and the query string
     const url = `${BASE_URL}/tours/?${params.toString()}`;
 
     try {
-      const response = await fetch(url);
+     const response = await fetchData(url,'GET');
+
       if (!response.ok) {
-        throw new Error('Něco se pokazilo, spolucesty nebyly načteny');
-      }
+        const errorData = await response.json();
+        setBackendError(errorData.error);
+    
+        }
 
       backendError && setBackendError(null);
       return await response.json();
     } catch (error: any) {
-      setBackendError(error.message);
+      setBackendServerError('SERVER ERROR')
       return null;
     }
   };
+
+
+
   
-  const { data, isLoading, isError, isPlaceholderData } = useQuery({
+  const { data, isLoading, isFetching, isError} = useQuery({
     queryFn: () => fetchTours(currentPage),
     queryKey: ['tours', currentPage, debouncedValue, countries, tourTypes, tourDates],
     retry: 2,
@@ -151,18 +153,16 @@ function Tours() {
 
   useEffect(() => {
     if (data?.allDestinations) {
-      // Create an array with { value, label } format
       const formattedDestinations = data.allDestinations.map((destination: any) => ({
         value: destination,
         label: destination,
       }));
   
-      // Update state with the new array
       setAvailableDestinations(formattedDestinations);
     }
   }, [data]);
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return <div className='flex justify-center items-center h-screen'>Moment prosim...</div>;
   }
 
@@ -174,6 +174,7 @@ function Tours() {
     keyword.destination.toLowerCase().startsWith(debouncedValue ? debouncedValue.toLowerCase() : '')
   ) || [];
   
+  const currentUrl = window.location.href;
 
   return (
     <div className='px-2 '>
@@ -207,15 +208,17 @@ function Tours() {
                         setTourDates={setTourDates}
                       />
       </div>
-
+      {backendServerError && !backendError &&<div className='pt-8 text-center text-xl font-extrabold dark:text-red-200 text-red-600'>{backendServerError}</div>}
+      {backendError && <div className='pt-8 text-center text-xl font-extrabold dark:text-red-200 text-red-600'>{backendError}</div>}
       <div className="wrapper grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 mt-20 md:px-20">
+     
         {userDataFiltered.length === 0 ? (
           <div className='flex justify-center items-center pb-10'>Žádná shoda</div>
         ) : (
           userDataFiltered
             .sort((a: { id: number }, b: { id: number }) => b.id - a.id)
             .map((tour: any) => (
-              <Link to={`../tours/${tour.id}`} key={tour.id}>
+              <Link to={`../tours/${tour.id}`} key={tour.id} state={{ some: currentUrl}}>
                 <Tour tour={tour} />
               </Link>
             ))
@@ -227,26 +230,27 @@ function Tours() {
           Aktuální stránka: {currentPage + 1} of {data?.totalPages}
         </span>
         <div className='flex gap-2'>
-        <button
+  <Button
     onClick={() => currentPage > 0 && navigate(`?page=${currentPage}`)}
+    color="gray" // Use gray color for the button
+    className={`rounded-md px-4 py-2 w-28 ${currentPage === 0 ? 'opacity-30 pointer-events-none' : ''}`}
     disabled={currentPage === 0}
-    className={`rounded-md px-4 py-2 w-28 bg-gray-200 text-black hover:bg-gray-300
-      ${currentPage === 0 ? 'opacity-30 pointer-events-none' : ''}`}
   >
     Předchozí
-  </button>
+  </Button>
 
-  <button
+  <Button
     onClick={() =>
       currentPage < (data?.totalPages - 1) && navigate(`?page=${currentPage + 2}`)
     }
+    color="gray" // Use gray color for the button
+    className={`rounded-md px-4 py-2 w-28 ${currentPage >= data?.totalPages - 1 ? 'opacity-30 pointer-events-none' : ''}`}
     disabled={currentPage >= data?.totalPages - 1}
-    className={`rounded-md px-4 py-2 w-28 bg-gray-200 text-black hover:bg-gray-300
-      ${currentPage >= data?.totalPages - 1 ? 'opacity-30 pointer-events-none' : ''}`}
   >
     Další
-  </button>
-        </div>
+  </Button>
+</div>
+
       </div>
     </div>
   );

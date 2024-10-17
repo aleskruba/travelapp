@@ -1,5 +1,5 @@
 import React, { FormEvent, useState, useEffect ,useRef } from 'react';
-import { initialMessageState, MessageProps, UserProps } from '../../types';
+import { initialMessageState, initialTourMessageState, MessageProps, TourMessageProps, UserProps } from '../../types';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { BsEmojiGrin } from "react-icons/bs";
@@ -10,21 +10,21 @@ import { useCountryContext } from '../../context/countryContext';
 import { fetchData } from '../../hooks/useFetchData';
 import Button from '../customButton/Button';
 
-interface CreateMessageProps {
+interface CreateTourMessageProps {
   user: UserProps;
   currentPage:number;
   currentPageReply:number;
+  tourID:string | undefined;
 }
 
-const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,currentPageReply }) => {
+const CreateTourMessage: React.FC<CreateTourMessageProps> = ({ user, currentPage,currentPageReply,tourID }) => {
   const queryClient = useQueryClient();
   const emojiPickerRef = useRef<HTMLDivElement | null>(null);
   const emojiPickerRefButton = useRef<HTMLDivElement | null>(null);
   const emojiPickerRefButtonSM = useRef<HTMLDivElement | null>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [message, setMessage] = useState<MessageProps>(initialMessageState);
-  const { chosenCountry } = useCountryContext();
-  const [backendError,setBackendError] = useState<string | null>(null);
+  const [message, setMessage] = useState<TourMessageProps>(initialTourMessageState);
+   const [backendError,setBackendError] = useState<string | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event:any) => {
@@ -73,10 +73,9 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
     setShowEmojiPicker(false);
   }, []);
 
-  const createMessage = async ({ message, country, id, user_id,image,firstName }: any) => {
+  const createMessage = async ({ message, id, user_id,image,firstName }: any) => {
     const data = {
       message,
-      country,
       id,
       user_id,
       user: {
@@ -88,7 +87,7 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
 
   
     try {
-      const response = await fetch(`${BASE_URL}/message`, {
+      const response = await fetch(`${BASE_URL}/tourmessage/${tourID}`, {
         ...HTTP_CONFIG,
         method: 'POST',
         body: JSON.stringify(data),
@@ -116,22 +115,22 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
     mutationFn: createMessage,
     onMutate: async (newMessage) => {
       // Cancel any outgoing queries to prevent them from overwriting optimistic update
-      await queryClient.cancelQueries({ queryKey: ['messages', chosenCountry, currentPage,currentPageReply] });
+      await queryClient.cancelQueries({ queryKey: ['tourmessages', currentPage,currentPageReply] });
   
       // Get the previous messages
-      const previousMessages = queryClient.getQueryData(['messages', chosenCountry, currentPage,currentPageReply]);
+      const previousMessages = queryClient.getQueryData(['tourmessages',  currentPage,currentPageReply]);
   
       // Optimistically update the cache with the new message and sort by id
-      queryClient.setQueryData(['messages', chosenCountry, currentPage,currentPageReply], (old: any) => {
+      queryClient.setQueryData(['tourmessages',  currentPage,currentPageReply], (old: any) => {
         // Create a new array with the new message added
-        const updatedMessages = [...(old?.messages || []), newMessage];
+        const updatedMessages = [...(old?.tourmessages || []), newMessage];
         
         // Sort messages by ID to ensure proper order
         updatedMessages.sort((a: { id: number }, b: { id: number }) => b.id - a.id);
         console.log(updatedMessages)
         return {
           ...old,
-          messages: updatedMessages,
+          tourmessages: updatedMessages,
         };
       });
   
@@ -140,33 +139,31 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
     },
     onSuccess: (data, variables) => {
       backendError && setBackendError(null)
-      setMessage(initialMessageState);
-      queryClient.setQueryData(['messages', chosenCountry, currentPage, currentPageReply], (old: any) => {
+      setMessage(initialTourMessageState);
+      queryClient.setQueryData(['tourmessages', currentPage, currentPageReply], (old: any) => {
         if (!old) return old;
-        old.messages.map((msg: any) => {
+        old.tourmessages.map((msg: any) => {
           console.log(msg.id, variables.id);
         })
      
-        const updatedMessages = old.messages.map((msg: any) => 
+        const updatedMessages = old.tourmessages.map((msg: any) => 
           msg.id === variables.id ? { ...msg, id: data.message.id } : msg
         );
         
-        return { ...old, messages: updatedMessages };
+        return { ...old, tourmessages: updatedMessages };
       });
 
     },
-    onError: (err, context) => {
+    onError: (err, newMessage, context) => {
       setBackendError('Něco se pokazilo, zpráva nebyla vytvořena')
-      queryClient.setQueryData(['messages', chosenCountry, currentPage,currentPageReply], context?.previousMessages);
-      console.log(err)
+      queryClient.setQueryData(['tourmessages',  currentPage,currentPageReply], context?.previousMessages);
     },
     onSettled: (data, error) => {
       // Only refetch if there's an error
       if (error) {
-        queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry, currentPage, currentPageReply] });
+        queryClient.invalidateQueries({ queryKey: ['tourmessages',  currentPage, currentPageReply] });
       }
     },
-    
   });
   
   //console.log(createMessageMutation.variables)
@@ -177,7 +174,6 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
     const tempId = Date.now();
     const newMessage = {          message:message.message, 
                                   id: tempId,
-                                  country: chosenCountry, 
                                   user_id: user.id,
                                   user: { 
                                     image: user.image, 
@@ -220,15 +216,8 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
 
       </div>
    
-      <div>
-{/*         <button type="submit"   
-                className={`py-2 px-4 bg-green-500 text-white rounded-lg shadow-md focus:outline-none focus:ring focus:border-green-700 ${
-          !message.message.length 
-            ? 'opacity-30 cursor-default pointer-events-none'
-            : 'hover:bg-green-600'
-        }`}>Odešli</button>
-           */}
-          <Button 
+      <div className='flex flex-col gap-2'>
+            <Button 
               type="submit"   
               color='green'
               className={`${!message.message.length ? 'opacity-30 cursor-default pointer-events-none': '' } rounded-lg shadow-md  focus:ring `}
@@ -236,9 +225,9 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
               
               Odešli
               </Button>
-            </div>
 
-
+      </div>
+      
 
     </div>
  
@@ -279,4 +268,4 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
   )
 }
 
-export default CreateMessage
+export default CreateTourMessage

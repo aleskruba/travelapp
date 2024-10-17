@@ -14,6 +14,7 @@ const Checkbox = ({ children, ...props }: JSX.IntrinsicElements['input']) => (
   </label>
 );
 
+
 function SearchDateComponent({tourDates,setTourDates}:TourTypeProps) {
 
     const animatedComponents = makeAnimated();
@@ -36,20 +37,27 @@ function SearchDateComponent({tourDates,setTourDates}:TourTypeProps) {
         label: t,
       }));
     
+   
       const handleChange = (selectedOption: any) => {
         setTourDates(selectedOption); 
+ 
       };
 
       
   return (
-    <Select
-     isClearable={isClearable}
-      components={animatedComponents}
-      defaultValue={tourDates}
-      placeholder="Vyber termin cesty ..."
-      options={formattedDateInTour}
-      onChange={handleChange} 
+    <div className='text-black'>
+      
+      <Select
+   
+        isClearable={isClearable}
+        components={animatedComponents}
+        placeholder="Vyber termín cesty ..."
+        options={formattedDateInTour}
+        onChange={handleChange}
+        defaultValue={tourDates} 
+        // Set default value based on state */
       />
+</div>
   )
 }
 
