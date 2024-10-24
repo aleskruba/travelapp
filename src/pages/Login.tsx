@@ -74,7 +74,7 @@ function Login() {
       );
 
       const data = await response.json();
-      console.log(data);
+   
       if (!response.ok) {
       
         setWrongData({email:data.error.email,password:data.error.password})
