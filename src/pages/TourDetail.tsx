@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   keepPreviousData,
   useQuery,
 } from "@tanstack/react-query";
 import { useThemeContext } from "../context/themeContext";
-import { BASE_URL, HTTP_CONFIG } from "../constants/config";
+import { BASE_URL } from "../constants/config";
 import { fetchData } from "../hooks/useFetchData";
 import moment from "moment";
 import { countriesData } from "../constants/constantsData";

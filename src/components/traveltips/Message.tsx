@@ -4,7 +4,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
 import { MessageProps } from "../../types";
 import { useAuthContext } from "../../context/authContext";
-import { BASE_URL, HTTP_CONFIG, SOCKET_URL } from "../../constants/config";
+import { BASE_URL, SOCKET_URL } from "../../constants/config";
 import useVote from "../../hooks/useVote";
 import { useCountryContext } from "../../context/countryContext";
 import { useThemeContext } from "../../context/themeContext";
@@ -18,6 +18,7 @@ import { fetchData } from "../../hooks/useFetchData";
 import ReactPaginate from "react-paginate";
 import useRelativeDate from "../../hooks/DateHook";
 import Button from "../customButton/Button";
+import lide from "../../assets/images/lide.svg"
 
 type Props = {
   message: MessageProps;
@@ -56,7 +57,7 @@ const Message: React.FC<Props> = ({
   const displayDateText = useRelativeDate(replyDateMoment);
 
   //const socket = io(SOCKET_URL);
-  const imageUrl = message?.user?.image ? message?.user?.image : "/profile.png";
+  const imageUrl = message?.user?.image ? message?.user?.image : lide;
 
   const handlePageChange = ({ selected }: { selected: number }) => {
     setCurrentPageReply(selected);
@@ -71,7 +72,7 @@ const Message: React.FC<Props> = ({
 
   const deleteMessageFunction = async (id: number): Promise<any> => {
     setBackendError(null);
-    console.log(id);
+   
     const response = await fetchData(`${BASE_URL}/message/${id}`, "DELETE");
 
     if (!response.ok) {
@@ -103,10 +104,10 @@ const Message: React.FC<Props> = ({
     }); */ const deleteMessageMutation = useMutation({
     mutationFn: deleteMessageFunction,
     onMutate: async (id) => {
-      console.log("onMutate", id);
+   
       // Cancel any outgoing refetches (so they don't overwrite optimistic update)
       await queryClient.cancelQueries({
-        queryKey: ["messages", chosenCountry, currentPage, currentPageReply],
+        queryKey: ["messages", chosenCountry, currentPage],
       });
 
       // Get the previous messages from the cache
@@ -114,12 +115,11 @@ const Message: React.FC<Props> = ({
         "messages",
         chosenCountry,
         currentPage,
-        currentPageReply,
       ]);
 
       // Optimistically update the cache by removing the deleted message
       queryClient.setQueryData(
-        ["messages", chosenCountry, currentPage, currentPageReply],
+        ["messages", chosenCountry, currentPage],
         (oldData: { messages: any[] }) => {
           if (!oldData) return oldData;
           return {
@@ -144,7 +144,7 @@ const Message: React.FC<Props> = ({
 
       // Rollback cache to the previous state
       queryClient.setQueryData(
-        ["messages", chosenCountry, currentPage, currentPageReply],
+        ["messages", chosenCountry, currentPage],
         context?.previousMessages
       );
     },
@@ -152,7 +152,7 @@ const Message: React.FC<Props> = ({
       // Only refetch if the mutation failed or if the server response indicates a need for it.
       if (error) {
         queryClient.invalidateQueries({
-          queryKey: ["messages", chosenCountry, currentPage, currentPageReply],
+          queryKey: ["messages", chosenCountry, currentPage],
         });
       } else {
         // Optionally, validate if data from the server is consistent with the cache.
@@ -230,7 +230,7 @@ const Message: React.FC<Props> = ({
           <CreateMessageVote message={message}   currentPage={currentPage} currentPageReply={currentPageReply} />
 
           <div className="flex gap-4 pt-2 pb-2">
-            {!replyDiv && user?.id !== message.user_id && (
+            {!replyDiv && user && user?.id !== message.user_id && (
               <Button
                 color="answer"
                 className=" px-4 py-1 text-sm	rounded-full focus:ring "

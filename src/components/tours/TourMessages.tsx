@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import TourMessage from './TourMessage';
 import { useAuthContext } from '../../context/authContext';
-import { useCountryContext } from '../../context/countryContext';
 import { BASE_URL, HTTP_CONFIG, SOCKET_URL } from '../../constants/config';
 import CreateTourMessage from './CreateTourMessage';
 import { io } from 'socket.io-client';
@@ -13,8 +12,7 @@ function TourMessages() {
   const { user } = useAuthContext();
   let { id } = useParams<string>();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { chosenCountry } = useCountryContext();
-  const [currentPageReply, setCurrentPageReply] = useState(0);
+   const [currentPageReply, setCurrentPageReply] = useState(0);
   const navigate = useNavigate();
 //  const socket = io(SOCKET_URL);
 
@@ -47,7 +45,7 @@ useEffect(() => {
 
   const { data,isLoading,isError,isFetching,isPlaceholderData } = useQuery({
     queryFn: ()=>fetchMessages(currentPage),
-    queryKey: ['tourmessages', currentPage,currentPageReply],
+    queryKey: ['tourmessages', currentPage],
     placeholderData: keepPreviousData,
     refetchOnWindowFocus:true, // automaticly refetch data while changing window , default is true       
     staleTime:10000,

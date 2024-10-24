@@ -1,6 +1,5 @@
 
 import { useCountryContext } from '../../context/countryContext';
-import moment from 'moment';
 import { motion } from "framer-motion"
 
 function Country() {

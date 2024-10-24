@@ -13,7 +13,7 @@ interface Props {
     currentPageReply: number;
 }
 
-function CreateReplyVote({ message, reply, currentPage, currentPageReply }: Props) {
+function CreateReplyVote({ message, reply, currentPage }: Props) {
     const queryClient = useQueryClient();
     const { user } = useAuthContext();
     const { chosenCountry } = useCountryContext();
@@ -39,7 +39,7 @@ function CreateReplyVote({ message, reply, currentPage, currentPageReply }: Prop
         onMutate: async (voteType) => {
             // Cancel any outgoing refetches to avoid conflicts with optimistic update
             await queryClient.cancelQueries({
-                queryKey: ['messages', chosenCountry, currentPage, currentPageReply],
+                queryKey: ['messages', chosenCountry, currentPage],
             });
 
             // Snapshot the previous value
@@ -47,11 +47,11 @@ function CreateReplyVote({ message, reply, currentPage, currentPageReply }: Prop
                 'messages',
                 chosenCountry,
                 currentPage,
-                currentPageReply,
+       
             ]);
 
             // Optimistically update the cache
-            queryClient.setQueryData(['messages', chosenCountry, currentPage, currentPageReply], (oldData: any) => {
+            queryClient.setQueryData(['messages', chosenCountry, currentPage], (oldData: any) => {
                 if (!oldData) return oldData;
 
                 return {
@@ -83,7 +83,7 @@ function CreateReplyVote({ message, reply, currentPage, currentPageReply }: Prop
         onError: (err, voteType, context) => {
             // Rollback to the previous state if mutation fails
             queryClient.setQueryData(
-                ['messages', chosenCountry, currentPage, currentPageReply],
+                ['messages', chosenCountry, currentPage],
                 context?.previousMessages
             );
         },
@@ -91,7 +91,7 @@ function CreateReplyVote({ message, reply, currentPage, currentPageReply }: Prop
             // Invalidate queries to ensure data is up-to-date
             if (error) {
                 queryClient.invalidateQueries({
-                    queryKey: ['messages', chosenCountry, currentPage, currentPageReply],
+                    queryKey: ['messages', chosenCountry, currentPage],
                 });
             }
         },

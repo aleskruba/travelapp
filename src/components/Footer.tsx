@@ -1,22 +1,7 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
+import { footerItems,footerConditions } from '../constants/constantsData';
 
 function Footer() {
-  const footerItems = [
-    'O NÁS',
-    'BLOG',
-    'INSTAGRAM',
-    'FACEBOOK',
-    'KONTAKT',
-    'SPOLUPRÁCE',
-    'ČLENSTVÍ'
-  ];
-
-  const footerConditions = [
-    'Obchodní podmínky',
-    'Ochrana osobních údajů',
-    'Cookies'
-  ];
 
   return (
     <footer className="dark:text-lightPrimary pb-20 ">

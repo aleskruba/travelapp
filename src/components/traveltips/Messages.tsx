@@ -43,7 +43,7 @@ useEffect(() => {
 
   const { data,isLoading,isError,isFetching,isPlaceholderData } = useQuery({
     queryFn: ()=>fetchMessages(currentPage),
-    queryKey: ['messages', chosenCountry,currentPage,currentPageReply],
+    queryKey: ['messages', chosenCountry,currentPage],
     placeholderData: keepPreviousData,
     refetchOnWindowFocus:true, // automaticly refetch data while changing window , default is true       
     staleTime:10000,
@@ -73,7 +73,7 @@ useEffect(() => {
           Jenom přihlášení uživatelé mohou sdílet své názory,
           <span
             onClick={() => navigate('/login')}
-            className="cursor-pointer text-blue-500 hover:underline"
+            className="cursor-pointer text-blue-500 hover:underline pl-2"
           >
             Přihlaš se zde
           </span>

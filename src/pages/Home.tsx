@@ -1,7 +1,5 @@
-import React from 'react'
+
 import Image from '../custom/Image'
-import lide from '../assets/images/lide.svg';
-import double from '../assets/images/double.png';
 import fun from '../assets/images/fun.png';
 import { useAuthContext } from '../context/authContext';
 

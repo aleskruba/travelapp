@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import  { useState } from 'react'
 import { VlogsProps } from '../../types';
 import Button from '../customButton/Button';
 import ConfirmationModal from '../ConfirmationModal';
 import { useMutation,useQueryClient } from '@tanstack/react-query';
-import { BASE_URL, HTTP_CONFIG } from '../../constants/config';
+import { BASE_URL } from '../../constants/config';
 import { Flip, toast } from 'react-toastify';
 import UpdateYourVlog from './UpdateYourVlog';
 import { fetchData } from '../../hooks/useFetchData';

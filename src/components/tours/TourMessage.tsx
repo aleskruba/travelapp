@@ -3,7 +3,7 @@ import moment from "moment";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { TourMessageProps } from "../../types";
 import { useAuthContext } from "../../context/authContext";
-import { BASE_URL, HTTP_CONFIG, SOCKET_URL } from "../../constants/config";
+import { BASE_URL, SOCKET_URL } from "../../constants/config";
 import { useThemeContext } from "../../context/themeContext";
 import { io } from "socket.io-client";
 import ConfirmationModal from "../ConfirmationModal";
@@ -14,6 +14,7 @@ import { fetchData } from "../../hooks/useFetchData";
 import ReactPaginate from "react-paginate";
 import useRelativeDate from "../../hooks/DateHook";
 import Button from "../customButton/Button";
+import lide from "../../assets/images/lide.svg"
 
 type Props = {
   message: TourMessageProps;
@@ -50,7 +51,7 @@ const TourMessage: React.FC<Props> = ({
   const displayDateText = useRelativeDate(replyDateMoment);
 
   //const socket = io(SOCKET_URL);
-  const imageUrl = message?.user?.image ? message?.user?.image : "/profile.png";
+  const imageUrl = message?.user?.image ? message?.user?.image : lide;
 
   const handlePageChange = ({ selected }: { selected: number }) => {
     setCurrentPageReply(selected);
@@ -79,25 +80,25 @@ const TourMessage: React.FC<Props> = ({
   const deleteMessageMutation = useMutation({
     mutationFn: deleteMessageFunction,
     onMutate: async (id) => {
-      console.log("onMutate", id);
+    //  console.log("onMutate", id);
       // Cancel any outgoing refetches (so they don't overwrite optimistic update)
       await queryClient.cancelQueries({
-        queryKey: ["tourmessages", currentPage, currentPageReply],
+        queryKey: ["tourmessages", currentPage],
       });
 
       // Get the previous messages from the cache
       const previousMessages = queryClient.getQueryData([
         "tourmessages",
-        currentPage,
-        currentPageReply,
+        currentPage
+
       ]);
 
       // Optimistically update the cache by removing the deleted message
       queryClient.setQueryData(
-        ["tourmessages", currentPage, currentPageReply],
+        ["tourmessages", currentPage],
         (oldData: { tourmessages: any[] }) => {
           if (!oldData) return oldData;
-          console.log(oldData);
+        //  console.log(oldData);
           return {
             ...oldData,
             tourmessages: oldData.tourmessages.filter(
@@ -122,7 +123,7 @@ const TourMessage: React.FC<Props> = ({
 
       // Rollback cache to the previous state
       queryClient.setQueryData(
-        ["tourmessages", currentPage, currentPageReply],
+        ["tourmessages", currentPage],
         context?.previousMessages
       );
     },
@@ -130,7 +131,7 @@ const TourMessage: React.FC<Props> = ({
       // Only refetch if the mutation failed or if the server response indicates a need for it.
       if (error) {
         queryClient.invalidateQueries({
-          queryKey: ["tourmessages", currentPage, currentPageReply],
+          queryKey: ["tourmessages", currentPage],
         });
       } else {
         // Optionally, validate if data from the server is consistent with the cache.

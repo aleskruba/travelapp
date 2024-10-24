@@ -3,10 +3,10 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useAuthContext } from "../context/authContext";
 import { Link, useNavigate,useLocation } from "react-router-dom";
-import { BASE_URL,HTTP_CONFIG } from '../constants/config';
-import { Flip, toast } from "react-toastify";
+import { BASE_URL } from '../constants/config';
 import { fetchData } from "../hooks/useFetchData";
 import Button from "../components/customButton/Button";
+import { showErrorToast, showSuccessToast } from "../utils/toastUtils";
 
 
 function ForgottenPassword() {
@@ -52,32 +52,12 @@ function ForgottenPassword() {
     if (response.status === 404) {
       setisLoading(false)
       setBackendError('Tento email není zaregistrován');
-      toast.error('Email nenení zaregistrován', {
-        position: "top-left",
-        autoClose: 1500,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Flip,
-      });
+      showErrorToast('Email nenení zaregistrován')
     }
     if (response.status === 201) {
 
       setisLoading(false)
-      toast.success('Email byl úspěšně odeslán', {
-        position: "top-left",
-        autoClose: 1500,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Flip,
-      });
+      showSuccessToast('Email byl úspěšně odeslán')
 
       navigate('/');
     }

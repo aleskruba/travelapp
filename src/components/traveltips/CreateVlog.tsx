@@ -4,7 +4,7 @@ import { VlogsProps } from '../../types';
 import DOMPurify from 'dompurify';
 import { useAuthContext } from '../../context/authContext';
 import { useCountryContext } from '../../context/countryContext';
-import { BASE_URL, HTTP_CONFIG } from '../../constants/config';
+import { BASE_URL } from '../../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Flip, toast } from 'react-toastify';
 import { fetchData } from '../../hooks/useFetchData';

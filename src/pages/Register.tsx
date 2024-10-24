@@ -3,7 +3,6 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { BASE_URL, HTTP_CONFIG } from '../constants/config';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Flip, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useGoogleLogin } from '@react-oauth/google';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -12,6 +11,7 @@ import fun from '../assets/images/fun.png';
 import { useAuthContext } from '../context/authContext';
 import { fetchData } from '../hooks/useFetchData';
 import Button from '../components/customButton/Button';
+import { showErrorToast, showSuccessToast } from '../utils/toastUtils';
 
 interface RegisterCredentials {
   email: string;
@@ -89,34 +89,12 @@ function Register() {
       const data = await response.json();
       setUser(data.user);
       setIsLoding(false);
-
-      toast.success(data.message, {
-        position: "top-left",
-        autoClose: 1500,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Flip,
-      });
-
+      showSuccessToast(data.message);
       resetForm();
       navigate('/');
     } catch (error: any) {
       setBackendError(error.message);
-      toast.error('Chyba při registraci', {
-        position: "top-left",
-        autoClose: 1500,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Flip,
-      });
+      showErrorToast('Chyba při registraci')
     }
   }
 
@@ -154,19 +132,7 @@ function Register() {
         }
 
         const data = await response.json();
-
-        toast.success(data.message, {
-          position: "top-left",
-          autoClose: 1500,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Flip,
-        });
-
+        showSuccessToast(data.message)
         setUser(data.user);
         navigate(location.pathname);
       } catch (error: any) {
@@ -178,12 +144,15 @@ function Register() {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto ">
       <div className='flex flex-wrap items-center  overflow-y-auto min-h-[600px] mt-20'>
+      {isLoding ? (
+          <h1>moment prosím....</h1>
+        ) : (
         <div className={` ${isLoding ? 'opacity-30 pointer-events-none' : ''}relative bg-white px-4 py-4 rounded-lg flex items-center justify-center flex-col `}>
           <h1 className='mt-4 text-black poppins-extrabold text-3xl'>Registrace</h1>
 
           <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
             {({ values, errors }) => {
-              const isFormValid = values.email && !errors.password && !errors.confirmPassword && values.password && values.confirmPassword;
+              const isFormValid = values.email && !errors.email && !errors.password && !errors.confirmPassword && values.password && values.confirmPassword;
               return (
                 <Form className="flex flex-col space-y-4 items-center w-[350px] ">
                   <Field name="email"
@@ -233,7 +202,9 @@ function Register() {
                   <ErrorMessage name="confirmPassword" component="div" className="text-red-500" />
 
                   {backendError && <div className="text-red-500">{backendError}</div>}
+               
                   <div className="flex space-x-4">
+              
                 <Button
                   type="submit"
                   color={isFormValid ? "blue" : "gray"}
@@ -258,7 +229,7 @@ function Register() {
               );
             }}
           </Formik>
-
+      
           <div className='mt-4 w-[80%]  bg-gray-200 flex items-center justify-center rounded-lg cursor-pointer'>
                     <Button
             color="blue"
@@ -285,7 +256,7 @@ function Register() {
             <Image className='flex mt-4  w-full h-full object-cover' src={fun} alt="lide" />
           </div>
         </div>
-      </div>
+    )}</div>
     </div>
   );
 }

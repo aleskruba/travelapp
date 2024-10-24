@@ -1,4 +1,4 @@
-import { useState } from 'react';
+
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 
@@ -7,18 +7,18 @@ interface TourTypeProps {
   setTourDates:React.Dispatch<any>
 }
 
-const Checkbox = ({ children, ...props }: JSX.IntrinsicElements['input']) => (
+/* const Checkbox = ({ children, ...props }: JSX.IntrinsicElements['input']) => (
   <label style={{ marginRight: '1em' }}>
     <input type="checkbox" {...props} />
     {children}
   </label>
 );
-
+ */
 
 function SearchDateComponent({tourDates,setTourDates}:TourTypeProps) {
 
     const animatedComponents = makeAnimated();
-    const [isClearable, setIsClearable] = useState(true);
+    const isClearable = true;
     const formattedDates = [];
     const currentDate = new Date();
 

@@ -1,4 +1,3 @@
-import React from 'react'
 import { useEffect, useState } from 'react';
 import { BASE_URL } from '../constants/config';
 import { Link } from 'react-router-dom';
@@ -7,9 +6,11 @@ import Tour from '../components/tours/Tour';
 import Button from '../components/customButton/Button';
 import { ImArrowUp } from "react-icons/im";
 import ConfirmationModal from '../components/ConfirmationModal';
-import { Flip, toast } from 'react-toastify';
 import { fetchData } from '../hooks/useFetchData';
 import { useTourContext } from '../context/tourContext';
+import { showErrorToast, showSuccessToast } from '../utils/toastUtils';
+import Image from '../custom/Image';
+import fun from '../assets/images/fun.png';
 
 function YourTours() {
     const queryClient = useQueryClient();
@@ -91,33 +92,13 @@ function YourTours() {
     const deleteTourMutation = useMutation({
         mutationFn: deleteTourFunction,
         onSuccess: () => {
-            toast.success('Spolucesta byla smazána', {
-                position: "top-left",
-                autoClose: 1500,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "colored",
-                transition: Flip,
-            });
+            showSuccessToast('Spolucesta byla smazána')
             queryClient.invalidateQueries({ queryKey: ['yourtours'] });
             setShowModal(false);
         },
         onError: () => {
-            toast.error('Chyba při mazání spolucesty', {
-                position: "top-left",
-                autoClose: 1500,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "colored",
-                transition: Flip,
-            });
-        }
+            showErrorToast('Chyba při mazání spolucesty')
+            }
     });
 
 
@@ -135,14 +116,29 @@ function YourTours() {
     }
 
     return (
-        <div>
-            <h1 className='text-center mt-4'>Můžeš vytvořit maximálně 4 spolucesty</h1>
-            <div className='text-center text-blue-500 '>
+        <div className='min-h-screen'>
+             <h1 className='text-center mt-4 text-2xl font-bold'>
+           { data.yourtours.length < 1 && 'Nemáš vytvořenou žádnou spolucestu' } 
+           </h1>
+           
+            <h1 className='text-center mt-4 text-2xl font-thin'>Můžeš vytvořit maximálně 4 spolucesty</h1>
+            <div className='text-center text-blue-500 text-xl'>
                 <Link to={'../createtour'}>
                     Vytvoř spolucestu <span className="underline cursor-pointer text-blue-600">zde</span>
                 </Link>
             </div>
-
+            { data.yourtours.length < 1 && <>
+                <div className="flex flex-1 justify-center mb-4">
+                <Image 
+                            src={fun} 
+                            alt="fun" 
+                            className="min-w-[300px] max-w-[400px] w-full h-auto object-contain"
+                            // Optional, if you want to maintain the aspect ratio
+                        />
+                        </div>
+            
+                </>
+            }
             <div className="wrapper grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 mt-8 mb-8 md:px-20">
                 {data.yourtours
                 .sort((a: { tourdateEnd: string }, b: { tourdateEnd: string }) => 

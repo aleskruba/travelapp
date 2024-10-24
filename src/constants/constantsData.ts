@@ -1,4 +1,4 @@
-const footerItems = [
+export const footerItems = [
     'O NÁS',
     'BLOG',
     'INSTAGRAM',
@@ -10,7 +10,7 @@ const footerItems = [
   
  
 
-  const footerConditions = [
+export const footerConditions = [
     "Obchodní podmínky",
     "Ochrana osobních údajů",
     "Cookies"

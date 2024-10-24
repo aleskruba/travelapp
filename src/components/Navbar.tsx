@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import Image from '../custom/Image';
 import ThemeComponent from './ThemeComponent';
 import logo from '../assets/images/logo.png';
@@ -11,7 +11,7 @@ import axios from 'axios';
 function Navbar() {
     const [prevScrollPos, setPrevScrollPos] = useState(0);
     const [visible, setVisible] = useState(true);
-    const { user, setUser, setUpdateUser, isLoading } = useAuthContext();
+    const { user, setUser, setUpdateUser } = useAuthContext();
     const navigate = useNavigate();
 
     useEffect(() => {

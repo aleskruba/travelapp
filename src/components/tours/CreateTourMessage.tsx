@@ -1,14 +1,13 @@
 import React, { FormEvent, useState, useEffect ,useRef } from 'react';
-import { initialMessageState, initialTourMessageState, MessageProps, TourMessageProps, UserProps } from '../../types';
+import {  initialTourMessageState,  TourMessageProps, UserProps } from '../../types';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { BsEmojiGrin } from "react-icons/bs";
 import DOMPurify from 'dompurify';
 import { BASE_URL, HTTP_CONFIG } from '../../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useCountryContext } from '../../context/countryContext';
-import { fetchData } from '../../hooks/useFetchData';
 import Button from '../customButton/Button';
+import lide from "../../assets/images/lide.svg"
 
 interface CreateTourMessageProps {
   user: UserProps;
@@ -115,19 +114,19 @@ const CreateTourMessage: React.FC<CreateTourMessageProps> = ({ user, currentPage
     mutationFn: createMessage,
     onMutate: async (newMessage) => {
       // Cancel any outgoing queries to prevent them from overwriting optimistic update
-      await queryClient.cancelQueries({ queryKey: ['tourmessages', currentPage,currentPageReply] });
+      await queryClient.cancelQueries({ queryKey: ['tourmessages', currentPage] });
   
       // Get the previous messages
-      const previousMessages = queryClient.getQueryData(['tourmessages',  currentPage,currentPageReply]);
+      const previousMessages = queryClient.getQueryData(['tourmessages',  currentPage]);
   
       // Optimistically update the cache with the new message and sort by id
-      queryClient.setQueryData(['tourmessages',  currentPage,currentPageReply], (old: any) => {
+      queryClient.setQueryData(['tourmessages',  currentPage], (old: any) => {
         // Create a new array with the new message added
         const updatedMessages = [...(old?.tourmessages || []), newMessage];
         
         // Sort messages by ID to ensure proper order
         updatedMessages.sort((a: { id: number }, b: { id: number }) => b.id - a.id);
-        console.log(updatedMessages)
+     //   console.log(updatedMessages)
         return {
           ...old,
           tourmessages: updatedMessages,
@@ -140,12 +139,12 @@ const CreateTourMessage: React.FC<CreateTourMessageProps> = ({ user, currentPage
     onSuccess: (data, variables) => {
       backendError && setBackendError(null)
       setMessage(initialTourMessageState);
-      queryClient.setQueryData(['tourmessages', currentPage, currentPageReply], (old: any) => {
+      queryClient.setQueryData(['tourmessages', currentPage], (old: any) => {
         if (!old) return old;
-        old.tourmessages.map((msg: any) => {
+   /*      old.tourmessages.map((msg: any) => {
           console.log(msg.id, variables.id);
         })
-     
+      */
         const updatedMessages = old.tourmessages.map((msg: any) => 
           msg.id === variables.id ? { ...msg, id: data.message.id } : msg
         );
@@ -156,12 +155,12 @@ const CreateTourMessage: React.FC<CreateTourMessageProps> = ({ user, currentPage
     },
     onError: (err, newMessage, context) => {
       setBackendError('Něco se pokazilo, zpráva nebyla vytvořena')
-      queryClient.setQueryData(['tourmessages',  currentPage,currentPageReply], context?.previousMessages);
+      queryClient.setQueryData(['tourmessages',  currentPage], context?.previousMessages);
     },
     onSettled: (data, error) => {
       // Only refetch if there's an error
       if (error) {
-        queryClient.invalidateQueries({ queryKey: ['tourmessages',  currentPage, currentPageReply] });
+        queryClient.invalidateQueries({ queryKey: ['tourmessages',  currentPage] });
       }
     },
   });
@@ -196,7 +195,7 @@ const CreateTourMessage: React.FC<CreateTourMessageProps> = ({ user, currentPage
     <div className="flex justify-between items-center dark:text-lighTextColor gap-4 bg-gray-100 px-2 py-2 md:rounded-lg shadow-md mt-2">
       <div className="flex items-center gap-2"> 
         <div className="w-14 h-14 overflow-hidden rounded-full">
-          <img src={user?.image ?? 'profile.png'} alt="Profile" className="w-full h-full object-cover" />
+          <img src={user?.image ?? lide} alt="Profile" className="w-full h-full object-cover" />
         </div>
        </div>
       <div className="flex-1 hidden md:flex relative">

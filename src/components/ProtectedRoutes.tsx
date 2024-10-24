@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { useAuthContext } from '../context/authContext';
-import Login from '../pages/Login';
+
 
 const ProtectedRoutes = () => {
   const { user } = useAuthContext();

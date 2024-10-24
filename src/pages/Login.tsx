@@ -2,7 +2,6 @@ import  { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { Flip, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Image from "../custom/Image";
@@ -12,6 +11,7 @@ import { useAuthContext } from "../context/authContext";
 import { useGoogleLogin } from "@react-oauth/google";
 import { fetchData } from "../hooks/useFetchData";
 import Button from "../components/customButton/Button";
+import { showErrorToast, showSuccessToast } from "../utils/toastUtils";
 
 interface LoginCredentials {
   email: string;
@@ -25,6 +25,7 @@ function Login() {
   const [backendErrorGoogle, setBackendErrorGoogle] = useState("");
   const [isLoding, setIsLoding] = useState(false);
   const { user, setUser } = useAuthContext();
+  const [wrongData,setWrongData] = useState<any>(null)
 
   useEffect(() => {
     if (user) {
@@ -59,8 +60,8 @@ function Login() {
   });
 
   const initialValues = {
-    email: "",
-    password: "",
+    email: wrongData ? wrongData.email : "",
+    password: wrongData ? wrongData.password : "",
   };
 
   const logCredentials = async (credentials: LoginCredentials) => {
@@ -72,12 +73,16 @@ function Login() {
         credentials
       );
 
+      const data = await response.json();
+
       if (!response.ok) {
+      
+        setWrongData({email:data.error.email,password:data.error.password})
         setIsLoding(false);
-        throw new Error("Chyba při přihlašování");
+        throw new Error("Nesprávný email nebo heslo");
       }
 
-      const data = await response.json();
+   
       setUser(data.user);
       setIsLoding(false);
       return data;
@@ -92,30 +97,11 @@ function Login() {
       const data = await logCredentials(values);
       resetForm();
       navigate("/");
-      toast.success(data.message, {
-        position: "top-left",
-        autoClose: 1500,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Flip,
-      });
+      showSuccessToast(data.message)
+
     } catch (error: any) {
       setBackendError(error.message);
-      toast.error("Chyba při přihlašování", {
-        position: "top-left",
-        autoClose: 1500,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Flip,
-      });
+      showErrorToast("Chyba při přihlašování")
     }
   };
 
@@ -155,17 +141,7 @@ function Login() {
         }
 
         const data = await response.json();
-        toast.success(data.message, {
-          position: "top-left",
-          autoClose: 1500,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Flip,
-        });
+        showSuccessToast(data.message)
         setUser(data.user);
         navigate(location.pathname);
       } catch (error: any) {
@@ -194,8 +170,8 @@ function Login() {
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
-              {({ values }) => {
-                const isFormValid = values.email && values.password 
+              {({ values,errors }) => {
+                const isFormValid = values.email &&  !errors.email && values.password 
 
                 return (
                   <Form className="flex flex-col space-y-4 items-center w-[350px] relative">

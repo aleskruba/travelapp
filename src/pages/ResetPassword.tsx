@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useAuthContext } from "../context/authContext";
-import { BASE_URL, HTTP_CONFIG } from '../constants/config';
+import { BASE_URL } from '../constants/config';
 import { Flip, toast } from "react-toastify";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { fetchData } from "../hooks/useFetchData";
 import Button from "../components/customButton/Button";
+import { showErrorToast, showSuccessToast } from "../utils/toastUtils";
 
 interface NewPasswordCredentials {
   password: string;
@@ -134,32 +135,12 @@ function ResetPassword() {
 
       const data = await response.json();
       setIsLoding(false);
-      toast.success(data.message, {
-        position: "top-left",
-        autoClose: 1500,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Flip,
-      });
+      showSuccessToast(data.message)
       resetForm();
       navigate("/login");
     } catch (error: any) {
       setBackendError(error.message);
-      toast.error('Chyba při resetování hesla', {
-        position: "top-left",
-        autoClose: 1500,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Flip,
-      });
+      showErrorToast('Chyba při resetování hesla')
     }
   }
 

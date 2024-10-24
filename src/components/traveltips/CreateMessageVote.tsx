@@ -12,7 +12,7 @@ interface Props {
     currentPageReply: number;
 }
 
-function CreateMessageVote({ message, currentPage, currentPageReply }: Props) {
+function CreateMessageVote({ message, currentPage }: Props) {
     const queryClient = useQueryClient();
     const { user } = useAuthContext();
     const { chosenCountry } = useCountryContext();
@@ -37,7 +37,7 @@ function CreateMessageVote({ message, currentPage, currentPageReply }: Props) {
         onMutate: async (voteType) => {
             // Cancel any outgoing refetches
             await queryClient.cancelQueries({
-                queryKey: ["messages", chosenCountry, currentPage, currentPageReply],
+                queryKey: ["messages", chosenCountry, currentPage ],
             });
 
             // Get the previous messages from the cache
@@ -45,12 +45,12 @@ function CreateMessageVote({ message, currentPage, currentPageReply }: Props) {
                 "messages",
                 chosenCountry,
                 currentPage,
-                currentPageReply,
+                
             ]);
 
             // Optimistically update the cache
             queryClient.setQueryData(
-                ["messages", chosenCountry, currentPage, currentPageReply],
+                ["messages", chosenCountry, currentPage],
                 (oldData: any) => {
                     if (!oldData) return oldData;
 
@@ -77,7 +77,7 @@ function CreateMessageVote({ message, currentPage, currentPageReply }: Props) {
         onError: (err, voteType, context) => {
             // Rollback to previous state if mutation fails
             queryClient.setQueryData(
-                ["messages", chosenCountry, currentPage, currentPageReply],
+                ["messages", chosenCountry, currentPage],
                 context?.previousMessages
             );
         },
@@ -85,7 +85,7 @@ function CreateMessageVote({ message, currentPage, currentPageReply }: Props) {
             // Invalidate to refetch the data
            if (error) {
             queryClient.invalidateQueries({
-                queryKey: ["messages", chosenCountry, currentPage, currentPageReply],
+                queryKey: ['messages', chosenCountry, currentPage],
             });
           }
         },

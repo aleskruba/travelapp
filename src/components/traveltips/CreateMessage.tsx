@@ -4,11 +4,12 @@ import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { BsEmojiGrin } from "react-icons/bs";
 import DOMPurify from 'dompurify';
-import { BASE_URL, HTTP_CONFIG } from '../../constants/config';
+import { BASE_URL } from '../../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCountryContext } from '../../context/countryContext';
 import { fetchData } from '../../hooks/useFetchData';
 import Button from '../customButton/Button';
+import lide from "../../assets/images/lide.svg"
 
 interface CreateMessageProps {
   user: UserProps;
@@ -88,12 +89,14 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
 
   
     try {
-      const response = await fetch(`${BASE_URL}/message`, {
+
+      const response = await fetchData(`${BASE_URL}/message`,'POST',data)
+   /*    const response = await fetch(`${BASE_URL}/message`, {
         ...HTTP_CONFIG,
         method: 'POST',
         body: JSON.stringify(data),
         credentials: 'include',
-      });
+      }); */
   
       if (!response.ok) {
         throw new Error('Error occurred while sending message');
@@ -116,19 +119,19 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
     mutationFn: createMessage,
     onMutate: async (newMessage) => {
       // Cancel any outgoing queries to prevent them from overwriting optimistic update
-      await queryClient.cancelQueries({ queryKey: ['messages', chosenCountry, currentPage,currentPageReply] });
+      await queryClient.cancelQueries({ queryKey: ['messages', chosenCountry, currentPage] });
   
       // Get the previous messages
-      const previousMessages = queryClient.getQueryData(['messages', chosenCountry, currentPage,currentPageReply]);
+      const previousMessages = queryClient.getQueryData(['messages', chosenCountry, currentPage]);
   
       // Optimistically update the cache with the new message and sort by id
-      queryClient.setQueryData(['messages', chosenCountry, currentPage,currentPageReply], (old: any) => {
+      queryClient.setQueryData(['messages', chosenCountry, currentPage], (old: any) => {
         // Create a new array with the new message added
         const updatedMessages = [...(old?.messages || []), newMessage];
         
         // Sort messages by ID to ensure proper order
         updatedMessages.sort((a: { id: number }, b: { id: number }) => b.id - a.id);
-        console.log(updatedMessages)
+      
         return {
           ...old,
           messages: updatedMessages,
@@ -141,11 +144,11 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
     onSuccess: (data, variables) => {
       backendError && setBackendError(null)
       setMessage(initialMessageState);
-      queryClient.setQueryData(['messages', chosenCountry, currentPage, currentPageReply], (old: any) => {
+      queryClient.setQueryData(['messages', chosenCountry, currentPage], (old: any) => {
         if (!old) return old;
-        old.messages.map((msg: any) => {
-          console.log(msg.id, variables.id);
-        })
+    /*     old.messages.map((msg: any) => {
+         
+        }) */
      
         const updatedMessages = old.messages.map((msg: any) => 
           msg.id === variables.id ? { ...msg, id: data.message.id } : msg
@@ -157,13 +160,13 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
     },
     onError: (err, context) => {
       setBackendError('Něco se pokazilo, zpráva nebyla vytvořena')
-      queryClient.setQueryData(['messages', chosenCountry, currentPage,currentPageReply], context?.previousMessages);
+      queryClient.setQueryData(['messages', chosenCountry, currentPage], context?.previousMessages);
       console.log(err)
     },
     onSettled: (data, error) => {
       // Only refetch if there's an error
       if (error) {
-        queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry, currentPage, currentPageReply] });
+        queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry, currentPage] });
       }
     },
     
@@ -200,7 +203,7 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
     <div className="flex justify-between items-center dark:text-lighTextColor gap-4 bg-gray-100 px-2 py-2 md:rounded-lg shadow-md mt-2">
       <div className="flex items-center gap-2"> 
         <div className="w-14 h-14 overflow-hidden rounded-full">
-          <img src={user?.image ?? 'profile.png'} alt="Profile" className="w-full h-full object-cover" />
+          <img src={user?.image ?? lide} alt="Profile" className="w-full h-full object-cover" />
         </div>
        </div>
       <div className="flex-1 hidden md:flex relative">

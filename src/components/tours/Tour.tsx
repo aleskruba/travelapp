@@ -1,7 +1,6 @@
 import React from 'react'
 import { TourProps } from '../../types';
 import moment from 'moment';
-import { useThemeContext } from '../../context/themeContext';
 
 type Props = {
     tour: TourProps;
@@ -10,8 +9,7 @@ type Props = {
   
   const Tour: React.FC<Props> = ( {tour}) => {
 
-    const { toggleModal } = useThemeContext();
-    const imageUrl = tour?.user?.image ? tour?.user?.image : '/profile.png';
+  const imageUrl = tour?.user?.image ? tour?.user?.image : '/profile.png';
     
   const monthsInCzech = ['leden', 'únor', 'březen', 'duben', 'květen', 'červen', 'červenec', 'srpen', 'září', 'říjen', 'listopad', 'prosinec'];
  

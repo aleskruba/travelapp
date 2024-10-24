@@ -2,12 +2,12 @@ import React,{useState,FormEvent,useEffect,useRef} from 'react'
 import DOMPurify from 'dompurify';
 import { useAuthContext } from '../../context/authContext';
 import { useTourContext } from '../../context/tourContext';
-import { BASE_URL, HTTP_CONFIG } from '../../constants/config';
+import { BASE_URL } from '../../constants/config';
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import { BsEmojiGrin } from "react-icons/bs";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import {  initialSingleReplyState, initialSingleTourReplyState, MessageProps, ReplyProps, TourMessageProps, TourReplyProps } from '../../types';
+import {   initialSingleTourReplyState, TourMessageProps, TourReplyProps } from '../../types';
 import { fetchData } from '../../hooks/useFetchData';
 import Button from '../customButton/Button';
 
@@ -28,7 +28,7 @@ function CreateTourReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,
        const [showEmojiPicker, setShowEmojiPicker] = useState(false);
        const [backendError,setBackendError] = useState<string | null>(null);
        const [tourreply, setTourReply] = useState<TourReplyProps>(initialSingleTourReplyState);
-        const {isPrivate,setIsPrivate,privateIdsArray,setPrivateIdsArray} = useTourContext()
+        const {isPrivate,setIsPrivate,setPrivateIdsArray} = useTourContext()
 
        
        useEffect(() => {
@@ -103,12 +103,12 @@ function CreateTourReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,
         mutationFn: createReply,
         onMutate: async (newMessage) => {
           // Cancel any outgoing queries to prevent them from overwriting optimistic update
- await queryClient.cancelQueries({ queryKey: ['tourmessages', currentPage,currentPageReply] });
+ await queryClient.cancelQueries({ queryKey: ['tourmessages', currentPage] });
 
- const previousMessages = queryClient.getQueryData(['tourmessages', currentPage,currentPageReply]);
+ const previousMessages = queryClient.getQueryData(['tourmessages', currentPage]);
 
  // Optimistically update the cache with the new message and sort by id
- queryClient.setQueryData(['tourmessages', currentPage,currentPageReply], (old: any) => {
+ queryClient.setQueryData(['tourmessages', currentPage], (old: any) => {
    if (!old) return old;
 
    // Map through existing messages and update the reply array in the matching message
@@ -136,9 +136,9 @@ function CreateTourReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,
 onSuccess: (data, variables) => {
  backendError && setBackendError(null);
  setTourReply(initialSingleTourReplyState);
- setReplyDiv(false);
 
- queryClient.setQueryData(['tourmessages', currentPage,currentPageReply], (old: any) => {
+
+ queryClient.setQueryData(['tourmessages', currentPage], (old: any) => {
    if (!old) return old;
 
    const updatedMessages = old.tourmessages.map((msg: any) => {
@@ -175,19 +175,20 @@ onSuccess: (data, variables) => {
 
 onError: (err, context) => {
  setBackendError('Něco se pokazilo, zpráva nebyla vytvořena')
- queryClient.setQueryData(['tourmessages', currentPage,currentPageReply], context?.previousMessages);
+ queryClient.setQueryData(['tourmessages', currentPage], context?.previousMessages);
  console.log(err)
 },
 onSettled: (data, error) => {
 
   if (error ) {
- queryClient.invalidateQueries({ queryKey: ['tourmessages', currentPage,currentPageReply] });
+ queryClient.invalidateQueries({ queryKey: ['tourmessages', currentPage] });
  }
 },
       });
 
       const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setReplyDiv(false);
         if (isPrivate) {console.log('isPrivate')}
         const tempId = Date.now();
         if (user) {

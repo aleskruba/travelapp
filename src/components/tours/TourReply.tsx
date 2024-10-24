@@ -6,11 +6,12 @@ import { useTourContext } from '../../context/tourContext';
 import { FaRegTrashAlt } from "react-icons/fa";
 import moment from 'moment'; // Import moment
 import { io } from 'socket.io-client';
-import { BASE_URL, HTTP_CONFIG, SOCKET_URL } from '../../constants/config';
+import { BASE_URL,  SOCKET_URL } from '../../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import ConfirmationModal from '../ConfirmationModal';
 import { fetchData } from '../../hooks/useFetchData';
 import useRelativeDate from '../../hooks/DateHook';
+import lide from "../../assets/images/lide.svg"
 
 type Props = {
   reply: TourReplyProps;
@@ -25,9 +26,8 @@ const TourReply: React.FC<Props> = ({ reply, message ,currentPage,currentPageRep
   const [selectedReplyId, setSelectedReplyId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [backendError, setBackendError] = useState<string | null>(null);
-  const imageUrl = reply?.user.image ? reply?.user.image : '/profile.png';
-  const {isPrivate,privateIdsArray} = useTourContext()
-  // Convert Date object to Moment object
+  const imageUrl = reply?.user.image ? reply?.user.image : lide;
+  const {privateIdsArray} = useTourContext()
   const replyDateMoment = moment(reply.date);
   console.log(privateIdsArray)
 
@@ -57,13 +57,13 @@ const TourReply: React.FC<Props> = ({ reply, message ,currentPage,currentPageRep
 
       console.log('onMutate delete reply',id)
       // Cancel any outgoing refetches to prevent overwriting the optimistic update
-      await queryClient.cancelQueries({ queryKey: ['tourmessages', currentPage,currentPageReply]  });
+      await queryClient.cancelQueries({ queryKey: ['tourmessages', currentPage]  });
   
       // Get the previous messages from the cache
-      const previousMessages = queryClient.getQueryData(['tourmessages', currentPage,currentPageReply] );
+      const previousMessages = queryClient.getQueryData(['tourmessages', currentPage] );
   
       // Optimistically update the cache by removing the deleted reply
-      queryClient.setQueryData(['tourmessages', currentPage,currentPageReply] , (oldData: { tourmessages: TourMessageProps[] } | undefined) => {
+      queryClient.setQueryData(['tourmessages', currentPage] , (oldData: { tourmessages: TourMessageProps[] } | undefined) => {
         if (!oldData) return oldData;
   
         return {
@@ -89,7 +89,7 @@ const TourReply: React.FC<Props> = ({ reply, message ,currentPage,currentPageRep
       setShowModal(false);
   
       // Rollback cache to the previous state
-      queryClient.setQueryData(['tourmessages', currentPage,currentPageReply] , context?.previousMessages);
+      queryClient.setQueryData(['tourmessages', currentPage] , context?.previousMessages);
     },
     onSuccess: () => {
       backendError && setBackendError(null);
@@ -97,7 +97,7 @@ const TourReply: React.FC<Props> = ({ reply, message ,currentPage,currentPageRep
     },
     onSettled: (data, error) => {
       if (error) {
-        queryClient.invalidateQueries({ queryKey: ['tourmessages', currentPage,currentPageReply]  });
+        queryClient.invalidateQueries({ queryKey: ['tourmessages', currentPage]  });
       } else {
         // Optionally, validate if data from the server is consistent with the cache.
       }
@@ -128,7 +128,7 @@ const TourReply: React.FC<Props> = ({ reply, message ,currentPage,currentPageRep
           )}
           <div className="w-14 h-14 overflow-hidden rounded-full cursor-pointer" onClick={() => toggleModal(imageUrl)}>
             <img
-              src={imageUrl ? imageUrl : 'profile.png'}
+              src={imageUrl ? imageUrl : lide}
               alt="Profile"
               className="w-full z-30 h-full object-cover"
             />

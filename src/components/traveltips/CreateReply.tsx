@@ -2,7 +2,7 @@ import React,{useState,FormEvent,useEffect,useRef} from 'react'
 import DOMPurify from 'dompurify';
 import { useAuthContext } from '../../context/authContext';
 import { useCountryContext } from '../../context/countryContext';
-import { BASE_URL, HTTP_CONFIG } from '../../constants/config';
+import { BASE_URL } from '../../constants/config';
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import { BsEmojiGrin } from "react-icons/bs";
@@ -103,12 +103,12 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,curr
         mutationFn: createReply,
         onMutate: async (newMessage) => {
                    // Cancel any outgoing queries to prevent them from overwriting optimistic update
-          await queryClient.cancelQueries({ queryKey: ['messages', chosenCountry, currentPage,currentPageReply] });
+          await queryClient.cancelQueries({ queryKey: ['messages', chosenCountry, currentPage] });
       
-          const previousMessages = queryClient.getQueryData(['messages', chosenCountry, currentPage,currentPageReply]);
+          const previousMessages = queryClient.getQueryData(['messages', chosenCountry, currentPage]);
       
           // Optimistically update the cache with the new message and sort by id
-          queryClient.setQueryData(['messages', chosenCountry, currentPage, currentPageReply], (old: any) => {
+          queryClient.setQueryData(['messages', chosenCountry, currentPage], (old: any) => {
             if (!old) return old;
         
             // Map through existing messages and update the reply array in the matching message
@@ -136,9 +136,9 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,curr
         onSuccess: (data, variables) => {
           backendError && setBackendError(null);
           setReply(initialSingleReplyState);
-          setReplyDiv(false);
+     
         
-          queryClient.setQueryData(['messages', chosenCountry, currentPage, currentPageReply], (old: any) => {
+          queryClient.setQueryData(['messages', chosenCountry, currentPage], (old: any) => {
             if (!old) return old;
         
             const updatedMessages = old.messages.map((msg: any) => {
@@ -166,18 +166,19 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,curr
 
         onError: (err, context) => {
           setBackendError('Něco se pokazilo, zpráva nebyla vytvořena')
-          queryClient.setQueryData(['messages', chosenCountry, currentPage,currentPageReply], context?.previousMessages);
+          queryClient.setQueryData(['messages', chosenCountry, currentPage], context?.previousMessages);
           console.log(err)
         },
         onSettled: (data, error) => {
           if (error) {
-          queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry,currentPage,currentPageReply] });
+          queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry,currentPage] });
           }
         },
       });
 
       const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setReplyDiv(false);
         const tempId = Date.now();
         if (user) {
 /*         const newReply = { ...reply, user_id: user.id, 

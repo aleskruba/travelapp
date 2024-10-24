@@ -6,12 +6,13 @@ import { useCountryContext } from '../../context/countryContext';
 import { FaRegTrashAlt } from "react-icons/fa";
 import moment from 'moment'; // Import moment
 import { io } from 'socket.io-client';
-import { BASE_URL, HTTP_CONFIG, SOCKET_URL } from '../../constants/config';
+import { BASE_URL, SOCKET_URL } from '../../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import ConfirmationModal from '../ConfirmationModal';
 import CreateReplyVote from './CreateReplyVote';
 import { fetchData } from '../../hooks/useFetchData';
 import useRelativeDate from '../../hooks/DateHook';
+import lide from "../../assets/images/lide.svg"
 
 type Props = {
   reply: ReplyProps;
@@ -28,7 +29,7 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply})
   const [showModal, setShowModal] = useState<boolean>(false);
   const { chosenCountry } = useCountryContext();
   const [backendError, setBackendError] = useState<string | null>(null);
-  const imageUrl = reply?.user.image ? reply?.user.image : '/profile.png';
+  const imageUrl = reply?.user.image ? reply?.user.image : lide;
 
   // Convert Date object to Moment object
   const replyDateMoment = moment(reply.date);
@@ -62,13 +63,13 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply})
 
       console.log('onMutate delete reply',id)
       // Cancel any outgoing refetches to prevent overwriting the optimistic update
-      await queryClient.cancelQueries({ queryKey: ['messages', chosenCountry, currentPage, currentPageReply] });
+      await queryClient.cancelQueries({ queryKey: ['messages', chosenCountry, currentPage] });
   
       // Get the previous messages from the cache
-      const previousMessages = queryClient.getQueryData(['messages', chosenCountry, currentPage, currentPageReply]);
+      const previousMessages = queryClient.getQueryData(['messages', chosenCountry, currentPage,]);
   
       // Optimistically update the cache by removing the deleted reply
-      queryClient.setQueryData(['messages', chosenCountry, currentPage, currentPageReply], (oldData: { messages: MessageProps[] } | undefined) => {
+      queryClient.setQueryData(['messages', chosenCountry, currentPage], (oldData: { messages: MessageProps[] } | undefined) => {
         if (!oldData) return oldData;
   
         return {
@@ -94,7 +95,7 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply})
       setShowModal(false);
   
       // Rollback cache to the previous state
-      queryClient.setQueryData(['messages', chosenCountry, currentPage, currentPageReply], context?.previousMessages);
+      queryClient.setQueryData(['messages', chosenCountry, currentPage], context?.previousMessages);
     },
     onSuccess: () => {
       backendError && setBackendError(null);
@@ -102,7 +103,7 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply})
     },
     onSettled: (data, error) => {
       if (error) {
-        queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry, currentPage, currentPageReply] });
+        queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry, currentPage] });
       } else {
         // Optionally, validate if data from the server is consistent with the cache.
       }
@@ -124,7 +125,7 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply})
           )}
           <div className="w-14 h-14 overflow-hidden rounded-full cursor-pointer" onClick={() => toggleModal(imageUrl)}>
             <img
-              src={imageUrl ? imageUrl : 'profile.png'}
+              src={imageUrl ? imageUrl : lide}
               alt="Profile"
               className="w-full z-30 h-full object-cover"
             />

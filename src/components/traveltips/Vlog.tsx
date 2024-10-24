@@ -1,12 +1,11 @@
-import React from 'react'
 import { VlogsProps } from '../../types';
 
 
-type Vlog = {
+type VlogPropsData  = {
     vlog: VlogsProps;
   };
 
-function Vlog({ vlog}:Vlog) {
+function Vlog({ vlog}:VlogPropsData) {
 
     return (
 <div className="box border border-black rounded-md p-8 text-center grid grid-rows-[subgrid] row-span-4">

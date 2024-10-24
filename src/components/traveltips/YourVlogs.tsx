@@ -2,9 +2,10 @@ import { BASE_URL } from '../../constants/config';
 import { useQuery} from '@tanstack/react-query';
 import ReactPaginate from 'react-paginate';
 import { useState } from 'react';
-import { useAuthContext } from '../../context/authContext';
 import YourVlog from './YourVlog';
-
+import Image from '../../custom/Image';
+import fun from '../../assets/images/fun.png';
+import { Link } from 'react-router-dom';
 
 /* const ITEMS_PER_PAGE = 6;
  */
@@ -41,10 +42,34 @@ function YourVlogs() {
 
 
   return (
-    <div className="wrapper pb-6">
+    <div className="wrapper pb-6 min-h-screen">
 
-        {!isLoading ? 
-            <div className="wrapper grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 mt-20">
+        {!isLoading ? <>
+ 
+ { data?.vlogs.length < 1 && 
+
+  <div className='flex justify-center items-center flex-col gap-10'>
+    <h1 className='text-center mt-4 text-2xl font-bold'>
+  Nemáš vytvořený žádný Vlog
+  </h1>
+  <h1 className='text-center mt-4 text-2xl font-thin'>
+  Vlog můžeš vytvořit v sekci <Link to='../traveltips' className='font bold underline'>travelTips</Link>
+  </h1>
+
+
+   <div className="flex flex-1 justify-center mb-4">
+   <Image 
+               src={fun} 
+               alt="fun" 
+               className="min-w-[300px] max-w-[400px] w-full h-auto object-contain"
+               // Optional, if you want to maintain the aspect ratio
+           />
+           </div>
+
+           </div>
+  } 
+
+          <div className="wrapper grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 mt-20">
                 {
 
         data.vlogs.sort((a: { id: number; }, b: { id: number; }) => b.id - a.id).map((vlog:any,idx:number)=>{
@@ -58,9 +83,9 @@ function YourVlogs() {
                     })
 
 }
-  </div> : <div> ... is Loading </div> 
+  </div> </>: <div className='flex justify-center items-center'> ... moment prosím </div> 
   }
-
+ { data?.vlogs.length > 0 && 
 <ReactPaginate
         previousLabel={'←'}
         nextLabel={'→'}
@@ -80,7 +105,7 @@ function YourVlogs() {
         nextLinkClassName={'page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100'}
         activeClassName={'active bg-blue-500 text-white'}
       />
-
+ }
 
     </div>
   )
