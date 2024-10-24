@@ -74,7 +74,7 @@ function Login() {
       );
 
       const data = await response.json();
-
+      console.log(data);
       if (!response.ok) {
       
         setWrongData({email:data.error.email,password:data.error.password})
@@ -95,10 +95,11 @@ function Login() {
   const handleSubmit = async (values: LoginCredentials, { resetForm }: any) => {
     try {
       const data = await logCredentials(values);
+ 
       resetForm();
       navigate("/");
       showSuccessToast(data.message)
-
+    
     } catch (error: any) {
       setBackendError(error.message);
       showErrorToast("Chyba při přihlašování")
