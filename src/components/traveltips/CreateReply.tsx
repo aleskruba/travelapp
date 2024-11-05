@@ -2,7 +2,7 @@ import React,{useState,FormEvent,useEffect,useRef} from 'react'
 import DOMPurify from 'dompurify';
 import { useAuthContext } from '../../context/authContext';
 import { useCountryContext } from '../../context/countryContext';
-import { BASE_URL } from '../../constants/config';
+import { BASE_URL, SOCKET_URL } from '../../constants/config';
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import { BsEmojiGrin } from "react-icons/bs";
@@ -10,16 +10,18 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {  initialSingleReplyState, MessageProps, ReplyProps } from '../../types';
 import { fetchData } from '../../hooks/useFetchData';
 import Button from '../customButton/Button';
+import { io } from 'socket.io-client';
+import socket from '../../utils/socket';
 
   interface Props {
     setReplyDiv: React.Dispatch<boolean>; 
     message:MessageProps
     currentPage:number;
     setSelectedReplyDivId:React.Dispatch<React.SetStateAction<number | null>>
-    currentPageReply:number
+    deletedMessage:number | null;
 }
 
-function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,currentPageReply}:Props) {
+function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,deletedMessage}:Props) {
       
       const queryClient = useQueryClient();
        const { user} = useAuthContext();
@@ -29,8 +31,8 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,curr
        const [showEmojiPicker, setShowEmojiPicker] = useState(false);
        const [backendError,setBackendError] = useState<string | null>(null);
        const [reply, setReply] = useState<ReplyProps>(initialSingleReplyState);
-  
-
+   /*     const socket = io(SOCKET_URL);
+ */
        
        useEffect(() => {
         const handleClickOutside = (event:any) => {
@@ -86,7 +88,8 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,curr
           user: {
             image, 
             firstName
-          }
+          },
+   
         };
       
 
@@ -102,6 +105,7 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,curr
       const createReplyMutation = useMutation({
         mutationFn: createReply,
         onMutate: async (newMessage) => {
+          console.log(newMessage);
                    // Cancel any outgoing queries to prevent them from overwriting optimistic update
           await queryClient.cancelQueries({ queryKey: ['messages', chosenCountry, currentPage] });
       
@@ -112,7 +116,7 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,curr
             if (!old) return old;
         
             // Map through existing messages and update the reply array in the matching message
-            const updatedMessages = old.messages.map((mes: any) => {
+        /*     const updatedMessages = old.messages.map((mes: any) => {
                 if (mes.id === message.id) {
                     return {
                         ...mes,
@@ -120,8 +124,16 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,curr
                     };
                 }
                 return mes; // Return other messages unchanged
+            }); */
+
+            const updatedMessages = old.messages.map((mes: any) => {
+              if (mes.id === message.id) {
+                return { ...mes, reply: mes.reply ? [...mes.reply, newMessage] : [newMessage] };
+              }
+              return mes;
             });
-        
+            
+       
             // Return the updated object with modified messages array
             return {
                 ...old,
@@ -148,6 +160,19 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,curr
                     const updatedReplies = msg.reply.map((rep: any) =>
                         rep.id === variables.id ? { ...rep, id: data.message.id } : rep
                     );
+
+
+                    const socketMessage = {
+                      ...data.message,
+                      votesreply:  [],
+                      user: { 
+                        image: user?.image, 
+                        firstName: user?.firstName 
+                      }
+                    };
+        console.log('socketMessage',data.message);
+                   socket.emit('send_reply', { reply: socketMessage, chosenCountry });
+                
         
                     // Return the updated message with the modified replies array
                     return { ...msg, reply: updatedReplies };
@@ -238,10 +263,11 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,curr
           Odešli
       </button>
  */}
+
       <Button 
               type="submit"   
               color='green'
-              className={`${!reply.message.length ? 'opacity-30 cursor-default pointer-events-none': '' } rounded-md shadow-md w-[100px]  focus:ring `}
+              className={`${!reply.message.length || deletedMessage === message.id? 'opacity-30 cursor-default pointer-events-none': '' } rounded-md shadow-md w-[100px]  focus:ring `}
              >
               
               Odešli

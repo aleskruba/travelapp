@@ -3,57 +3,199 @@ import TourMessage from './TourMessage';
 import { useAuthContext } from '../../context/authContext';
 import { BASE_URL, HTTP_CONFIG, SOCKET_URL } from '../../constants/config';
 import CreateTourMessage from './CreateTourMessage';
+import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { io } from 'socket.io-client';
-import { useNavigate, useSearchParams,useParams } from 'react-router-dom';
-import { keepPreviousData, useQuery  } from '@tanstack/react-query';
+import socket from '../../utils/socket';
 
-function TourMessages() {
+type Props = {
+  tourID: number;
+ 
+};
 
+function TourMessages({tourID}:Props) {
   const { user } = useAuthContext();
   let { id } = useParams<string>();
   const [searchParams, setSearchParams] = useSearchParams();
-   const [currentPageReply, setCurrentPageReply] = useState(0);
   const navigate = useNavigate();
-//  const socket = io(SOCKET_URL);
+  const queryClient = useQueryClient();
+  const [deletedMessage,setDeletedMessage] = useState<number | null>(null)
+  const [deletedReply,setDeletedReply] = useState<number | null>(null)
+  // Retrieve `currentPage` based on `searchParams`
+  const currentPage = parseInt(searchParams.get('page') || '1', 10) - 1;/* 
+  const socket = io(SOCKET_URL); */
+  // Sync `searchParams` with `currentPage`
+  useEffect(() => {
+    setSearchParams({ page: (currentPage + 1).toString() });
+  }, [currentPage, setSearchParams, id]);
 
-const currentPage = parseInt(searchParams.get('page') || '1', 10) - 1;
 
-/* useEffect(()=>{
-  if (chosenCountry ) {
-setCurrentPage((parseInt(searchParams.get('page') || '1', 10) - 1))
-}
-},[chosenCountry]) */
+  useEffect(() => {
+    console.log(tourID, ' ',typeof(tourID))
+    if (tourID) {
+    socket.emit('join_tour_room', String(tourID),user?.id);
+    }
 
-useEffect(() => {
-  setSearchParams({ page: (currentPage + 1).toString() }); // Convert number to string
+    socket.on('receive_message_tour', (socketdata) => {
+ 
+      if (socketdata.message.user_id !== user?.id) {
+    
+        queryClient.setQueryData(['tourmessages', currentPage], (old: any) => {
+          console.log(old);
+          const updatedMessages = [
+            ...(old?.tourmessages?.map((msg: any) => ({ ...msg, reply: msg.tourreply || [] })) || []),
+            socketdata.message,  // Add socketdata as a new message
+          ];
+    
+          updatedMessages.sort((a: { id: number }, b: { id: number }) => a.id - b.id);
+    
+          return { ...old, tourmessages: updatedMessages };
+        });
+      }
+    });
+    
+    socket.on('receive_reply_tour', (socketdata) => {
+   
+      if (socketdata.user_id !== user?.id) {
+        setDeletedMessage(socketdata.messageID)
+        if  (socketdata.messagetype === 1 && user?.id !== socketdata.receiver_id) return;
+        if  (socketdata.messagetype === 1 && user?.id  === socketdata.receiver_id) {
+          queryClient.invalidateQueries({ queryKey: ['tourmessages',currentPage]})
+        }
+        queryClient.setQueryData(['tourmessages',  currentPage], (old: any) => {
+ 
+        
+          // Clone the old messages array
+          const updatedMessages = (old?.tourmessages || []).map((msg: any) => {
+            // Check if the current message is the one to update
+            if (msg.id === socketdata.tourmessage_id
+            ) {
+              // Add socketdata to the reply array of the specific message and ensure votesreply array
+              return {
+                ...msg,
+                  tourreply: [...(msg.tourreply || []), socketdata], // Add new reply
+              };
+            }
+        
+            return msg; // Return other messages unchanged
+          });
+   
+          // Sort updatedMessages if necessary
+          updatedMessages.sort((a: { id: number }, b: { id: number }) => a.id - b.id);
+        
+          return { ...old, tourmessages: updatedMessages };
+        });
+        
+      }
+    });
+    
+    socket.on('receive_deleted_message_tour', (socketdata) => {
 
-}, [currentPage, setSearchParams]);
+        console.log(socketdata)
+      if (socketdata.user_id !== user?.id) {
+      
+        setDeletedMessage(socketdata.messageID)
 
+        setTimeout(() => {
+          
+        queryClient.setQueryData(['tourmessages', currentPage], (old: any) => {
+          
+          // Filter out the message with the specified message_id
+          const updatedMessages = (old?.messages || []).filter((msg: any) => msg.id !== socketdata.messageID);
+    
+        
+    
+          // Sort updatedMessages if necessary
+          updatedMessages.sort((a: { id: number }, b: { id: number }) => a.id - b.id);
+          queryClient.invalidateQueries({ queryKey: ['tourmessages',currentPage]})
+          return { ...old, tourmessages: updatedMessages };
+        });
+
+        setDeletedMessage(null)
+      }, 3500);
+
+
+
+      }
+    });
+
+
+    
+    socket.on('receive_deleted_reply_tour', (socketdata) => {
+
+      console.log(socketdata)
+      setDeletedReply(socketdata.replyID)
+      setTimeout(() => {
+
+      if (socketdata.user_id !== user?.id) {
+        queryClient.setQueryData(['tourmessages', currentPage], (old: any) => {
+          // Clone the old messages array and map to find the correct message
+          const updatedMessages = (old?.messages || []).map((msg: any) => {
+            // Check if the current message is the one to update
+            if (msg.id === socketdata.messageID) {
+              // Filter out the specific reply by its ID
+              const updatedReplies = msg.reply.filter((r: any) => r.id !== socketdata.replyID);
+              // Return the message with updated replies
+              return { ...msg, tourreply: updatedReplies };
+            }
+            return msg; // Return other messages unchanged
+          });
+    
+          // Sort updatedMessages if necessary
+          updatedMessages.sort((a: { id: number }, b: { id: number }) => a.id - b.id);
+          queryClient.invalidateQueries({ queryKey: ['tourmessages',currentPage]})
+          return { ...old, tourmessages: updatedMessages };
+        });
+
+        
+      }
+      setDeletedReply(null)
+
+    }, 3500);
+    });
+    
+    // Cleanup event listeners on unmount
+    return () => {
+      socket.off('receive_message_tour');
+     socket.off('receive_reply_tour');
+     socket.off('receive_deleted_message_tour');
+      socket.off('receive_deleted_reply_tour');
+      
+      
+
+    };
+  }, [ user?.id, tourID,queryClient, currentPage]);
+
+
+  // Fetch messages function
   const fetchMessages = async (page = 0) => {
-    const response = await fetch(`${BASE_URL}/tourmessages/${id}?page=${page+1}`,{
+    const response = await fetch(`${BASE_URL}/tourmessages/${id}?page=${page + 1}`, {
       ...HTTP_CONFIG,
       credentials: 'include',
-    }
-    );
-
+    });
   
     if (!response.ok) {
       throw new Error('Chyba při získaní dat');
     }
-    return response.json();
+  
+    // Await the response.json() to resolve the promise and log the data
+    const data = await response.json();
+  
+    return data;
   };
 
-  const { data,isLoading,isError,isFetching,isPlaceholderData } = useQuery({
-    queryFn: ()=>fetchMessages(currentPage),
+
+  // React Query to fetch messages
+  const { data, isLoading, isError, isPlaceholderData } = useQuery({
+    queryFn: () => fetchMessages(currentPage ),
     queryKey: ['tourmessages', currentPage],
-    placeholderData: keepPreviousData,
-    refetchOnWindowFocus:true, // automaticly refetch data while changing window , default is true       
-    staleTime:10000,
+/*     placeholderData: keepPreviousData,
+    refetchOnWindowFocus: true,
+    staleTime: 10000, */
   });
 
 
-
-  if (isLoading || isFetching) {
+  if (isLoading ) {
     return    <div className='flex justify-center items-center '>Moment prosim...</div>
   }
 
@@ -64,11 +206,11 @@ useEffect(() => {
 
   return (
     <div className="flex flex-col px-2 md:px-4 w-full">
+
       {user ? (
         <CreateTourMessage
           user={user}
           currentPage={currentPage}
-          currentPageReply={currentPageReply}
           tourID={id}
         />
       ) : (
@@ -94,8 +236,9 @@ useEffect(() => {
                 key={message.id}
                 message={message}
                 currentPage={currentPage}
-                currentPageReply={currentPageReply}
-                setCurrentPageReply={setCurrentPageReply}
+                tourID={id}
+                deletedMessage={deletedMessage}
+                deletedReply={deletedReply}
                 />
             ))}
         </div>
@@ -130,7 +273,6 @@ useEffect(() => {
         </button>
       </div>
         </>
-
 
     </div>
   );

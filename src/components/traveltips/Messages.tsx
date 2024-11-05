@@ -6,35 +6,155 @@ import { BASE_URL, SOCKET_URL } from '../../constants/config';
 import CreateMessage from './CreateMessage';
 import { io } from 'socket.io-client';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { keepPreviousData, useQuery  } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useQueryClient } from "@tanstack/react-query";
+import socket from '../../utils/socket';
 
 function Messages() {
-
   const { user } = useAuthContext();
-
   const [searchParams, setSearchParams] = useSearchParams();
   const { chosenCountry } = useCountryContext();
-  const [currentPageReply, setCurrentPageReply] = useState(0);
   const navigate = useNavigate();
-//  const socket = io(SOCKET_URL);
 
-const currentPage = parseInt(searchParams.get('page') || '1', 10) - 1;
+  const queryClient = useQueryClient();
+  const currentPage = parseInt(searchParams.get('page') || '1', 10) - 1;
+  const [deletedMessage,setDeletedMessage] = useState<number | null>(null)
+  const [deletedReply,setDeletedReply] = useState<number | null>(null)
+/* 
+  const socket = io(SOCKET_URL); */
+  useEffect(() => {
+    if (chosenCountry) {
+      socket.emit('join_room', chosenCountry, user?.id);
+    }
 
-/* useEffect(()=>{
-  if (chosenCountry ) {
-setCurrentPage((parseInt(searchParams.get('page') || '1', 10) - 1))
-}
-},[chosenCountry]) */
+    socket.on('receive_message', (socketdata) => {
 
-useEffect(() => {
-  setSearchParams({ page: (currentPage + 1).toString() }); // Convert number to string
+      if (socketdata.user_id !== user?.id) {
 
-}, [currentPage, setSearchParams]);
+        queryClient.setQueryData(['messages', chosenCountry, currentPage], (old: any) => {
+          const updatedMessages = [
+            ...(old?.messages?.map((msg: any) => ({ ...msg, votes: msg.votes || [], reply:msg.reply || [] })) || []),
+            socketdata,
+          ];
+        
+          updatedMessages.sort((a: { id: number }, b: { id: number }) => a.id - b.id);
+        
+          return { ...old, messages: updatedMessages };
+        });
+        
+      }
+    });
+    
+    
+    socket.on('receive_reply', (socketdata) => {
+
+      if (socketdata.user_id !== user?.id) {
+
+               queryClient.setQueryData(['messages', chosenCountry, currentPage], (old: any) => {
+ 
+        
+          // Clone the old messages array
+          const updatedMessages = (old?.messages || []).map((msg: any) => {
+            // Check if the current message is the one to update
+            if (msg.id === socketdata.message_id) {
+              // Add socketdata to the reply array of the specific message and ensure votesreply array
+              return {
+                ...msg,
+                  reply: [...(msg.reply || []), socketdata], // Add new reply
+              };
+            }
+        
+            return msg; // Return other messages unchanged
+          });
+   
+          // Sort updatedMessages if necessary
+          updatedMessages.sort((a: { id: number }, b: { id: number }) => a.id - b.id);
+        
+          return { ...old, messages: updatedMessages };
+        });
+        
+      }
+    });
+
+    socket.on('receive_deleted_message', (socketdata) => {
+
+      
+      if (socketdata.user_id !== user?.id) {
+      
+        setDeletedMessage(socketdata.messageID)
+
+        setTimeout(() => {
+          
+        queryClient.setQueryData(['messages', chosenCountry, currentPage], (old: any) => {
+          
+          // Filter out the message with the specified message_id
+          const updatedMessages = (old?.messages || []).filter((msg: any) => msg.id !== socketdata.messageID);
+    
+        
+    
+          // Sort updatedMessages if necessary
+          updatedMessages.sort((a: { id: number }, b: { id: number }) => a.id - b.id);
+          queryClient.invalidateQueries({ queryKey: ['tourmessages',chosenCountry,currentPage]})
+          return { ...old, messages: updatedMessages };
+        });
+
+        setDeletedMessage(null)
+      }, 3500);
+
+
+
+      }
+    });
+    
+    socket.on('receive_deleted_reply', (socketdata) => {
+      setDeletedReply(socketdata.replyID)
+      setTimeout(() => {
+
+      if (socketdata.user_id !== user?.id) {
+        queryClient.setQueryData(['messages', chosenCountry, currentPage], (old: any) => {
+          // Clone the old messages array and map to find the correct message
+          const updatedMessages = (old?.messages || []).map((msg: any) => {
+            // Check if the current message is the one to update
+            if (msg.id === socketdata.messageID) {
+              // Filter out the specific reply by its ID
+              const updatedReplies = msg.reply.filter((r: any) => r.id !== socketdata.replyID);
+              // Return the message with updated replies
+              return { ...msg, reply: updatedReplies };
+            }
+            return msg; // Return other messages unchanged
+          });
+    
+          // Sort updatedMessages if necessary
+          updatedMessages.sort((a: { id: number }, b: { id: number }) => a.id - b.id);
+    
+          return { ...old, messages: updatedMessages };
+        });
+
+        
+      }
+      setDeletedReply(null)
+    }, 3500);
+    });
+    
+
+    // Cleanup event listeners on unmount
+    return () => {
+      socket.off('receive_message');
+      socket.off('receive_reply');
+      socket.off('delete_message');
+      socket.off('receive_deleted_reply');
+      
+      
+
+    };
+  }, [chosenCountry, user?.id, queryClient, currentPage]);
+
+  useEffect(() => {
+    setSearchParams({ page: (currentPage + 1).toString() });
+  }, [currentPage, setSearchParams]);
 
   const fetchMessages = async (page = 0) => {
-    const response = await fetch(`${BASE_URL}/messages/${chosenCountry}?page=${page+1}`);
-    console.log('fetched')
-  
+    const response = await fetch(`${BASE_URL}/messages/${chosenCountry}?page=${page + 1}`);
     if (!response.ok) {
       throw new Error('Chyba při získaní dat');
     }
@@ -66,7 +186,7 @@ useEffect(() => {
         <CreateMessage
           user={user}
           currentPage={currentPage}
-          currentPageReply={currentPageReply}
+   
         />
       ) : (
         <div className="p-4 bg-blue-100 text-blue-800 border border-blue-300 rounded-md shadow-lg">
@@ -90,8 +210,10 @@ useEffect(() => {
                 key={message.id}
                 message={message}
                 currentPage={currentPage}
-                currentPageReply={currentPageReply}
-                setCurrentPageReply={setCurrentPageReply}
+                deletedMessage={deletedMessage}
+                deletedReply={deletedReply}
+      
+                  
                 />
             ))}
         </div>

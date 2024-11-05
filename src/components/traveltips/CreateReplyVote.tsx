@@ -10,7 +10,7 @@ interface Props {
     message: MessageProps;
     reply: ReplyProps;
     currentPage: number;
-    currentPageReply: number;
+
 }
 
 function CreateReplyVote({ message, reply, currentPage }: Props) {
@@ -19,6 +19,8 @@ function CreateReplyVote({ message, reply, currentPage }: Props) {
     const { chosenCountry } = useCountryContext();
 
     const createVote = async (voteType: string) => {
+
+        console.log('test',voteType)
         const newVote = {
             voteType: voteType,
             message_id: message.id,
@@ -37,6 +39,8 @@ function CreateReplyVote({ message, reply, currentPage }: Props) {
     const mutation = useMutation({
         mutationFn: createVote,
         onMutate: async (voteType) => {
+
+            console.log(voteType,'message ',message.id,' reply ',reply.id)
             // Cancel any outgoing refetches to avoid conflicts with optimistic update
             await queryClient.cancelQueries({
                 queryKey: ['messages', chosenCountry, currentPage],
@@ -97,7 +101,12 @@ function CreateReplyVote({ message, reply, currentPage }: Props) {
         },
     });
 
+/*     console.log(message)
+    console.log(reply) */
+
     const countThumbsUp = (reply_id: any) => {
+
+     //   console.log('reply.id',reply.id)
         return reply?.votesreply?.filter(
             (vote) => vote.reply_id === reply_id && vote.vote_type === 'thumb_up'
         ).length;

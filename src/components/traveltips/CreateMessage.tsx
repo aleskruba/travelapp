@@ -4,20 +4,22 @@ import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { BsEmojiGrin } from "react-icons/bs";
 import DOMPurify from 'dompurify';
-import { BASE_URL } from '../../constants/config';
+import { BASE_URL, SOCKET_URL } from '../../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCountryContext } from '../../context/countryContext';
 import { fetchData } from '../../hooks/useFetchData';
 import Button from '../customButton/Button';
 import lide from "../../assets/images/lide.svg"
+import { io } from 'socket.io-client';
+import socket from '../../utils/socket';
 
 interface CreateMessageProps {
   user: UserProps;
   currentPage:number;
-  currentPageReply:number;
+
 }
 
-const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,currentPageReply }) => {
+const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage }) => {
   const queryClient = useQueryClient();
   const emojiPickerRef = useRef<HTMLDivElement | null>(null);
   const emojiPickerRefButton = useRef<HTMLDivElement | null>(null);
@@ -26,6 +28,7 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
   const [message, setMessage] = useState<MessageProps>(initialMessageState);
   const { chosenCountry } = useCountryContext();
   const [backendError,setBackendError] = useState<string | null>(null);
+/*   const socket = io(SOCKET_URL); */
 
   useEffect(() => {
     const handleClickOutside = (event:any) => {
@@ -150,9 +153,20 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
          
         }) */
      
-        const updatedMessages = old.messages.map((msg: any) => 
-          msg.id === variables.id ? { ...msg, id: data.message.id } : msg
-        );
+    const updatedMessages = old.messages.map((msg: any) => {
+      return msg.id === variables.id ? { ...msg, id: data.message.id } : msg;
+  });
+
+  const socketMessage = {
+    ...data.message,
+    user: { 
+      image: user.image, 
+      firstName: user.firstName 
+    },
+    votes:[],
+    votesreply:[]
+  };
+  socket.emit('send_message', { message: socketMessage, chosenCountry });
         
         return { ...old, messages: updatedMessages };
       });
@@ -165,6 +179,7 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
     },
     onSettled: (data, error) => {
       // Only refetch if there's an error
+      // wothou data it does not work
       if (error) {
         queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry, currentPage] });
       }
@@ -187,6 +202,8 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage,current
                                     firstName: user.firstName 
                                   }
                                 };
+
+                                         
 
     try {
  

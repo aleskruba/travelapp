@@ -17,10 +17,12 @@ type Props = {
   reply: TourReplyProps;
   message: TourMessageProps;
   currentPage:number;
-  currentPageReply:number
+  deletedReply:number | null;
+  tourID:string | undefined;
 };
 
-const TourReply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply}) => {
+const TourReply: React.FC<Props> = ({ reply, message ,currentPage,deletedReply,tourID}) => {
+  const socket = io(SOCKET_URL);
   const { user } = useAuthContext();
   const { toggleModal } = useThemeContext();
   const [selectedReplyId, setSelectedReplyId] = useState<number | null>(null);
@@ -29,7 +31,7 @@ const TourReply: React.FC<Props> = ({ reply, message ,currentPage,currentPageRep
   const imageUrl = reply?.user.image ? reply?.user.image : lide;
   const {privateIdsArray} = useTourContext()
   const replyDateMoment = moment(reply.date);
-  console.log(privateIdsArray)
+
 
   // Use the custom hook to get the relative date
   const displayDateText = useRelativeDate(replyDateMoment);
@@ -94,6 +96,7 @@ const TourReply: React.FC<Props> = ({ reply, message ,currentPage,currentPageRep
     onSuccess: () => {
       backendError && setBackendError(null);
       setShowModal(false);
+      socket.emit('delete_reply_tour', {replyID:selectedReplyId, messageID:message.id,tour_room:tourID, user_id:user?.id});
     },
     onSettled: (data, error) => {
       if (error) {
@@ -142,7 +145,7 @@ const TourReply: React.FC<Props> = ({ reply, message ,currentPage,currentPageRep
         </div>
         <div className="md:pl-14 break-all">
           <p className={`${reply.user_id === user?.id ? 'text-gray-700 dark:text-gray-200' : 'text-gray-600 dark:text-gray-100'}`}>
-            {reply.message}
+          {   deletedReply === reply.id ? <span className="font-semibold "> zpráva byla smazána</span>: reply.message} 
           </p>
         </div>
       </div>

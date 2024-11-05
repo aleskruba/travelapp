@@ -178,6 +178,7 @@ function Tours() {
 
   return (
     <div className='px-2 '>
+
       <div className='text-center text-blue-500 pt-4'>
         {!user ? 
           'Pouze přihlášení uživatelé mohou vkládat Vlogy' :

@@ -2,7 +2,7 @@ import React,{useState,FormEvent,useEffect,useRef} from 'react'
 import DOMPurify from 'dompurify';
 import { useAuthContext } from '../../context/authContext';
 import { useTourContext } from '../../context/tourContext';
-import { BASE_URL } from '../../constants/config';
+import { BASE_URL, SOCKET_URL } from '../../constants/config';
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import { BsEmojiGrin } from "react-icons/bs";
@@ -10,16 +10,19 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {   initialSingleTourReplyState, TourMessageProps, TourReplyProps } from '../../types';
 import { fetchData } from '../../hooks/useFetchData';
 import Button from '../customButton/Button';
-
-  interface Props {
+import { io } from 'socket.io-client';
+import socket from '../../utils/socket';
+ 
+interface Props {
     setReplyDiv: React.Dispatch<boolean>; 
     message:TourMessageProps
     currentPage:number;
     setSelectedReplyDivId:React.Dispatch<React.SetStateAction<number | null>>
-    currentPageReply:number
+    tourID:string | undefined;
+    deletedMessage: number | null;
 }
 
-function CreateTourReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,currentPageReply}:Props) {
+function CreateTourReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,tourID,deletedMessage}:Props) {
       
       const queryClient = useQueryClient();
        const { user} = useAuthContext();
@@ -29,7 +32,7 @@ function CreateTourReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,
        const [backendError,setBackendError] = useState<string | null>(null);
        const [tourreply, setTourReply] = useState<TourReplyProps>(initialSingleTourReplyState);
         const {isPrivate,setIsPrivate,setPrivateIdsArray} = useTourContext()
-
+    /*     const socket = io(SOCKET_URL); */
        
        useEffect(() => {
         const handleClickOutside = (event:any) => {
@@ -152,6 +155,16 @@ onSuccess: (data, variables) => {
                 if (isPrivate === 1){
                   setPrivateIdsArray((prevIds) => [...prevIds, data.message.id]);
                 }
+
+                const socketMessage = {
+                  ...data.message,
+                    user: { 
+                    image: user?.image, 
+                    firstName: user?.firstName 
+                  },
+                         };
+               console.log('socketMessage',data.message);
+               socket.emit('send_reply_tour', { tourreply: socketMessage ,tour_room:tourID,receiver_id:message.user_id});
                 return { ...rep, id: data.message.id };
               }
               return rep;
@@ -255,7 +268,7 @@ onSettled: (data, error) => {
           <Button 
               type="submit"   
               color='green'
-              className={`${!tourreply.message.length ? 'opacity-30 cursor-default pointer-events-none': '' } rounded-md shadow-md w-[100px]  focus:ring `}
+              className={`${!tourreply.message.length || deletedMessage === message.id ? 'opacity-30 cursor-default pointer-events-none': '' } rounded-md shadow-md w-[100px]  focus:ring `}
              >
               
               Odešli
@@ -265,6 +278,7 @@ onSettled: (data, error) => {
       <input
           type="checkbox"
           id="privateCheckbox"
+          disabled={deletedMessage === message.id}
           className="w-8 h-8  bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
           onChange={(e) => setIsPrivate(e.target.checked ? 1 : 0)} // Set to 1 if checked, 0 if not
         />
@@ -282,7 +296,7 @@ onSettled: (data, error) => {
           <Button 
        
               color='gray'
-              className={` rounded-md shadow-md w-[100px] focus:ring `}
+              className={` ${deletedMessage === message.id ? 'opacity-30 cursor-default pointer-events-none' : '' } rounded-md shadow-md w-[100px] focus:ring `}
               onClick={() => {setReplyDiv(false);setSelectedReplyDivId(null)}}
              >
               

@@ -4,19 +4,20 @@ import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { BsEmojiGrin } from "react-icons/bs";
 import DOMPurify from 'dompurify';
-import { BASE_URL, HTTP_CONFIG } from '../../constants/config';
+import { BASE_URL, HTTP_CONFIG, SOCKET_URL } from '../../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Button from '../customButton/Button';
 import lide from "../../assets/images/lide.svg"
+import { io } from 'socket.io-client';
+import socket from '../../utils/socket';
 
 interface CreateTourMessageProps {
   user: UserProps;
   currentPage:number;
-  currentPageReply:number;
   tourID:string | undefined;
 }
 
-const CreateTourMessage: React.FC<CreateTourMessageProps> = ({ user, currentPage,currentPageReply,tourID }) => {
+const CreateTourMessage: React.FC<CreateTourMessageProps> = ({ user, currentPage,tourID }) => {
   const queryClient = useQueryClient();
   const emojiPickerRef = useRef<HTMLDivElement | null>(null);
   const emojiPickerRefButton = useRef<HTMLDivElement | null>(null);
@@ -24,6 +25,7 @@ const CreateTourMessage: React.FC<CreateTourMessageProps> = ({ user, currentPage
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [message, setMessage] = useState<TourMessageProps>(initialTourMessageState);
    const [backendError,setBackendError] = useState<string | null>(null);
+/*    const socket = io(SOCKET_URL); */
 
   useEffect(() => {
     const handleClickOutside = (event:any) => {
@@ -148,6 +150,18 @@ const CreateTourMessage: React.FC<CreateTourMessageProps> = ({ user, currentPage
         const updatedMessages = old.tourmessages.map((msg: any) => 
           msg.id === variables.id ? { ...msg, id: data.message.id } : msg
         );
+
+
+        const socketMessage = {
+          ...data.message,
+          user: { 
+            image: user.image, 
+            firstName: user.firstName 
+          },
+          tourreply:[]
+        };
+        console.log(socketMessage);
+        socket.emit('send_message_tour', { message: socketMessage, tour_room:tourID});
         
         return { ...old, tourmessages: updatedMessages };
       });

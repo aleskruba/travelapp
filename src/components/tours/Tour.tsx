@@ -53,7 +53,7 @@ const truncateText = (text: string, maxLength: number): string => {
 
     return (
 <div className="box border hover:bg-zinc-200 dark:hover:bg-zinc-900 border-black dark:border-white rounded-md p-2 pb-4 text-center grid grid-rows-[subgrid] row-span-4 1px solid relative">
-
+      <h1>{tour.id}</h1>
      <div className='flex  justify-between pl-2 pr-8'>
         <div className='flex flex-col gap-2' >
             <div
@@ -98,6 +98,8 @@ const truncateText = (text: string, maxLength: number): string => {
   <div>
 
   </div>
+
+
 </div>
   )
 }

@@ -13,16 +13,20 @@ import CreateReplyVote from './CreateReplyVote';
 import { fetchData } from '../../hooks/useFetchData';
 import useRelativeDate from '../../hooks/DateHook';
 import lide from "../../assets/images/lide.svg"
+import socket from '../../utils/socket';
 
 type Props = {
   reply: ReplyProps;
   message: MessageProps;
   currentPage:number;
-  currentPageReply:number
+  deletedReply:number | null;
+
 };
 
 
-const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply}) => {
+const Reply: React.FC<Props> = ({ reply, message ,currentPage,deletedReply}) => {
+
+/*   const socket = io(SOCKET_URL); */
   const { user } = useAuthContext();
   const { toggleModal } = useThemeContext();
   const [selectedReplyId, setSelectedReplyId] = useState<number | null>(null);
@@ -100,6 +104,7 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply})
     onSuccess: () => {
       backendError && setBackendError(null);
       setShowModal(false);
+      socket.emit('delete_reply', {replyID:selectedReplyId, messageID:message.id, user_id:user?.id,chosenCountry});
     },
     onSettled: (data, error) => {
       if (error) {
@@ -110,9 +115,14 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply})
     },
   });
 
+ 
   return (
-    <div className="relative shadow-xl rounded-lg" id={reply?.id.toString()}>
-      
+    <div
+      className={`relative shadow-xl rounded-lg transition-opacity duration-[2000ms] ${
+        deletedReply === reply.id ? 'opacity-0 delay-[2000ms] dark:bg-gray-600' : 'opacity-100'
+      }`}
+      id={reply?.id.toString()}
+    >
       <div className="absolute right-1 bottom-1 text-red-500 dark:text-red-200 font-thin">
         {backendError && backendError}
       </div>
@@ -132,20 +142,21 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,currentPageReply})
           </div>
           <div className="flex gap-1">
             <p className={`${reply.user_id === user?.id ? 'text-red-600 dark:text-red-200' : 'text-gray-600 dark:text-gray-100'} font-bold`}>
-              {reply.user.firstName ? reply.user.firstName.slice(0, 10) : ''}
+              {reply.user.firstName ? reply.user.firstName.slice(0, 10) : ''} - {reply.id}
             </p>
             <p className="text-gray-600 dark:text-gray-100 italic">{displayDateText}</p>
           </div>
         </div>
         <div className="md:pl-14 break-all">
           <p className={`${reply.user_id === user?.id ? 'text-red-600 dark:text-red-200' : 'text-gray-600 dark:text-gray-100'}`}>
-            {reply.message}
+           
+            {   deletedReply === reply.id ? <span className="font-semibold "> zpráva byla smazána</span>: reply.message} 
           </p>
         </div>
       </div>
 
       <div className="flex gap-4">
-        <CreateReplyVote message={message} reply={reply} currentPage={currentPage} currentPageReply={currentPageReply}/>
+        <CreateReplyVote message={message} reply={reply} currentPage={currentPage} />
       </div>
       <ConfirmationModal
         show={showModal}

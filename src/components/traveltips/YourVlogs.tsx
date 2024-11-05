@@ -83,7 +83,7 @@ function YourVlogs() {
                     })
 
 }
-  </div> </>: <div className='flex justify-center items-center'> ... moment prosím </div> 
+  </div> </>: <div className='flex justify-center items-center h-screen'> ... moment prosím </div> 
   }
  { data?.vlogs.length > 0 && 
 <ReactPaginate

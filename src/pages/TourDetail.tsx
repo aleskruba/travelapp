@@ -46,10 +46,10 @@ function TourDetail() {
   const { data, isSuccess, isFetching, isError } = useQuery({
     queryFn: () => fetchTour(),
     queryKey: ["tour"],
-    retry: 2,
+/*     retry: 2,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: true,
-    staleTime: 100000,
+    staleTime: 100000, */
   });
 
   const [flag, setFlag] = useState("");
@@ -184,8 +184,9 @@ function TourDetail() {
         </div>
       </div>
       {backendError && <div>{backendError} </div>}
-
-      <TourMessages />
+         
+      <TourMessages tourID={data.tour.id}/>
+          
     </div>
   );
 }

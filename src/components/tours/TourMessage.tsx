@@ -15,22 +15,27 @@ import ReactPaginate from "react-paginate";
 import useRelativeDate from "../../hooks/DateHook";
 import Button from "../customButton/Button";
 import lide from "../../assets/images/lide.svg"
+import socket from "../../utils/socket";
 
 type Props = {
   message: TourMessageProps;
   currentPage: number;
-  currentPageReply: number;
-  setCurrentPageReply: React.Dispatch<React.SetStateAction<number>>;
+  tourID:string | undefined;
+  deletedMessage:number | null;
+  deletedReply:number | null;
 };
 
 const TourMessage: React.FC<Props> = ({
   message,
   currentPage,
-  currentPageReply,
-  setCurrentPageReply,
-}) => {
-  const ITEMS_PER_PAGE = 4;
+  tourID,
+  deletedMessage,
+  deletedReply
 
+
+}) => {
+  const ITEMS_PER_PAGE = 5;
+/*   const socket = io(SOCKET_URL); */
   const { user } = useAuthContext();
   const { toggleModal } = useThemeContext();
   const [hiddenAnswers, setHiddenAnswes] = useState(true);
@@ -53,9 +58,14 @@ const TourMessage: React.FC<Props> = ({
   //const socket = io(SOCKET_URL);
   const imageUrl = message?.user?.image ? message?.user?.image : lide;
 
-  const handlePageChange = ({ selected }: { selected: number }) => {
-    setCurrentPageReply(selected);
+
+  const [currentReplyPage, setCurrentReplyPage] = useState(0);
+
+  const handleReplyPageChange = (selectedPage: { selected: React.SetStateAction<number>; }) => {
+    setCurrentReplyPage(selectedPage.selected);
+    // Additional logic to fetch or display replies for the new page can go here
   };
+  
 
   const handleDeleteMessageClick = (ID: number) => {
     setSelectedMessageId(ID);
@@ -113,6 +123,9 @@ const TourMessage: React.FC<Props> = ({
     },
     onSuccess: (data, variables) => {
       setShowModal(false);
+      socket.emit('delete_message_tour', {messageID:selectedMessageId, tour_room:tourID,user_id:user?.id});
+  
+      //console.log(deletedMessage)
       // If you need to confirm that the deletion was successful on the backend and matches your optimistic update,
       // you can log the response or do additional checks here.
     },
@@ -142,7 +155,7 @@ const TourMessage: React.FC<Props> = ({
 
   const pageCount = Math.ceil(message?.tourreply?.length / ITEMS_PER_PAGE);
 
-  const startIndex = currentPageReply * ITEMS_PER_PAGE;
+  const startIndex = currentReplyPage * ITEMS_PER_PAGE;
 
   const selectedReplies = message?.tourreply
     ? message?.tourreply
@@ -152,7 +165,11 @@ const TourMessage: React.FC<Props> = ({
 
   return (
     <div
-      className="relative flex flex-col dark:bg-gray-600  dark:text-gray-100 px-4 py-2 shadow-2xl rounded-lg"
+    className={`${
+      deletedMessage === message.id
+        ? 'transition-opacity delay-[2000ms] duration-[2000ms] dark:bg-gray-600 opacity-0 text-red-500 pl-4 '
+        : 'relative flex flex-col dark:bg-gray-600 dark:text-gray-100 '
+       } pl-4 py-2 shadow-2xl rounded-lg`}
       id={message?.id.toString()}
     >
       <div className="absolute right-1 bottom-1 text-red-500 dark:text-red-200 font-thin">
@@ -194,7 +211,11 @@ const TourMessage: React.FC<Props> = ({
           </div>
         </div>
         <div className="md:px-4 pt-4 break-all">
-          <p className="">{message?.message} </p>
+          <p className="">{/* {message?.message}  */}
+
+          {   deletedMessage === message.id ? <span className="font-semibold "> zpráva byla smazána</span>: message?.message} 
+          </p>
+          
         </div>
       </div>
 
@@ -220,8 +241,9 @@ const TourMessage: React.FC<Props> = ({
             message={message}
             setSelectedReplyDivId={setSelectedReplyDivId}
             currentPage={currentPage}
-            currentPageReply={currentPageReply}
-          />
+            tourID={tourID}
+            deletedMessage={deletedMessage}
+               />
         )}
       </div>
       {typeof message.tourreply !== "string" && (
@@ -261,37 +283,34 @@ const TourMessage: React.FC<Props> = ({
             reply={r}
             message={message}
             currentPage={currentPage}
-            currentPageReply={currentPageReply}
-          />
+            deletedReply={deletedReply}
+            tourID={tourID}
+              />
         ))}
 
-        {selectedReplies && selectedReplies.length > 0 && (
-          <ReactPaginate
-            previousLabel={"←"}
-            nextLabel={"→"}
-            disabledClassName={"disabled"}
-            breakLabel={"..."}
-            breakClassName={"break-me"}
-            pageCount={pageCount || 0}
-            marginPagesDisplayed={2}
-            pageRangeDisplayed={8}
-            onPageChange={handlePageChange}
-            containerClassName={"pagination flex justify-center mt-8"}
-            pageClassName={"page-item"}
-            pageLinkClassName={
-              "page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100"
-            }
-            previousClassName={"page-item"}
-            previousLinkClassName={
-              "page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100"
-            }
-            nextClassName={"page-item"}
-            nextLinkClassName={
-              "page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100"
-            }
-            activeClassName={"active bg-blue-500 text-white"}
-          />
-        )}
+        {selectedReplies && message?.tourreply?.length > 5 && (
+       <ReactPaginate
+       previousLabel={"←"}
+       nextLabel={"→"}
+       disabledClassName={"disabled"}
+       breakLabel={"..."}
+       breakClassName={"break-me"}
+       pageCount={pageCount || 0}
+       marginPagesDisplayed={2}
+       pageRangeDisplayed={8}
+       onPageChange={handleReplyPageChange}
+       containerClassName={"pagination flex justify-center mt-8 space-x-1"}
+       pageClassName={"page-item"}
+       pageLinkClassName={
+         "page-link px-4 py-2 border border-gray-300 rounded-lg hover:bg-blue-200 transition-colors duration-200 ease-in-out"
+       }
+       previousClassName={`page-item ${currentReplyPage === 0 ? "disabled" : ""}`}
+       previousLinkClassName={`page-link px-4 py-2 border border-gray-300 rounded-lg hover:bg-blue-400 transition-opacity duration-200 ease-in-out ${currentReplyPage === 0 ? "opacity-50 cursor-not-allowed pointer-events-none" : ""}`}
+       nextClassName={`page-item ${currentReplyPage === pageCount - 1 ? "disabled" : ""}`}
+       nextLinkClassName={`page-link px-4 py-2 border border-gray-300 rounded-lg hover:bg-blue-400 transition-opacity duration-200 ease-in-out ${currentReplyPage === pageCount - 1 ? "opacity-50 cursor-not-allowed pointer-events-none" : ""}`}
+       activeClassName={"active bg-blue-500 text-white font-semibold rounded-lg"}
+     />
+    )}
       </div>
 
       <ConfirmationModal

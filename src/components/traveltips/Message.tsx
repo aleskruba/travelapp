@@ -19,21 +19,26 @@ import ReactPaginate from "react-paginate";
 import useRelativeDate from "../../hooks/DateHook";
 import Button from "../customButton/Button";
 import lide from "../../assets/images/lide.svg"
+import socket from "../../utils/socket";
 
 type Props = {
   message: MessageProps;
   currentPage: number;
-  currentPageReply: number;
-  setCurrentPageReply: React.Dispatch<React.SetStateAction<number>>;
+  deletedMessage:number | null;
+  deletedReply:number | null;
+
 };
 
 const Message: React.FC<Props> = ({
   message,
   currentPage,
-  currentPageReply,
-  setCurrentPageReply,
+  deletedMessage,
+  deletedReply
+  
+
 }) => {
-  const ITEMS_PER_PAGE = 4;
+  const ITEMS_PER_PAGE = 5;
+/*   const socket = io(SOCKET_URL); */
 
   const { user } = useAuthContext();
   const { toggleModal } = useThemeContext();
@@ -59,10 +64,19 @@ const Message: React.FC<Props> = ({
   //const socket = io(SOCKET_URL);
   const imageUrl = message?.user?.image ? message?.user?.image : lide;
 
-  const handlePageChange = ({ selected }: { selected: number }) => {
+/*   const handlePageChange = ({ selected }: { selected: number }) => {
     setCurrentPageReply(selected);
-  };
+  }; */
 
+ 
+  
+  const [currentReplyPage, setCurrentReplyPage] = useState(0);
+
+  const handleReplyPageChange = (selectedPage: { selected: React.SetStateAction<number>; }) => {
+    setCurrentReplyPage(selectedPage.selected);
+    // Additional logic to fetch or display replies for the new page can go here
+  };
+  
   const handleDeleteMessageClick = (ID: number) => {
     setSelectedMessageId(ID);
     setShowModal(true);
@@ -105,6 +119,7 @@ const Message: React.FC<Props> = ({
     mutationFn: deleteMessageFunction,
     onMutate: async (id) => {
    
+
       // Cancel any outgoing refetches (so they don't overwrite optimistic update)
       await queryClient.cancelQueries({
         queryKey: ["messages", chosenCountry, currentPage],
@@ -134,6 +149,10 @@ const Message: React.FC<Props> = ({
     },
     onSuccess: (data, variables) => {
       setShowModal(false);
+
+      socket.emit('delete_message', {messageID:selectedMessageId, user_id:user?.id,chosenCountry});
+  
+      // console.log(deletedMessage)
       // If you need to confirm that the deletion was successful on the backend and matches your optimistic update,
       // you can log the response or do additional checks here.
     },
@@ -163,7 +182,7 @@ const Message: React.FC<Props> = ({
 
   const pageCount = Math.ceil(message?.reply?.length / ITEMS_PER_PAGE);
 
-  const startIndex = currentPageReply * ITEMS_PER_PAGE;
+  const startIndex = currentReplyPage * ITEMS_PER_PAGE;
 
   const selectedReplies = message?.reply
     ? message?.reply
@@ -178,10 +197,14 @@ const Message: React.FC<Props> = ({
   };
 
   return (
-    <div
-      className="relative flex flex-col dark:bg-gray-600 dark:text-gray-100 pl-4 py-2 shadow-2xl rounded-lg "
-      id={message?.id.toString()}
-    >
+      <div
+        className={`${
+          deletedMessage === message.id
+            ? 'transition-opacity delay-[2000ms] duration-[2000ms] dark:bg-gray-600 opacity-0 text-red-500 pl-4 '
+            : 'relative flex flex-col dark:bg-gray-600 dark:text-gray-100 '
+           } pl-4 py-2 shadow-2xl rounded-lg`}
+        id={message?.id.toString()}
+      >
       <div className="absolute right-1 bottom-1 text-red-500 dark:text-red-200 font-thin">
         {backendError && backendError}
       </div>
@@ -211,7 +234,7 @@ const Message: React.FC<Props> = ({
 
           <div className="flex flex-row gap-4 md:gap-2">
             <p className="text-gray-600 dark:bg-gray-500 dark:text-gray-100 font-semibold">
-              {message?.user?.firstName?.slice(0, 10)}
+              {message?.user?.firstName?.slice(0, 10)} - {message.id}
             </p>
             <p className="text-gray-600 dark:bg-gray-500 dark:text-gray-100  shrink-0 whitespace-nowrap overflow-hidden text-ellipsis">
               {/*  {moment(message?.date).format('DD-MM YYYY ')}
@@ -221,13 +244,18 @@ const Message: React.FC<Props> = ({
           </div>
         </div>
         <div className="md:px-8  pb-2 p md:pb-0 break-all">
-          <p className="">{message?.message} </p>
+          <p className="">
+          {   deletedMessage === message.id ? <span className="font-semibold "> zpráva byla smazána</span>: message?.message} 
+           
+          </p>
         </div>
       </div>
 
       <div className="flex  gap-2 flex-col md:flex-row ">
+        {deletedMessage !== message.id &&
         <div className="flex gap-4 md:pt-2 ">
-          <CreateMessageVote message={message}   currentPage={currentPage} currentPageReply={currentPageReply} />
+          
+          <CreateMessageVote message={message}   currentPage={currentPage}  />
 
           <div className="flex gap-4 pt-2 pb-2">
             {!replyDiv && user && user?.id !== message.user_id && (
@@ -241,19 +269,20 @@ const Message: React.FC<Props> = ({
             )}
           </div>
         </div>
+        }
         {replyDiv && message.id === selectedReplyDivId && (
           <CreateReply
             setReplyDiv={setReplyDiv}
             message={message}
             setSelectedReplyDivId={setSelectedReplyDivId}
             currentPage={currentPage}
-            currentPageReply={currentPageReply}
-          />
+            deletedMessage={deletedMessage}
+            />
         )}
       </div>
       {typeof message.reply !== "string" && (
         <div
-          className="flex gap-4"
+          className="flex gap-4 "
           onClick={() => setHiddenAnswes(!hiddenAnswers)}
         >
           {message?.reply?.filter((r) => r.message_id === message.id).length >
@@ -288,37 +317,32 @@ const Message: React.FC<Props> = ({
             reply={r}
             message={message}
             currentPage={currentPage}
-            currentPageReply={currentPageReply}
-          />
+            deletedReply={deletedReply}
+             />
         ))}
+{selectedReplies && message?.reply?.length > 5 && (<ReactPaginate
+  previousLabel={"←"}
+  nextLabel={"→"}
+  disabledClassName={"disabled"}
+  breakLabel={"..."}
+  breakClassName={"break-me"}
+  pageCount={pageCount || 0}
+  marginPagesDisplayed={2}
+  pageRangeDisplayed={8}
+  onPageChange={handleReplyPageChange}
+  containerClassName={"pagination flex justify-center mt-8 space-x-1"}
+  pageClassName={"page-item"}
+  pageLinkClassName={
+    "page-link px-4 py-2 border border-gray-300 rounded-lg hover:bg-blue-200 transition-colors duration-200 ease-in-out"
+  }
+  previousClassName={`page-item ${currentReplyPage === 0 ? "disabled" : ""}`}
+  previousLinkClassName={`page-link px-4 py-2 border border-gray-300 rounded-lg hover:bg-blue-400 transition-opacity duration-200 ease-in-out ${currentReplyPage === 0 ? "opacity-50 cursor-not-allowed pointer-events-none" : ""}`}
+  nextClassName={`page-item ${currentReplyPage === pageCount - 1 ? "disabled" : ""}`}
+  nextLinkClassName={`page-link px-4 py-2 border border-gray-300 rounded-lg hover:bg-blue-400 transition-opacity duration-200 ease-in-out ${currentReplyPage === pageCount - 1 ? "opacity-50 cursor-not-allowed pointer-events-none" : ""}`}
+  activeClassName={"active bg-blue-500 text-white font-semibold rounded-lg"}
+/>
 
-        {selectedReplies && selectedReplies.length > 0 && (
-          <ReactPaginate
-            previousLabel={"←"}
-            nextLabel={"→"}
-            disabledClassName={"disabled"}
-            breakLabel={"..."}
-            breakClassName={"break-me"}
-            pageCount={pageCount || 0}
-            marginPagesDisplayed={2}
-            pageRangeDisplayed={8}
-            onPageChange={handlePageChange}
-            containerClassName={"pagination flex justify-center mt-8"}
-            pageClassName={"page-item"}
-            pageLinkClassName={
-              "page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100"
-            }
-            previousClassName={"page-item"}
-            previousLinkClassName={
-              "page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100"
-            }
-            nextClassName={"page-item"}
-            nextLinkClassName={
-              "page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100"
-            }
-            activeClassName={"active bg-blue-500 text-white"}
-          />
-        )}
+      )}
       </div>
 
       <ConfirmationModal

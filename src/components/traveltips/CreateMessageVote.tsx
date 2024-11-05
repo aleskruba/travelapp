@@ -5,11 +5,12 @@ import { BASE_URL } from '../../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCountryContext } from '../../context/countryContext';
 import { fetchData } from '../../hooks/useFetchData';
+import { useState } from 'react';
 
 interface Props {
     message: MessageProps;
     currentPage: number;
-    currentPageReply: number;
+
 }
 
 function CreateMessageVote({ message, currentPage }: Props) {
@@ -91,11 +92,16 @@ function CreateMessageVote({ message, currentPage }: Props) {
         },
     });
 
+
+
     const countThumbsUp = (message_id: any) => {
+   
         return message?.votes?.filter(
             (vote) => vote.message_id === message_id && vote.vote_type === 'thumb_up'
         ).length;
     };
+   
+
 
     const countThumbsDown = (message_id: any) => {
         return message?.votes?.filter(
