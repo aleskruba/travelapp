@@ -107,7 +107,7 @@ function TourMessages({tourID}:Props) {
     
           // Sort updatedMessages if necessary
           updatedMessages.sort((a: { id: number }, b: { id: number }) => a.id - b.id);
-          queryClient.invalidateQueries({ queryKey: ['tourmessages',currentPage]})
+      //    queryClient.invalidateQueries({ queryKey: ['tourmessages',currentPage]})
           return { ...old, tourmessages: updatedMessages };
         });
 
@@ -143,7 +143,7 @@ function TourMessages({tourID}:Props) {
     
           // Sort updatedMessages if necessary
           updatedMessages.sort((a: { id: number }, b: { id: number }) => a.id - b.id);
-          queryClient.invalidateQueries({ queryKey: ['tourmessages',currentPage]})
+       //   queryClient.invalidateQueries({ queryKey: ['tourmessages',currentPage]})
           return { ...old, tourmessages: updatedMessages };
         });
 
