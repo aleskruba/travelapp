@@ -99,11 +99,12 @@ function TourMessages({tourID}:Props) {
         setTimeout(() => {
           
         queryClient.setQueryData(['tourmessages', currentPage], (old: any) => {
+          console.log(old)
           
           // Filter out the message with the specified message_id
-          const updatedMessages = (old?.messages || []).filter((msg: any) => msg.id !== socketdata.messageID);
+          const updatedMessages = (old?.tourmessages || []).filter((msg: any) => msg.id !== socketdata.messageID);
     
-        
+         // console.log(updatedMessages)
     
           // Sort updatedMessages if necessary
           updatedMessages.sort((a: { id: number }, b: { id: number }) => a.id - b.id);
@@ -130,11 +131,12 @@ function TourMessages({tourID}:Props) {
       if (socketdata.user_id !== user?.id) {
         queryClient.setQueryData(['tourmessages', currentPage], (old: any) => {
           // Clone the old messages array and map to find the correct message
-          const updatedMessages = (old?.messages || []).map((msg: any) => {
+          const updatedMessages = (old?.tourmessages || []).map((msg: any) => {
             // Check if the current message is the one to update
             if (msg.id === socketdata.messageID) {
               // Filter out the specific reply by its ID
-              const updatedReplies = msg.reply.filter((r: any) => r.id !== socketdata.replyID);
+              const updatedReplies = msg.tourreply.filter((r: any) => r.id !== socketdata.replyID);
+            
               // Return the message with updated replies
               return { ...msg, tourreply: updatedReplies };
             }
