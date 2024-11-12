@@ -23,6 +23,9 @@ import YourTours from './pages/YourTours';
 import UpdateTour from './pages/UpdateTour';
 import TourDetail from './pages/TourDetail';
 import NotFound404 from './pages/NotFound404';
+import AdminRoutes from './components/AdminRoutes';
+import AdminPage from './pages/AdminPage';
+import UserDetail from './components/admin/UserDetail';
 
 
 function App() {
@@ -57,7 +60,12 @@ function App() {
               <Route path="/yourtours/:id" element={<UpdateTour />}/> 
               <Route path="/tours/:id" element={<TourDetail />}/> 
             </Route>
-            
+
+            <Route element={<AdminRoutes />}>
+             <Route path="/admin" element={<AdminPage />}/> 
+             <Route path="/admin/users/:id" element={<UserDetail />}/> 
+            </Route>
+
             <Route path="/test" element={<Test />}/> 
             <Route path='*' element={<NotFound404 />} />
          

@@ -7,11 +7,17 @@ import { useAuthContext } from '../context/authContext';
 import { Flip, toast } from 'react-toastify';
 import { BASE_URL } from '../constants/config';
 import axios from 'axios';
+import FlagComponent from './FlagComponent';
+import { useLanguageContext } from '../context/languageContext';
+import { navbarConstants } from '../constants/constantsData';
+import { authConstants } from "../constants/constantsAuth";
 
 function Navbar() {
+    
     const [prevScrollPos, setPrevScrollPos] = useState(0);
     const [visible, setVisible] = useState(true);
     const { user, setUser, setUpdateUser } = useAuthContext();
+     const { language} = useLanguageContext();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,7 +42,7 @@ function Navbar() {
                 const url = `${BASE_URL}/logout`;
                 const response = await axios.get(url, { withCredentials: true });
                 if (response.status === 200) {
-                    toast.success(response.data.message, {
+                    toast.success(authConstants.logout[language], {
                         position: "top-left",
                         autoClose: 1500,
                         hideProgressBar: true,
@@ -52,7 +58,7 @@ function Navbar() {
                     navigate('/');
                 }
             } catch (err) {
-                console.log('Error fetching user data:', err);
+                console.log('Error during logout :', err);
             }
         };
 
@@ -75,7 +81,7 @@ function Navbar() {
                                 ` p-4 font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                             }
                         >
-                            TravelTips
+                           {navbarConstants.traveltips[language]}
                         </NavLink>
                         <NavLink
                             to="/tours"
@@ -83,7 +89,7 @@ function Navbar() {
                                 `p-4 font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                             }
                         >
-                            Spolucesty
+                             {navbarConstants.travelMates[language]}
                         </NavLink>
                     </div>
                 </div>
@@ -96,7 +102,7 @@ function Navbar() {
                                 `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                             }
                         >
-                            Přihlášení
+                       {navbarConstants.login[language]}
                         </NavLink>
                         <NavLink
                             to="/register"
@@ -104,7 +110,7 @@ function Navbar() {
                                 `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                             }
                         >
-                            Registrace
+                            {navbarConstants.signUp[language]}
                         </NavLink>
                     </div>
                 ) : (
@@ -115,16 +121,16 @@ function Navbar() {
                                 `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                             }
                         >
-                            Profil
+                          {navbarConstants.profile[language]}
                         </NavLink>
                         <div onClick={logOutFunction} className="dark:hover:text-gray-300 cursor-pointer hover:text-yellow-500">
-                            Odhlásit
+                        {navbarConstants.logout[language]}
                         </div>
                     </div>
                 )}
 
-                <div className="dark:hover:text-gray-300 hover:text-yellow-500 absolute top-1 right-2">
-                    <ThemeComponent />
+                <div className="flex items-center gap-2 dark:hover:text-gray-300 hover:text-yellow-500 absolute top-1 right-2">
+                   <FlagComponent/> <ThemeComponent />
                 </div>
             </nav>
 
@@ -137,7 +143,7 @@ function Navbar() {
                             `p-2 font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                         }
                     >
-                        TravelTips
+                    {navbarConstants.traveltips[language]}
                     </NavLink>
                     <NavLink
                         to="/tours"
@@ -145,7 +151,7 @@ function Navbar() {
                             `p-2 font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                         }
                     >
-                        Spolucesty
+                {navbarConstants.travelMates[language]}
                     </NavLink>
                 </div>
 
@@ -158,7 +164,7 @@ function Navbar() {
                                     `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                                 }
                             >
-                                Přihlášení
+                          {navbarConstants.login[language]}
                             </NavLink>
                             <NavLink
                                 to="/register"
@@ -166,7 +172,7 @@ function Navbar() {
                                     `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                                 }
                             >
-                                Registrace
+                              {navbarConstants.signUp[language]}
                             </NavLink>
                         </>
                     ) : (
@@ -177,10 +183,10 @@ function Navbar() {
                                     `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                                 }
                             >
-                                Profil
+                                {navbarConstants.profile[language]}
                             </NavLink>
                             <div onClick={logOutFunction} className="dark:hover:text-gray-300 hover:text-yellow-500 cursor-pointer">
-                                Odhlásit
+                            {navbarConstants.logout[language]}
                             </div>
                         </>
                     )}

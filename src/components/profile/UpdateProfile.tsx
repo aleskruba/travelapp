@@ -5,6 +5,9 @@ import { fetchData } from "../../hooks/useFetchData";
 import { BASE_URL } from "../../constants/config";
 import google from "../../assets/images/google.png";
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
+import { authConstants } from "../../constants/constantsAuth";
+import { navbarConstants } from "../../constants/constantsData";
+import { useLanguageContext } from '../../context/languageContext';
 
 interface UpdateProfileProps {
   updateProfile: boolean;
@@ -22,6 +25,7 @@ const UpdateProfile = ({
 
   const { user, updateUser, setUser } = useAuthContext();
   const [error, setError] = useState<string | null>(null);
+  const { language} = useLanguageContext();
 
   const isFalse =
     updateUser?.username === user?.username &&
@@ -111,10 +115,10 @@ const UpdateProfile = ({
     <div className="bg-gray-100 dark:bg-gray-500 dark:text-gray-100 p-6 rounded-lg shadow-md w-full md:w-[35rem]">
       {!updateProfile ? (
         <div>
-          <div className="text-lg font-semibold mb-2">Tvůj profil</div>
+          <div className="text-lg font-semibold mb-2">{authConstants.yourProfile[language]}</div>
           <div className="mb-2">Username: {updateUser?.username}</div>
-          <div className="mb-2">Jméno: {updateUser?.firstName}</div>
-          <div className="mb-2">Příjmění: {updateUser?.lastName}</div>
+          <div className="mb-2">{authConstants.name[language]}: {updateUser?.firstName}</div>
+          <div className="mb-2">{authConstants.surname[language]}: {updateUser?.lastName}</div>
           <div>Email: {user?.email}</div>
         </div>
       ) : (
@@ -133,7 +137,7 @@ const UpdateProfile = ({
           />
           <input
             type="text"
-            placeholder="Jméno"
+            placeholder={authConstants.name[language]}
             name="firstName"
             className="w-full border rounded-md p-2 text-black"
             onChange={handleChange}
@@ -142,7 +146,7 @@ const UpdateProfile = ({
           />
           <input
             type="text"
-            placeholder="Příjmení"
+            placeholder={authConstants.surname[language]}
             name="lastName"
             className="w-full border rounded-md p-2 text-black"
             onChange={handleChange}
@@ -182,7 +186,7 @@ const UpdateProfile = ({
 
           {user?.googleEmail ? (
             <span className="text-xs text-violet-700">
-              pokud jsi přihlášený s Googlem nemůžeš měnit email
+              {authConstants.emailGoogleLoggedin[language]}
             </span>
           ) : (
             ""
@@ -197,7 +201,7 @@ const UpdateProfile = ({
             }`}
             disabled={isFalse}
           >
-            Ulož
+           {authConstants.save[language]}
           </Button>
         </form>
       )}
@@ -211,7 +215,7 @@ const UpdateProfile = ({
           color="blue"
           className="mt-4 w-full"
         >
-          Aktualizovat Profil
+           {authConstants.profilUpdate[language]}
         </Button>
       ) : (
         <Button
@@ -222,7 +226,7 @@ const UpdateProfile = ({
           color="gray"
           className="mt-4 w-full border-1.5"
         >
-          Zrušit
+         {authConstants.cancel[language]}
         </Button>
       )}
     </div>

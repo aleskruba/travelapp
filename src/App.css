@@ -19,3 +19,47 @@
     object-fit: contain;
   }
   
+  .user-list {
+    max-width: 600px;
+    margin: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+  }
+  
+  .user-link {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .user-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    transition: background-color 0.2s ease;
+  }
+  
+  .user-item:hover {
+    background-color: #f7fafc;
+  }
+  
+  .user-id {
+    font-weight: 600;
+    color: #4a5568;
+  }
+  
+  .user-email {
+    color: #2d3748;
+    font-size: 0.95rem;
+  }
+  
+
+  .transition-all {
+    transition: all 0.3s ease-in-out;
+  }
+
+  .flag-icon {
+    width: 20px; /* Adjust width as needed */
+    height: auto;
+  }
+  

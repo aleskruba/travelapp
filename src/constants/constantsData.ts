@@ -1,4 +1,68 @@
-export const footerItems = [
+export const navbarConstants = {
+  traveltips: {
+    en: "TravelTips",
+    cz: "TravelTipy",
+    es: "Consejos"
+  },
+  travelMates: {
+    en: "TravelMates",
+    cz: "Spolucesty",
+    es: "Compañeros"
+  },login: {
+    en: "Login",
+    cz: "Přihlášení",
+    es: "Login"
+  },
+  signUp: {
+    en: "SignUp",
+    cz: "Registrace",
+    es: "Registrarse"
+  },
+  profile: {
+    en: "Profile",
+    cz: "Profil",
+    es: "Perfil"
+  },
+  logout: {
+    en: "Logout",
+    cz: "Odhlásit",
+    es: "Logout"
+  },
+  waitplease: {
+    en: "Wait please...",
+    cz: "Moment prosím...",
+    es: "Espera por favor...",
+}
+
+  
+  
+};
+
+export const footerColumns = {
+  links: {
+    en: 'Links',
+    cz: 'Odkazy',
+    es: 'Enlaces',
+  },
+  conditions: {
+    en: 'Conditions',
+    cz: 'Podmínky',
+    es: 'Condiciones',
+  },
+};
+
+
+export const footerConstants = {
+  en: [
+    'ABOUT US',
+    'BLOG',
+    'INSTAGRAM',
+    'FACEBOOK',
+    'CONTACT',
+    'COLLABORATIONS',
+    'MEMBERSHIP'
+  ],
+  cz: [
     'O NÁS',
     'BLOG',
     'INSTAGRAM',
@@ -6,15 +70,38 @@ export const footerItems = [
     'KONTAKT',
     'SPOLUPRÁCE',
     'ČLENSTVÍ'
-  ];
-  
- 
+  ],
+  es: [
+    'SOBRE NOSOTROS',
+    'BLOG',
+    'INSTAGRAM',
+    'FACEBOOK',
+    'CONTACTO',
+    'COLABORACIONES',
+    'MEMBRESÍA'
+  ]
+};
 
-export const footerConditions = [
+ 
+export const footerConditions = {
+  en: [
+    "Terms and Conditions",
+    "Privacy Policy",
+    "Cookies"
+  ],
+  cz: [
     "Obchodní podmínky",
     "Ochrana osobních údajů",
     "Cookies"
-  ];
+  ],
+  es: [
+    "Términos y condiciones",
+    "Política de privacidad",
+    "Cookies"
+  ]
+};
+
+
 
 
  export const countryNames = [

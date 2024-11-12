@@ -6,11 +6,15 @@ import { BASE_URL, HTTP_CONFIG } from '../../constants/config';
 import { ChangeEvent, useState } from 'react';
 import { UserProps } from '../../types';
 import EXIF from 'exif-js';
+import { authConstants } from "../../constants/constantsAuth";
+import { navbarConstants } from "../../constants/constantsData";
+import { useLanguageContext } from '../../context/languageContext';
 
 export const UpdateImage = () => {
     const { toggleModal } = useThemeContext();
     const { user,setUser} = useAuthContext();
     const [backendImageError, setBackendImageError] = useState('');
+    const { language} = useLanguageContext();
 
     const resizeFile = (file: any, orientation: number) =>
         new Promise((resolve, reject) => {
@@ -92,7 +96,7 @@ export const UpdateImage = () => {
   return (
     <div className="bg-gray-100 dark:bg-gray-500 dark:text-gray-100 p-6 rounded-lg shadow-md w-full md:w-[35rem]">
     <div className="col-span-full">
-        <label htmlFor="photo" className="text-lg font-semibold mb-2">Foto</label>
+     {/*    <label htmlFor="photo" className="text-lg font-semibold mb-2">Foto</label> */}
         <div className="mt-2 flex items-center gap-x-3 w-full justify-center"     
              onClick={() => toggleModal(user?.image ? user.image : lide)}
              >
@@ -113,7 +117,7 @@ export const UpdateImage = () => {
                         onChange={handleImageChange}
                     />
                     <span className="bg-gray-200 dark:text-black hover:bg-gray-300 py-2 px-4 rounded-md cursor-pointer">
-                        Vyber novou fotku
+                         {authConstants.newPhoto[language]}
                     </span>
                 </span>
             </label>

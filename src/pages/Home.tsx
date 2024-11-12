@@ -2,10 +2,13 @@
 import Image from '../custom/Image'
 import fun from '../assets/images/fun.png';
 import { useAuthContext } from '../context/authContext';
-
+import { Link } from 'react-router-dom';
+import { useLanguageContext } from '../context/languageContext';
+import { homeConstants, homeWelcome } from '../constants/constantsHome';
 function Home() {
 
   const {user,isLoading} = useAuthContext()
+  const { language} = useLanguageContext();
 
   if (isLoading) return <div className='flex h-screen justify-center items-center'>Moment prosím...</div>;
 
@@ -18,10 +21,25 @@ function Home() {
 
       <div className="flex-1 text-xl">
 
+    {user?.isAdmin && 
+          <div className="flex flex-col gap-2 pb-4">
+          <h1 className="font-thin text-3xl italic">WELCOME ADMIN !!!!!!</h1>
+          <Link 
+            to="admin" 
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500 inline-block max-w-52 text-center"
+          >
+            ADMIN ZONE
+          </Link>
+          </div>
 
-      <p>Vítejte na našem webu <span className='dark:text-pink-300  text-pink-800 font-bold'>{user? user.firstName ? user.firstName : user.email : ''} </span>! </p>
+    }
+
+      <p> {homeWelcome[language]}<span className='dark:text-pink-300  text-pink-800 font-bold'> {user? user.firstName ? user.firstName : user.email : ''} </span>! </p>
       <br />
-      <p> Jsme tu pro vás, abychom vám poskytli užitečné informace a inspiraci pro vaše cestovní plány. Naše stránky jsou zdrojem poznatků o turisticky zajímavých státech po celém světě, které vám pomohou naplánovat nezapomenutelnou dovolenou.</p>
+      <div
+        dangerouslySetInnerHTML={{ __html: homeConstants[language] }}
+      />
+{/*       <p> Jsme tu pro vás, abychom vám poskytli užitečné informace a inspiraci pro vaše cestovní plány. Naše stránky jsou zdrojem poznatků o turisticky zajímavých státech po celém světě, které vám pomohou naplánovat nezapomenutelnou dovolenou.</p>
       <br />
 <p>Prozkoumejte naše obsáhlé přehledy destinací, kde každý stát má svou vlastní stránku plnou zajímavostí, tipů a užitečných informací. Každý stát je doplněn osobními komentáři a videi od našich redaktorů a cestovatelů, kteří sdílejí své zážitky a rady.</p>
 <br />
@@ -30,7 +48,7 @@ function Home() {
 <p>Navíc, pokud hledáte spolucestujícího do nějakého státu, jste na správném místě! Naše stránky nabízejí fórum, kde můžete najít společníka pro vaše dobrodružné plány. Sdílejte své cestovatelské přání a najděte si spolucestujícího, se kterým se vydáte na nezapomenutelnou dobrodružnou cestu.</p>
 <br />
 <p>Nechte se inspirovat našimi stránkami a připravte se na nezapomenutelné zážitky, které vás čekají na cestách po světě!</p>
-
+ */}
       </div>
       <div className="flex flex-1 justify-center mb-4">
   <Image 

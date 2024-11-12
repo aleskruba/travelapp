@@ -211,7 +211,8 @@ const Message: React.FC<Props> = ({
 
       <div className="flex flex-col md:flex-row md:items-center gap-4 relative z-auto">
         <div className="flex  items-center gap-2">
-          {message?.user_id === user?.id && (
+
+          {(user?.isAdmin ||  message?.user_id === user?.id) && (
             <>
               <div
                 className={` absolute top-1 right-0 min-w-[25px] text-red-500  cursor-pointer hover:text-red-300`}

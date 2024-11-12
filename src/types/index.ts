@@ -1,3 +1,5 @@
+export type Language = 'en' | 'cz' | 'es';
+
 export interface UserProps {
   id: number;
   username?: string;
@@ -13,6 +15,8 @@ export interface UserProps {
   googleName?: string;
   googleProfilePicture?: string;
   passwordUpdatedAt?: Date | null;
+  isAdmin?: boolean | null;
+  loginLogs: LoginLog[];
 }
 
 export type MessageProps = {
@@ -70,6 +74,8 @@ export const initialUserState: UserProps = {
   googleName: '',
   googleProfilePicture: '',
   passwordUpdatedAt: null,
+  isAdmin:null,
+  loginLogs: [] as LoginLog[]
 };
 
 export const initialSingleReplyState: ReplyProps = {
@@ -203,6 +209,14 @@ export type TourReplyProps = {
   user: UserProps;
 };
 
+export interface LoginLog {
+  id: number;
+  user_id: number;
+  timestamp: Date;
+  ipAddress: string;
+  status: string; // e.g., 'SUCCESS' or 'FAILURE'
+  failureReason?: string | null; // Optional field, for failed attempts
+}
 
 export const initialSingleTourReplyState: TourReplyProps = {
   id: 0,
@@ -238,3 +252,4 @@ export const initialTourMessageState: TourMessageProps = {
   tourreply: initialTourReplyState,
 
 };
+

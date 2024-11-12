@@ -12,6 +12,9 @@ import { useAuthContext } from '../context/authContext';
 import { fetchData } from '../hooks/useFetchData';
 import Button from '../components/customButton/Button';
 import { showErrorToast, showSuccessToast } from '../utils/toastUtils';
+import { authConstants } from "../constants/constantsAuth";
+import { navbarConstants } from "../constants/constantsData";
+import { useLanguageContext } from '../context/languageContext';
 
 interface RegisterCredentials {
   email: string;
@@ -27,6 +30,7 @@ function Register() {
   const [isLoding, setIsLoding] = useState(false);
   const { user, setUser } = useAuthContext();
   let location = useLocation();
+  const { language} = useLanguageContext();
 
   useEffect(() => {
     if (user) {
@@ -49,20 +53,20 @@ function Register() {
 
   const validationSchema = Yup.object({
     email: Yup.string()
-      .required('Povinné!')
-      .email('Neplatný formát emailu')
-      .max(50, 'Email může mít maximálně 50 znaků'),
+      .required(authConstants.required[language])
+      .email(authConstants.emailFormat[language])
+      .max(50, authConstants.emailMaxMin[language]),
     password: Yup.string()
-      .required('Povinné!')
-      .min(6, 'Heslo musí mít alespoň 6 znaků')
-      .max(50, 'Heslo může mít maximálně 50 znaků')
+      .required(authConstants.required[language])
+      .min(6, authConstants.passwordMin[language])
+      .max(50, authConstants.passwordMax[language])
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]/,
-        'Heslo musí obsahovat alespoň jedno malé písmeno, jedno velké písmeno a jednu číslici'
+        authConstants.passwordFormat[language]
       ),
     confirmPassword: Yup.string()
-      .oneOf([Yup.ref('password')], 'Hesla se musí shodovat')
-      .required('Povinné!')
+      .oneOf([Yup.ref('password')], authConstants.passwordsMatch[language])
+      .required(authConstants.required[language])
   });
   
 
@@ -79,11 +83,11 @@ function Register() {
 
       if (!response.ok && response.status === 401) {
         setIsLoding(false);
-        throw new Error('Email je již zaregistrován');
+        throw new Error(authConstants.accountExists[language]);
       }
       if (!response.ok && response.status === 400) {
         setIsLoding(false);
-        throw new Error('Hesla musí být stejná');
+        throw new Error(authConstants.passwordsMatch[language]);
       }
 
       const data = await response.json();
@@ -94,7 +98,7 @@ function Register() {
       navigate('/');
     } catch (error: any) {
       setBackendError(error.message);
-      showErrorToast('Chyba při registraci')
+      showErrorToast(authConstants.registrationError[language])
     }
   }
 
@@ -128,7 +132,7 @@ function Register() {
 
         if (!response.ok) {
           setIsLoding(false);
-          throw new Error('Chyba při přihlašování');
+          throw new Error(authConstants.loginError[language]);
         }
 
         const data = await response.json();
@@ -136,7 +140,7 @@ function Register() {
         setUser(data.user);
         navigate(location.pathname);
       } catch (error: any) {
-        setBackendErrorGoogle('Tento účet je již zaregistrován');
+        setBackendErrorGoogle(authConstants.accountExists[language]);
       }
     }
   });
@@ -145,10 +149,10 @@ function Register() {
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto ">
       <div className='flex flex-wrap items-center  overflow-y-auto min-h-[600px] mt-20'>
       {isLoding ? (
-          <h1>moment prosím....</h1>
+          <h1>{navbarConstants.waitplease[language]}</h1>
         ) : (
         <div className={` ${isLoding ? 'opacity-30 pointer-events-none' : ''}relative bg-white px-4 py-4 rounded-lg flex items-center justify-center flex-col `}>
-          <h1 className='mt-4 text-black poppins-extrabold text-3xl'>Registrace</h1>
+          <h1 className='mt-4 text-black poppins-extrabold text-3xl'>{authConstants.registration[language]}</h1>
 
           <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
             {({ values, errors }) => {
@@ -170,7 +174,7 @@ function Register() {
                       name="password"
                       type={showPassword ? "text" : "password"}
                       id="password"
-                      placeholder="Heslo"
+                      placeholder={authConstants.password[language]}
                       autoComplete="off"
                       className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                     />
@@ -188,7 +192,7 @@ function Register() {
                       name="confirmPassword"
                       type={showPassword ? "text" : "password"}
                       id="confirmPassword"
-                      placeholder="Zopakuj heslo"
+                      placeholder={authConstants.repeatPassword[language]}
                       autoComplete="off"
                       className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                     />
@@ -221,7 +225,7 @@ function Register() {
                   className="transition duration-300"
                   width="120px"
                 >
-                  Zpět
+                    {authConstants.back[language]}
                 </Button>
               </div>
 
@@ -237,19 +241,19 @@ function Register() {
             width="100%"
             onClick={() => login()}
           >
-            Zaregistovat se s Google 🚀
+             {authConstants.registerWithGoogle[language]} 🚀
           </Button>
 
           </div>
           {backendErrorGoogle && <div className="text-red-500">{backendErrorGoogle}</div>}
 
-          <h5 className='pt-4 text-gray-600 '>Již nemáš účet?
+          <h5 className='pt-4 text-gray-600 '>{authConstants.alreadyAccount[language]}
             <Link to='/login' className='text-gray-600 underline cursor-pointer'>
-              Přihlásit se
+            {authConstants.login[language]}
             </Link>
           </h5>
-          <h5 className='text-gray-600 '>Zapomenuté heslo : <Link to='/forgottenpassword' className='text-gray-600 underline cursor-pointer'>
-            Klikni zde
+          <h5 className='text-gray-600 '>  {authConstants.ForgottenPassword[language]}{": "}<Link to='/forgottenpassword' className='text-gray-600 underline cursor-pointer'>
+            {authConstants.click[language]}
           </Link>  </h5>
 
           <div className='h-[100px]'>

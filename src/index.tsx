@@ -13,6 +13,7 @@ import {
 import { AuthProvider } from './context/authContext';
 import { CountryProvider } from './context/countryContext';
 import { TourProvider } from './context/tourContext';
+import { LanguageProvider } from './context/languageContext';
 
 const queryClient = new QueryClient()
 
@@ -25,14 +26,16 @@ root.render(
     <GoogleOAuthProvider clientId="85802491961-b7t13blg4rkgqbira2i00fni49cg8rmm.apps.googleusercontent.com">
       <AuthProvider>
         <ThemeProvider>
+          <LanguageProvider>
           <TourProvider>
-          <CountryProvider>
-              <Routes>
-                  <Route path="/*" element={<App/>} />
-              </Routes>
-            </CountryProvider>
-            <ToastContainer /> 
-          </TourProvider>
+            <CountryProvider>
+                <Routes>
+                    <Route path="/*" element={<App/>} />
+                </Routes>
+              </CountryProvider>
+              <ToastContainer /> 
+            </TourProvider>
+           </LanguageProvider>
         </ThemeProvider>
       </AuthProvider>
       </GoogleOAuthProvider>

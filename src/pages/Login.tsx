@@ -12,6 +12,9 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { fetchData } from "../hooks/useFetchData";
 import Button from "../components/customButton/Button";
 import { showErrorToast, showSuccessToast } from "../utils/toastUtils";
+import { authConstants } from "../constants/constantsAuth";
+import { navbarConstants } from "../constants/constantsData";
+import { useLanguageContext } from '../context/languageContext';
 
 interface LoginCredentials {
   email: string;
@@ -26,6 +29,7 @@ function Login() {
   const [isLoding, setIsLoding] = useState(false);
   const { user, setUser } = useAuthContext();
   const [wrongData,setWrongData] = useState<any>(null)
+  const { language} = useLanguageContext();
 
   useEffect(() => {
     if (user) {
@@ -50,18 +54,19 @@ function Login() {
 
   const validationSchema = Yup.object({
     email: Yup.string()
-      .required("Povinné!")
-      .email("Neplatný formát emailu")
-      .max(50, "Email může mít maximálně 50 znaků"),
+      .required(authConstants.required[language])
+      .email(authConstants.emailFormat[language])
+      .max(50, authConstants.emailMaxMin[language]),
     password: Yup.string()
-      .required("Povinné!")
-      .min(6, "Heslo musí mít alespoň 6 znaků")
-      .max(50, "Heslo může mít maximálně 50 znaků"),
+      .required(authConstants.required[language])
+      .min(6, authConstants.passwordMin[language])
+      .max(50, authConstants.passwordMax[language]),
   });
 
   const initialValues = {
     email: wrongData ? wrongData.email : "",
     password: wrongData ? wrongData.password : "",
+
   };
 
   const logCredentials = async (credentials: LoginCredentials) => {
@@ -91,18 +96,52 @@ function Login() {
       throw error;
     }
   };
+  const getClientIp = async () => {
+    try {
+      // Step 1: Get the IP address from ipify API
+      const ipResponse = await fetch('https://api.ipify.org?format=json');
+      const ipData = await ipResponse.json();
+      const ip = ipData.ip;
+
+      // Step 2: Fetch geolocation data (country) based on the IP
+      const geoResponse = await fetch(`https://ipapi.co/${ip}/json/`);
+      const geoData = await geoResponse.json();
+
+      // Get the country from the geolocation response
+      const country = geoData.country_name || 'Unknown'; // Fallback to 'Unknown' if country info is not available
+
+      // Step 3: Concatenate the IP and country with a hyphen
+      const concatenatedResult = `${ip}-${country}`;
+      console.log(concatenatedResult); // Logs something like "192.168.0.1-US"
+
+      return concatenatedResult; // Return the concatenated result
+  } catch (error) {
+      console.error("Unable to fetch IP or country:", error);
+      return ''; // Fallback or empty string
+  }
+};
 
   const handleSubmit = async (values: LoginCredentials, { resetForm }: any) => {
     try {
-      const data = await logCredentials(values);
+
+
+      const clientIpAddress = await getClientIp(); // This function could make a request to an external service
+
+      // Spread the values and add the IP address
+      const requestData = {
+          ...values, // This includes email and password
+          ipAddress: clientIpAddress, // Add the IP address to the payload
+      };
+
+      const data = await logCredentials(requestData);
  
       resetForm();
       navigate("/");
-      showSuccessToast(data.message)
+      showSuccessToast(authConstants.success[language])
     
     } catch (error: any) {
-      setBackendError(error.message);
-      showErrorToast("Chyba při přihlašování")
+      setBackendError(authConstants.loginError[language]);
+      showErrorToast(authConstants.loginError[language])
     }
   };
 
@@ -138,7 +177,7 @@ function Login() {
 
         if (!response.ok) {
           setIsLoding(false);
-          throw new Error("Chyba při přihlašování");
+          throw new Error(authConstants.loginError[language]);
         }
 
         const data = await response.json();
@@ -146,7 +185,7 @@ function Login() {
         setUser(data.user);
         navigate(location.pathname);
       } catch (error: any) {
-        setBackendErrorGoogle("Tento účet není zaregistrován");
+        setBackendErrorGoogle(authConstants.wrongEmail[language]);
       }
     },
   });
@@ -155,7 +194,7 @@ function Login() {
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
       <div className="flex flex-wrap items-center overflow-y-auto min-h-[600px] mt-20">
         {isLoding ? (
-          <h1>moment prosím....</h1>
+          <h1>{navbarConstants.waitplease[language]}</h1>
         ) : (
           <div
             className={` ${
@@ -163,7 +202,7 @@ function Login() {
             }relative bg-white px-4 py-4 rounded-lg flex items-center justify-center flex-col `}
           >
             <h1 className="mt-4 text-black poppins-extrabold text-3xl">
-              Příhlášení
+              {authConstants.login[language]}
             </h1>
 
             <Formik
@@ -195,7 +234,7 @@ function Login() {
                         name="password"
                         type={showPassword ? "text" : "password"}
                         id="password"
-                        placeholder="Heslo"
+                        placeholder={authConstants.password[language]}
                         autoComplete="off"
                         className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                       />
@@ -219,10 +258,10 @@ function Login() {
                       <Button
                         type="submit"
                         color={isFormValid ? "blue" : "gray"}
-                        className={`${isFormValid ? "text-gray-700" : "text-gray-200 opacity-50 cursor-not-allowed"} transition duration-300`}
+                        className={`${isFormValid ? "text-gray-700" : "text-gray-200 opacity-50 cursor-not-allowed"} w-[120px] transition duration-300`}
                           disabled={!isFormValid}
                       >
-                        Přihlásit
+                      {authConstants.login[language]}
                       </Button>
                       <Button
                         onClick={handleBack}
@@ -230,7 +269,7 @@ function Login() {
                         color="gray"
                         className="w-[120px]"
                       >
-                        Zpět
+                          {authConstants.back[language]}
                       </Button>
                     </div>
                   </Form>
@@ -245,28 +284,28 @@ function Login() {
                 width="100%"
                 onClick={() => login()}
               >
-                Přihlásit s Google 🚀
+                   {authConstants.google[language]} 🚀
               </Button>
             </div>
             {backendErrorGoogle && (
               <div className="text-red-500">{backendErrorGoogle}</div>
             )}
             <h5 className="pt-4 text-gray-600">
-              Ještě nemáš účet?
+            {authConstants.account[language]}
               <Link
                 to="/register"
                 className="text-gray-600 underline cursor-pointer"
               >
-                Zaregistrovat se
+                    {authConstants.register[language]}
               </Link>
             </h5>
             <h5 className="text-gray-600">
-              Zapomenuté heslo:{" "}
+            {authConstants.ForgottenPassword[language]}{": "}
               <Link
                 to="/forgottenpassword"
                 className="text-gray-600 underline cursor-pointer"
               >
-                Klikni zde
+                   {authConstants.click[language]}
               </Link>
             </h5>
             <div className="h-[100px]">

@@ -7,12 +7,17 @@ import DOMPurify from "dompurify";
 import UpdatePassword from "../components/profile/UpdatePassword";
 import { UpdateImage } from "../components/profile/UpdateImage";
 import DeleteProfile from "../components/profile/DeleteProfile";
+import { authConstants } from "../constants/constantsAuth";
+import { navbarConstants } from "../constants/constantsData";
+import { useLanguageContext } from '../context/languageContext';
+
 
 function Profil() {
   const { user, setUpdateUser } = useAuthContext();
   const [updateProfile, setUpdateProfile] = useState(false);
   const [updatePassword, setUpdatePassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { language} = useLanguageContext();
 
   useEffect(() => {
     setUpdateUser(user);
@@ -35,7 +40,7 @@ function Profil() {
     <div className="flex items-center h-full min-h-screen pb-4 flex-col pt-8 px-2 gap-6 ">
       {isLoading ? (
         <h1 className="flex h-full justify-center items-center">
-          moment prosím....
+           {navbarConstants.waitplease[language]}
         </h1>
       ) : (
         <>
@@ -45,14 +50,14 @@ function Profil() {
                 to={`/yourvlogs`}
                 className="p-6 rounded-lg shadow-md w-full md:w-[35rem] flex justify-center items-center font-extrabold bg-gradient-to-br from-slate-200 to-slate-100 dark:from-slate-700 dark:to-slate-600 dark:text-white cursor-pointer hover:shadow-lg dark:hover:from-slate-600 dark:hover:to-slate-500 transition duration-300 ease-in-out"
               >
-                Tvoje Vlogy
+                  {authConstants.yourVlogs[language]}
               </Link>
 
               <Link
                 to={`/yourtours`}
                 className="p-6 rounded-lg shadow-md w-full md:w-[35rem] flex justify-center items-center font-extrabold bg-gradient-to-br from-slate-200 to-slate-100 dark:from-slate-700 dark:to-slate-600 dark:text-white cursor-pointer hover:shadow-lg dark:hover:from-slate-600 dark:hover:to-slate-500 transition duration-300 ease-in-out"
-              >
-                Tvoje Spolucesty
+              >   {authConstants.yourTravelMates[language]}
+
               </Link>
             </>
           )}

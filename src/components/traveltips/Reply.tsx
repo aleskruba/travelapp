@@ -128,11 +128,15 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,deletedReply}) => 
       </div>
       <div key={reply.id} className="flex flex-col pt-2 border-t border-gray-400 dark:text-gray-100 relative">
         <div className={`flex items-center gap-6 md:gap-2 cursor-pointer mt-1 ${reply.user_id === user?.id ? 'pl-1' : 'p3-6'}`}>
-          {reply.user_id === user?.id && (
-            <div className="text-red-500 hover:text-red-300 absolute top-3 right-1" onClick={() => handleDeleteClick(reply.id)}>
+        {(user?.isAdmin || reply.user_id === user?.id) && (
+            <div
+              className="text-red-500 hover:text-red-300 absolute top-3 right-1"
+              onClick={() => handleDeleteClick(reply.id)}
+            >
               <FaRegTrashAlt />
             </div>
           )}
+
           <div className="w-14 h-14 overflow-hidden rounded-full cursor-pointer" onClick={() => toggleModal(imageUrl)}>
             <img
               src={imageUrl ? imageUrl : lide}
