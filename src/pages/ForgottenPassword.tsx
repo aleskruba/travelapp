@@ -7,7 +7,8 @@ import { BASE_URL } from '../constants/config';
 import { fetchData } from "../hooks/useFetchData";
 import Button from "../components/customButton/Button";
 import { showErrorToast, showSuccessToast } from "../utils/toastUtils";
-
+import { authConstants } from "../constants/constantsAuth";
+import { useLanguageContext } from '../context/languageContext';
 
 function ForgottenPassword() {
 
@@ -15,7 +16,7 @@ function ForgottenPassword() {
   const [backendError, setBackendError] = useState("");
   const [isLoading,setisLoading] = useState(false);
   const { user} = useAuthContext()
-
+  const { language} = useLanguageContext();
   let location = useLocation();
 
   useEffect(()=>{
@@ -27,8 +28,8 @@ function ForgottenPassword() {
   const validationSchema = Yup.object({
     email: Yup.string()
       .required("Required!")
-      .email("Invalid email format")
-      .max(50, "Email must be at most 50 characters"),
+      .email(authConstants.emailFormat[language])
+      .max(50,authConstants.emailMaxMin[language]),
   });
 
   const initialValues = {
@@ -51,20 +52,20 @@ function ForgottenPassword() {
 
     if (response.status === 404) {
       setisLoading(false)
-      setBackendError('Tento email není zaregistrován');
-      showErrorToast('Email nenení zaregistrován')
+      setBackendError(authConstants.emailNotRegistered[language]);
+      showErrorToast(authConstants.emailNotRegistered[language])
     }
     if (response.status === 201) {
 
       setisLoading(false)
-      showSuccessToast('Email byl úspěšně odeslán')
+      showSuccessToast(authConstants.emailWasSent[language])
 
       navigate('/');
     }
 
 
     } catch (err: any) {
-      setBackendError('Něco se pokazilo');
+      setBackendError('Something went wrong....');
    //   setIsloading(false);
       return;
     } finally {
@@ -91,7 +92,7 @@ function ForgottenPassword() {
 
           </div>
           <h1 className="mt-4 text-black poppins-extrabold text-3xl mb-4">
-            ZAPOMENUTÉ HESLO
+          {authConstants.forgottenPasswordTitle[language]}
           </h1>
 
             <div>
@@ -109,7 +110,7 @@ function ForgottenPassword() {
                         name="email"
                         type="email"
                         id="email"
-                        placeholder="zadej svůj email"
+                        placeholder=  {authConstants.enterYourEmail[language]}
                         autoComplete="off"
                         className="w-full px-4 py-2 border border-gray-300 text-black rounded-md focus:outline-none focus:border-blue-500"
                       />
@@ -129,7 +130,7 @@ function ForgottenPassword() {
                 className={`px-4 py-2 rounded-md transition duration-300 w-[120px] ${isLoading ? 'opacity-50 pointer-events-none' : isFormValid ? 'text-gray-700 hover:bg-blue-600' : 'bg-gray-300 text-gray-500 opacity-50 cursor-not-allowed'}`}
                 disabled={isLoading || !isFormValid}
               >
-                Odeslat
+              {authConstants.send[language]}
               </Button>
               <Button
                 onClick={handleBack}
@@ -137,7 +138,7 @@ function ForgottenPassword() {
                 color="gray"
                 className="px-4 py-2 text-center transition duration-300 w-[120px]"
               >
-                Zpět
+               {authConstants.back[language]}
               </Button>
             </div>
 
@@ -150,10 +151,10 @@ function ForgottenPassword() {
             </div>
    
           <h5 className="pt-4">
-            vzpomněl jsi si?
+          {authConstants.remember[language]}
             <Link to="/login">
               
-              Přihlásit se
+            {authConstants.login[language]}
             </Link>
           </h5>
         </div>

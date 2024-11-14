@@ -6,6 +6,8 @@ import { useAuthContext } from "../../context/authContext";
 import ConfirmationModal from "../ConfirmationModal";
 import { FormEvent, useState } from "react";
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
+import { authConstants } from "../../constants/constantsAuth";
+import { useLanguageContext } from '../../context/languageContext';
 
 interface DeleteProfileProps {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -16,7 +18,7 @@ const DeleteProfile = ({ setIsLoading }: DeleteProfileProps) => {
   const { setUser } = useAuthContext();
   const [backendError, setBackendError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
-
+  const { language} = useLanguageContext();
 
   const handleDeleteAccountClick = () => {
     setShowModal(true);
@@ -33,7 +35,7 @@ const DeleteProfile = ({ setIsLoading }: DeleteProfileProps) => {
       if (!response.ok) {
         const errorData = await response.json();
         console.log(errorData);
-        setBackendError("Něco se pokazilo");
+        setBackendError("Server error");
         return;
       }
   
@@ -43,12 +45,12 @@ const DeleteProfile = ({ setIsLoading }: DeleteProfileProps) => {
       setUser(null);
       navigate("/");
       setIsLoading(false);
-      showSuccessToast("Účet byl úspěšně smazán");
+      showSuccessToast(authConstants.deleteAccountSuccess[language]);
     } catch (e: any) {
-      console.error(e.message);
+      console.error(authConstants.deleteAccountError[language]);
       setIsLoading(false);
 
-      showErrorToast("Chyba při smazání profilu");
+      showErrorToast( authConstants.deleteAccountError[language]);
     }
   };
   
@@ -62,7 +64,7 @@ const DeleteProfile = ({ setIsLoading }: DeleteProfileProps) => {
           className="w-full"
           onClick={handleDeleteAccountClick}
         >
-          Smazat účet
+     {authConstants.deleteAccount[language]}
         </Button>
         { backendError && <div className="text-red-800">server error</div>}
       </div>
@@ -70,7 +72,7 @@ const DeleteProfile = ({ setIsLoading }: DeleteProfileProps) => {
         show={showModal}
         onClose={() => setShowModal(false)}
         onConfirm={() => deleteAccount()}
-        message="Chceš opravdu smazat svůj účet ? "
+        message={authConstants.deleteAccountMessage[language]}
       />
     </>
   );

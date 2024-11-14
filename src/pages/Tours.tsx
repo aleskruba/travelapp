@@ -11,6 +11,8 @@ import SearchDebounceComponent from '../components/tours/SearchDebounceComponent
 import useDebounce from '../hooks/useDebounce';
 import { fetchData } from '../hooks/useFetchData';
 import Button from '../components/customButton/Button';
+import { useLanguageContext } from '../context/languageContext';
+import { tourConstants } from '../constants/constantsTours';
 
 interface CountryOption {
   readonly value: string;
@@ -26,6 +28,7 @@ function Tours() {
   const [availableDestinations, setAvailableDestinations] = useState<CountryOption[]>([]);
   const [text, setText] = useState<string>('');
   const { debouncedValue } = useDebounce(text, 500);
+  const { language} = useLanguageContext();
 
   const countriesParam = searchParams.get('countries');
   const tourTypesParam = searchParams.get('tourtypes');
@@ -163,11 +166,11 @@ function Tours() {
   }, [data]);
 
   if (isLoading || isFetching) {
-    return <div className='flex justify-center items-center h-screen'>Moment prosim...</div>;
+    return <div className='flex justify-center items-center h-screen'>{tourConstants.waitplease[language]}</div>;
   }
 
   if (isError) {
-    return <span>Něco se pokazilo , spolucety nebyly načteny</span>;
+    return <span>{tourConstants.somethingWentWrong[language]}</span>;
   }
 
   const userDataFiltered = data?.tours.filter((keyword: any) =>
@@ -180,9 +183,9 @@ function Tours() {
     <div className='px-2 '>
 
       <div className='text-center text-blue-500 pt-4'>
-        {!user ? 
-          'Pouze přihlášení uživatelé mohou vkládat Vlogy' :
-          <Link to={'../createtour'}>Vytvoř spolucestu <span className="underline cursor-pointer text-blue-600" >zde</span></Link>
+        {!user ? tourConstants.onlyRegistredUsersTour[language]
+        :
+          <Link to={'../createtour'}>{tourConstants.createTour[language]}<span className="underline cursor-pointer text-blue-600 pl-2" >{tourConstants.here[language]}</span></Link>
         }
       </div>
 
@@ -214,7 +217,7 @@ function Tours() {
       <div className="wrapper grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-4 mt-20 md:px-20">
      
         {userDataFiltered.length === 0 ? (
-          <div className='flex justify-center items-center pb-10'>Žádná shoda</div>
+          <div className='flex justify-center items-center pb-10'>{tourConstants.noMatch[language]}</div>
         ) : (
           userDataFiltered
             .sort((a: { id: number }, b: { id: number }) => b.id - a.id)
@@ -228,7 +231,7 @@ function Tours() {
 
       <div className="flex flex-col gap-2 items-center justify-center  space-x-4 py-2 pt-12 pb-12">
         <span className="text-gray-700 dark:text-gray-200 font-medium">
-          Aktuální stránka: {currentPage + 1} of {data?.totalPages}
+        {tourConstants.currentPage[language]} {currentPage + 1} {tourConstants.of[language]} {data?.totalPages}
         </span>
         <div className='flex gap-2'>
   <Button
@@ -237,7 +240,7 @@ function Tours() {
     className={`rounded-md px-4 py-2 w-28 ${currentPage === 0 ? 'opacity-30 pointer-events-none' : ''}`}
     disabled={currentPage === 0}
   >
-    Předchozí
+  {tourConstants.previousPage[language]}
   </Button>
 
   <Button
@@ -248,7 +251,7 @@ function Tours() {
     className={`rounded-md px-4 py-2 w-28 ${currentPage >= data?.totalPages - 1 ? 'opacity-30 pointer-events-none' : ''}`}
     disabled={currentPage >= data?.totalPages - 1}
   >
-    Další
+  {tourConstants.next[language]} 
   </Button>
 </div>
 

@@ -5,6 +5,8 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { fetchData } from "../../hooks/useFetchData";
 import { BASE_URL } from "../../constants/config";
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
+import { authConstants } from "../../constants/constantsAuth";
+import { useLanguageContext } from '../../context/languageContext';
 
 interface UpdatePasswordProps {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -19,6 +21,8 @@ const UpdatePassword = ({
   updatePassword,
   handleChange,
 }: UpdatePasswordProps) => {
+  
+  const { language} = useLanguageContext();
   const { updateUser } = useAuthContext();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +52,7 @@ const UpdatePassword = ({
           updateUser.password.trim().length < 8 ||
           updateUser.password.trim().length > 50
         ) {
-          setError("Heslo musí mít 8 až 50 znaků");
+          setError(authConstants.passwordErrorMinMax[language]);
           return;
         }
         const response = await fetchData(`${BASE_URL}/updatepassword`, "PUT", {
@@ -61,14 +65,14 @@ const UpdatePassword = ({
     
         }
         setIsLoading(false);
-        showSuccessToast("Změna hesla proběhla úspěšně");
+        showSuccessToast(authConstants.changePasswordSuccess[language]);
         setUpdatePassword(false);
       }
     } catch (e:any) {
       console.error(e.message);
-      setError(e.message)  
+      setError(authConstants.changePasswordError[language])  
       setIsLoading(false);
-      showErrorToast("Chyba při změně hesla");
+      showErrorToast(authConstants.changePasswordError[language]);
     }
   };
 
@@ -76,7 +80,7 @@ const UpdatePassword = ({
     <div className="bg-gray-100 dark:bg-gray-500 dark:text-gray-100 p-6 rounded-lg shadow-md w-full md:w-[35rem]">
       {!updatePassword ? (
         <div>
-          <div className="text-lg font-semibold mb-2">Heslo</div>
+          <div className="text-lg font-semibold mb-2">{authConstants.password[language]}</div>
         </div>
       ) : (
         <form className="space-y-4 relative" onSubmit={handleSubmitPassword}>
@@ -90,7 +94,7 @@ const UpdatePassword = ({
           <input
             type={showPassword ? "text" : "password"}
             name="password"
-            placeholder="nové heslo"
+            placeholder={authConstants.newPassword[language]}
             className="w-full border rounded-md p-2 text-black"
             maxLength={20}
             autoComplete="new-password"
@@ -108,7 +112,7 @@ const UpdatePassword = ({
           <input
             type={showPassword ? "text" : "password"}
             name="confirmPassword"
-            placeholder="opakuj heslo"
+            placeholder={authConstants.repeatPassword[language]}
             className="w-full border rounded-md p-2 text-black"
             maxLength={20}
             autoComplete="new-password"
@@ -134,7 +138,7 @@ const UpdatePassword = ({
             }`}
             disabled={!!isFalse}
           >
-            Ulož
+            {authConstants.save[language]}
           </Button>
         </form>
       )}
@@ -148,7 +152,7 @@ const UpdatePassword = ({
           color="blue"
           className="mt-4 w-full"
         >
-          Změnit heslo
+          {authConstants.changePassword[language]}
         </Button>
       ) : (
         <Button
@@ -159,7 +163,7 @@ const UpdatePassword = ({
           color="gray"
           className="mt-4 w-full border-1.5"
         >
-          Zrušit
+          {authConstants.cancel[language]}
         </Button>
       )}
     </div>

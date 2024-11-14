@@ -11,7 +11,8 @@ import { initialToureState, TourProps } from '../types';
 import { BASE_URL, HTTP_CONFIG } from '../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {  Flip, toast } from 'react-toastify';
-
+import { useLanguageContext } from '../context/languageContext';
+import { tourConstants } from '../constants/constantsTours';
 
 function CreateTour() {
     const queryClient = useQueryClient();
@@ -30,7 +31,7 @@ function CreateTour() {
     const [backendError,setBackendError] = useState<string | null>(null);
     const navigate = useNavigate();
     const [tour, setTour] = useState<TourProps>(initialToureState);
-
+    const { language} = useLanguageContext();
     
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -249,37 +250,25 @@ function CreateTour() {
     <div className="text-black dark:text-white">
           <div className='flex justify-end p-4'>
       <button className='bg-gray-200 hover:bg-gray-300 darK:bg-gray-700 darK:hover:bg-gray-800 px-4 py-2 dark:text-black rounded-md'
-              onClick={()=>navigate(-1)}>Zpět</button>
-    </div>
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8">Jak vytvořit Spolucestu</h1>
-      <h2 className="text-xl font-semibold mb-4">1. Začněte Registrací:</h2>
-      <p className="mb-4">Pokud jste již zaregistrovaní uživatelé, můžete tento krok přeskočit. Pokud ne, zaregistrujte se na našem webu a vytvořte si účet. Tím se vám umožní spravovat vaše nabídky spolucesty a komunikovat s ostatními uživateli.</p>
-      <h2 className="text-xl font-semibold mb-4">2. Přihlaste se:</h2>
-      <p className="mb-4">Po registraci nebo pokud už máte účet, přihlaste se pomocí svého uživatelského jména a hesla.</p>
-      <h2 className="text-xl font-semibold mb-4">3. Vyplňte Formulář:</h2>
-      <p className="mb-4">Po přihlášení klikněte na tlačítko "Vytvořit novou nabídku spolucesty". Vyplňte formulář s následujícími informacemi:</p>
-      <ul className="list-disc ml-8 mb-4">
-        <li><strong>Destinace:</strong> Kam se chystáte? Uveďte místo, které plánujete navštívit.</li>
-        <li><strong>Příbližný termín</strong> Kdy plánujete odjet? Uveďte příbližný termín.</li>
-        <li><strong>Typ cesty:</strong> Jaký druh cesty plánujete? Moře, hory, výlety, atd. Zde můžete specifikovat typ vaší dobrodružné plánované cesty.</li>
-        <li><strong>Koho hledáte:</strong> Jakého spolucestujícího hledáte? Zadejte požadavky na pohlaví, věk, zájmy, atd.</li>
-        <li><strong>Informace o sobě:</strong> Napište krátký popis o sobě. Zahrňte vaše zájmy, preference a vše, co si myslíte, že by měli ostatní uživatelé vědět.</li>
-      </ul>
-    </div>
+              onClick={()=>navigate(-1)}>{tourConstants.back[language]}</button>
+              </div>
+              <div 
+                dangerouslySetInnerHTML={{ __html: tourConstants.createTourGuide[language] }}
+              />
+
     
     <div>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-center mb-8">Vytvoř spolucestu</h1>
+        <h1 className="text-3xl font-bold text-center mb-8">{tourConstants.createTour[language]}</h1>
         <div>
           <form onSubmit={onSubmitFunction}>
             <div className="mb-4">
             
-            <label className="block text-sm font-bold mb-2" htmlFor="destination">Destinace:</label>
+            <label className="block text-sm font-bold mb-2" htmlFor="destination">{tourConstants.destination[language]}</label>
 <div className="relative w-full px-2">
 <input
   type="text"
-  placeholder={chosenCountry ? chosenCountry : "vyber zemi"}
+  placeholder={chosenCountry ? chosenCountry : tourConstants.chooseCountry[language]}
   maxLength={8}
   value={searchTerm}
   onChange={handleInputChange}
@@ -293,7 +282,7 @@ function CreateTour() {
     onClick={handleDropdownClick}
   >
     {filteredCountries.length === 0 ? (
-      <div className="px-4 py-2">Žádná shoda</div>
+      <div className="px-4 py-2">{tourConstants.noMatch[language]}</div>
     ) : (
       filteredCountries.map((country, index) => (
         <div
@@ -312,7 +301,7 @@ function CreateTour() {
     )}
     {countryNames.length > filteredCountries.length && (
       <div className="flex items-center justify-center opacity-50 italic">
-        + dalších {countryNames.length - filteredCountries.length} zemí
+        + {tourConstants.nextDestinations[language]} {countryNames.length - filteredCountries.length} {tourConstants.countries[language]}
       </div>
     )}
   </div>
@@ -327,7 +316,7 @@ function CreateTour() {
 
 
             <div className='flex gap-4 items-center mt-4'>
-            <label className="block text-sm font-bold " htmlFor="date">Začátek cesty:</label>
+            <label className="block text-sm font-bold " htmlFor="date">{tourConstants.tourBeginning[language]}</label>
             <DatePicker
               selected={selectedDate}
               onChange={handleDateChange}
@@ -338,7 +327,7 @@ function CreateTour() {
             />
 
                  {selectedDate &&  <>
-                 <label className="block text-sm font-bold " htmlFor="dateend">do:</label>
+                 <label className="block text-sm font-bold " htmlFor="dateend">{tourConstants.until[language]}</label>
             <DatePicker
 
               selected={selectedDateEnd}
@@ -354,7 +343,7 @@ function CreateTour() {
 
      <div className="mb-4 text-sm mt-4	">
 
-      <label className="block text-sm font-bold mb-2" htmlFor="journey-type">Typ cesty:</label>
+      <label className="block text-sm font-bold mb-2" htmlFor="journey-type">{tourConstants.tourType[language]}</label>
       <div className="flex flex-wrap gap-3">
 
         {typeOfTour.map((type, index) => (
@@ -410,12 +399,12 @@ function CreateTour() {
       </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-bold mb-2" htmlFor="looking-for">Koho hledáte:</label>
+              <label className="block text-sm font-bold mb-2" htmlFor="looking-for">{tourConstants.whoLookFor[language]}</label>
               <textarea
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-gray-200 leading-tight focus:outline-none focus:shadow-outline"
                 id="looking-for"
                 rows={5}
-                placeholder="Jakého spolucestujícího hledáte? Zadejte požadavky na pohlaví, věk, zájmy, atd. Omezte se na 500 znaků."
+                placeholder={tourConstants.whoLookForPlaceholder[language]}
                 maxLength={500}
                 name="fellowtraveler"
                 value={tour.fellowtraveler ?? ""}
@@ -424,12 +413,12 @@ function CreateTour() {
               ></textarea>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-bold mb-2" htmlFor="about-you">Informace o sobě:</label>
+              <label className="block text-sm font-bold mb-2" htmlFor="about-you">{tourConstants.aboutMe[language]}</label>
               <textarea
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-gray-200  leading-tight focus:outline-none focus:shadow-outline"
                 id="about-you"
                 rows={5}
-                placeholder="Napište krátký popis o sobě. Zahrňte vaše zájmy, preference a vše, co si myslíte, že by měli ostatní uživatelé vědět. Omezte se na 500 znaků."
+                placeholder={tourConstants.aboutMePlaceholder[language]}
                 maxLength={500}
                 name="aboutme"
                 value={tour.aboutme ?? ""}
@@ -442,7 +431,7 @@ function CreateTour() {
              className={` ${allowSubmitButton ? ':hover:bg-blue-700  cursor-pointer':' opacity-30  cursor-default py-2 px-4 pointer-events-none ' } bg-blue-500 min-w-[150px]  text-whitefont-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline `}
               type="submit"
             >
-              Odeslat
+             {tourConstants.send[language]}
             </button>
 
           </form>

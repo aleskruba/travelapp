@@ -6,7 +6,6 @@ import { BASE_URL } from "../../constants/config";
 import google from "../../assets/images/google.png";
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
 import { authConstants } from "../../constants/constantsAuth";
-import { navbarConstants } from "../../constants/constantsData";
 import { useLanguageContext } from '../../context/languageContext';
 
 interface UpdateProfileProps {
@@ -50,7 +49,7 @@ const UpdateProfile = ({
          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Simple email regex validation
 
         if (!emailRegex.test(updateUser.email)) {
-            setError("Špatný fomát mailu");
+            setError(authConstants.emailFormat[language]);
             return;
         }
 

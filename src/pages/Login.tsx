@@ -91,9 +91,11 @@ function Login() {
       setUser(data.user);
       setIsLoding(false);
       return data;
-    } catch (error) {
+    } catch (error:any) {
       setIsLoding(false);
-      throw error;
+      setBackendError(error.message)
+      console.error(error.message);
+      throw new Error("Nesprávný email nebo heslo");
     }
   };
   const getClientIp = async () => {

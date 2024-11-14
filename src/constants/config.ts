@@ -1,5 +1,5 @@
-export const BASE_URL = 'https://travelapp-server.onrender.com/api';
-//export const BASE_URL = 'http://localhost:5252/api';
+//export const BASE_URL = 'https://travelapp-server.onrender.com/api';
+export const BASE_URL = 'http://localhost:5252/api';
 
 export const HTTP_CONFIG = {
   headers: {
@@ -7,5 +7,5 @@ export const HTTP_CONFIG = {
   },
 };
 
-//export const SOCKET_URL = 'http://localhost:3001';
-export const SOCKET_URL = 'https://travelappsocket.onrender.com';
+export const SOCKET_URL = 'http://localhost:3001';
+//export const SOCKET_URL = 'https://travelappsocket.onrender.com';

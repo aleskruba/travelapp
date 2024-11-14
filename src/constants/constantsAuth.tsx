@@ -1,5 +1,4 @@
 
-
 export const authConstants = {
     login: {
         en: 'Login',
@@ -47,10 +46,11 @@ export const authConstants = {
         es: 'Esta cuenta no está registrada',
     },
     loginError: {
-        en: 'Login error',
-        cz: 'Chyba při přihlašování',
-        es: 'Error al iniciar sesión',
+        en: 'Incorrect password or email',
+        cz: 'Špatné heslo nebo e-mail',
+        es: 'Correo electrónico o contraseña incorrectos',
     },
+    
     success: {
         en: 'Login successful',
         cz: 'Přihlášení proběhlo úspěšně',
@@ -181,6 +181,87 @@ export const authConstants = {
             en: 'Cancel',
             cz: 'Zrušit',
             es: 'Cancelar',
+        },
+        changePasswordSuccess: {
+            en: 'Password change was successful',
+            cz: 'Změna hesla proběhla úspěšně',
+            es: 'El cambio de contraseña fue exitoso',
+        },
+        changePasswordError: {
+            en: 'Error changing password',
+            cz: 'Chyba při změně hesla',
+            es: 'Error al cambiar la contraseña',
+        },passwordErrorMinMax: {
+            en: 'Password must be between 8 and 50 characters',
+            cz: 'Heslo musí mít 8 až 50 znaků',
+            es: 'La contraseña debe tener entre 8 y 50 caracteres',
+        },newPassword: {
+            en: 'New Password',
+            cz: 'Nové heslo',
+            es: 'Nueva contraseña',
+        },changePassword: {
+            en: 'Change Password',
+            cz: 'Změnit heslo',
+            es: 'Cambiar contraseña',
+        },deleteAccount: {
+            en: 'Delete Account',
+            cz: 'Smazat účet',
+            es: 'Eliminar cuenta',
+        },
+        deleteAccountSuccess: {
+            en: 'Account successfully deleted',
+            cz: 'Účet byl úspěšně smazán',
+            es: 'Cuenta eliminada con éxito',
+        },
+        deleteAccountError: {
+            en: 'Error deleting account',
+            cz: 'Chyba při smazání profilu',
+            es: 'Error al eliminar la cuenta',
+        },confirm: {
+            en: 'Confirm',
+            cz: 'Potvrdit',
+            es: 'Confirmar',
+        },deleteAccountMessage: {
+            en: 'Are you sure you want to delete your account?',
+            cz: 'Chceš opravdu smazat svůj účet?',
+            es: '¿Estás seguro de que deseas eliminar tu cuenta?',
+        },emailNotRegistered: {
+            en: 'Email is not registered',
+            cz: 'Email není zaregistrován',
+            es: 'El correo no está registrado',
+        },emailWasSent: {
+            en: 'Email was successfully sent',
+            cz: 'Email byl úspěšně odeslán',
+            es: 'El correo fue enviado con éxito',
+        },forgottenPasswordTitle: {
+            en: 'FORGOTTEN PASSWORD',
+            cz: 'ZAPOMENUTÉ HESLO',
+            es: 'CONTRASEÑA OLVIDADA',
+        },send: {
+            en: 'SEND',
+            cz: 'ODESLAT',
+            es: 'ENVIAR',
+        },remember: {
+            en: 'Already remember?',
+            cz: 'Vzpomněl jsi si?',
+            es: '¿Ya recuerdas?',
+        },enterYourEmail: {
+            en: 'Enter your email',
+            cz: 'Zadej svůj email',
+            es: 'Ingresa tu correo electrónico',
+        },missingToken: {
+            en: 'Token is missing or you are already logged in',
+            cz: 'Chybí token nebo jsi již přihlášen',
+            es: 'Falta el token o ya estás registrado',
+        },expiredToken: {
+            en: 'The token has expired',
+            cz: 'Vypršela platnost tokenu',
+            es: 'El token ha expirado',
+        },
+        verifyToken: {
+            en: 'Verifying token...',
+            cz: 'Ověřuji token...',
+            es: 'Verificando el token...',
         }
         
         
@@ -189,18 +270,14 @@ export const authConstants = {
         
         
         
+
+
+        
+        
+        
         
   
         
-        
-        
-        
-        
-        
     
-    
-    
-    
-
 
 }

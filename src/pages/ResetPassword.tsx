@@ -9,6 +9,8 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { fetchData } from "../hooks/useFetchData";
 import Button from "../components/customButton/Button";
 import { showErrorToast, showSuccessToast } from "../utils/toastUtils";
+import { authConstants } from "../constants/constantsAuth";
+import { useLanguageContext } from '../context/languageContext';
 
 interface NewPasswordCredentials {
   password: string;
@@ -22,14 +24,14 @@ function ResetPassword() {
   const [verified, setVerified] = useState(false);
   const [userId, setUserId] = useState(null);
   const { user } = useAuthContext();
-
+  const { language} = useLanguageContext();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
 
   useEffect(() => {
     if (!token) {
-      toast.error('chybí token nebo jsi přihlášen', {
+      toast.error(authConstants.missingToken[language], {
         position: "top-left",
         autoClose: 1500,
         hideProgressBar: true,
@@ -64,7 +66,7 @@ function ResetPassword() {
         setVerified(true);
       } catch (error) {
         console.error('Error verifying token:', error);
-        toast.error('vypšela platnost tokenu', {
+        toast.error(authConstants.expiredToken[language], {
           position: "top-left",
           autoClose: 1500,
           hideProgressBar: true,
@@ -94,16 +96,16 @@ function ResetPassword() {
 
   const validationSchema = Yup.object({
     password: Yup.string()
-      .required('Required')
-      .min(6, 'Password must be at least 6 characters')
-      .max(50, 'Password must be at most 50 characters')
+      .required(authConstants.required[language])
+      .min(6, authConstants.passwordMin[language])
+      .max(50, authConstants.passwordMax[language])
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]/,
-        'Password must contain at least one lowercase letter, one uppercase letter, and one digit'
+        authConstants.passwordFormat[language]
       ),
     confirmPassword: Yup.string()
-      .oneOf([Yup.ref('password')], 'Passwords must match')
-      .required('Required')
+      .oneOf([Yup.ref('password')], authConstants.passwordsMatch[language])
+      .required(authConstants.required[language])
   });
 
   const initialValues = {
@@ -130,7 +132,7 @@ function ResetPassword() {
 
       if (!response.ok && response.status === 400) {
         setIsLoding(false);
-        throw new Error('Hesla musí být stejná');
+        throw new Error(authConstants.passwordsMatch[language]);
       }
 
       const data = await response.json();
@@ -140,7 +142,7 @@ function ResetPassword() {
       navigate("/login");
     } catch (error: any) {
       setBackendError(error.message);
-      showErrorToast('Chyba při resetování hesla')
+      showErrorToast('ERROR...')
     }
   }
 
@@ -160,7 +162,7 @@ function ResetPassword() {
                         name="password"
                         type={showPassword ? "text" : "password"}
                         id="password"
-                        placeholder="Nové heslo"
+                        placeholder={authConstants.newPassword[language]}
                         autoComplete="off"
                         className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                       />
@@ -177,7 +179,7 @@ function ResetPassword() {
                         name="confirmPassword"
                         type={showPassword ? "text" : "password"}
                         id="confirmPassword"
-                        placeholder="Zopakuj heslo"
+                        placeholder={authConstants.repeatPassword[language]}
                         autoComplete="off"
                         className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                       />
@@ -197,7 +199,7 @@ function ResetPassword() {
                     className={`px-4 py-2 rounded-md transition duration-300 w-[120px] ${isFormValid ? 'text-gray-700 hover:bg-blue-600' : 'opacity-50 cursor-not-allowed'}`}
                     disabled={!isFormValid}
                   >
-                    Uložit
+                  {authConstants.save[language]}
                   </Button>
                   <Button
                     onClick={() => navigate('/')}
@@ -205,7 +207,7 @@ function ResetPassword() {
                     color="gray"
                     className="px-4 py-2 text-center transition duration-300 w-[120px]"
                   >
-                    Zpět
+                 {authConstants.back[language]}
                   </Button>
                 </div>
 
@@ -214,7 +216,7 @@ function ResetPassword() {
               }}
             </Formik>
           ) : (
-            <div>ověřuji token...</div>
+            <div>  {authConstants.verifyToken[language]}</div>
           )}
         </div>
       </div>
