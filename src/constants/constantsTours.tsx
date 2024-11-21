@@ -156,7 +156,68 @@ tourBeginning: {
   en:'Send',
   cz:'Odeslat',
   es:'Enviar'
+},chooseTourType: {
+  en: 'Choose tour type...',
+  cz: 'Vyber typ cesty ...',
+  es: 'Elige tipo de viaje...'
+},searchCountryDebounce: {
+  en: 'Search country... (debounce method)',
+  cz: 'Hledej zemi ... (debounce metoda)',
+  es: 'Buscar país... (método debounce)'
+},chooseTourDate: {
+  en: 'Choose tour date...',
+  cz: 'Vyber termín cesty ...',
+  es: 'Elige fecha del viaje...'
+},
+iLookFor: {
+  en: 'I am looking for:',
+  cz: 'Hledám:',
+  es: 'Busco:'
+},andMore: {
+  en: '... and more',
+  cz: '... a další',
+  es: '... y más'
+},maximumNumberOfTours :{
+  en: 'You can create a maximum of 4 tours',
+  cz: 'Můžeš vytvořit maximálně 4 spolucesty',
+  es: 'Puedes crear un máximo de 4 viajes',
+},
+somethingWentWrongTours: {
+  en: 'Something went wrong, fellow travelers could not be loaded.',
+  cz: 'Něco se pokazilo, spolucestující nebyli načteni',
+  es: 'Algo salió mal, los compañeros de viaje no pudieron ser cargados.'
+},expiredTour: {
+  en: 'Expired tour',
+  cz: 'Prošlá splucesta',
+  es: 'Tour expirado'
+},
+delete: {
+  en: 'Delete',
+  cz: 'Smazat',
+  es: 'Eliminar'
+},
+update: {
+  en: 'Update',
+  cz: 'Upravit',
+  es: 'Actualizar'
+},
+deleteTourAreYouSure: {
+  en: 'Are you sure you want to delete this tour?',
+  cz: 'Chceš opravdu smazat tuto tour?',
+  es: '¿Estás seguro de que quieres eliminar este tour?'
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

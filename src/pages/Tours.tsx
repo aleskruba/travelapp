@@ -13,6 +13,9 @@ import { fetchData } from '../hooks/useFetchData';
 import Button from '../components/customButton/Button';
 import { useLanguageContext } from '../context/languageContext';
 import { tourConstants } from '../constants/constantsTours';
+import { countryTranslationsEn,countryTranslationsEs } from '../constants/constantsData';
+ import { typeOfTourEn } from '../constants/constantsData';
+import { typeOfTourEs } from '../constants/constantsData'; 
 
 interface CountryOption {
   readonly value: string;
@@ -35,11 +38,41 @@ function Tours() {
   const tourDatesParam = searchParams.get('tourdates');
 
 
-  const [countries, setCountries] = useState<any[]>(countriesParam ? 
-    countriesParam.split(',').map(value => ({ value, label: value })) : []);
+  const [countries, setCountries] = useState<any[]>(countriesParam 
+    ? countriesParam.split(',').map(value => {
+        if (language === 'en') {
+          // Find the country translation in English
+          const country = countryTranslationsEn.find(c => c.cz === value);
+          return { value, label: country ? country.en : value }; // Default to `value` if no translation found
+        } else if (language === 'es') {
+          // Find the country translation in Spanish
+          const country = countryTranslationsEs.find(c => c.cz === value);
+          return { value, label: country ? country.es : value }; // Default to `value` if no translation found
+        }
+        return { value, label: value }; // Default case, no translation
+      })
+    : []);
+  
+
+
+/*   const [tourTypes, setTourTypes] = useState<any[]>(tourTypesParam ? 
+      tourTypesParam.split(',').map(value => {
+        if (language === 'en') {
+          // Find the country translation in English
+          const t = typeOfTourEn.find(c => c.cz === value);
+          return { value, label: t ? t.en : value }; // Default to `value` if no translation found
+        } else if (language === 'es') {
+          // Find the country translation in Spanish
+          const t = typeOfTourEs.find(c => c.cz === value);
+          return { value, label: t ? t.es : value }; // Default to `value` if no translation found
+        }
+        return { value, label: value }; // Default case, no translation
+      })
+    : []); */
+
   const [tourTypes, setTourTypes] = useState<any[]>(tourTypesParam ? 
-      tourTypesParam.split(',').map(value => ({ value, label: value })) : []
-  );
+    tourTypesParam.split(',').map(value => ({ value,   label: 'test'})) : []
+);
   const [tourDates, setTourDates] = useState<any>(
     tourDatesParam ? { value: tourDatesParam, label: tourDatesParam } : null
   );
@@ -54,12 +87,37 @@ function Tours() {
 
     const searchParam = searchParams.get('search');
 
+
     if (countriesParam) {
-      setCountries(countriesParam.split(',').map(value => ({ value, label: value })));
+  
+      setCountries(
+        countriesParam.split(',').map(value => ({
+          value,
+          label: language === 'en'
+            ? countryTranslationsEn.find(c => c.cz === value)?.en
+            : language === 'es'
+            ? countryTranslationsEs.find(c => c.cz === value)?.es
+            : value // Default to the country value if no translation is found
+        }))
+      );
+      
+      
     }
+ /*    if (tourTypesParam) {
+      setTourTypes(
+        tourTypesParam.split(',').map(value => ({
+          value,
+          label: language === 'en'
+            ? typeOfTourEn.find(c => c.cz === value)?.en
+            : language === 'es'
+            ? typeOfTourEs.find(c => c.cz === value)?.es
+            : value // Default to the country value if no translation is found
+        }))
+      );
+    } */
 
     if (tourTypesParam) {
-      setTourTypes(tourTypesParam.split(',').map(value => ({ value, label: value })));
+      setTourTypes(tourTypesParam.split(',').map(value => ({ value, label: 'test' })));
     }
 
     if (tourDatesParam) {
@@ -70,7 +128,7 @@ function Tours() {
     if (searchParam) {
       setText(searchParam);
     }
-  }, [searchParams,countriesParam, tourDatesParam, tourTypesParam]);
+  }, [searchParams,countriesParam, tourDatesParam, tourTypesParam,language]);
 
   useEffect(() => {
     // Update the searchParams whenever countries or search text changes
@@ -98,7 +156,9 @@ function Tours() {
     params.set('page', (currentPage + 1).toString());
 
     setSearchParams(params);
-  }, [countries, tourTypes, tourDates, debouncedValue, currentPage, setSearchParams]);
+  }, [countries, tourTypes, tourDates, debouncedValue, currentPage, setSearchParams,language]);
+
+
 
   const fetchTours = async (page = 0) => {
     const params = new URLSearchParams();
@@ -128,11 +188,13 @@ function Tours() {
     try {
      const response = await fetchData(url,'GET');
 
+    
       if (!response.ok) {
         const errorData = await response.json();
         setBackendError(errorData.error);
     
         }
+
 
       backendError && setBackendError(null);
       return await response.json();
@@ -147,7 +209,7 @@ function Tours() {
   
   const { data, isLoading, isFetching, isError} = useQuery({
     queryFn: () => fetchTours(currentPage),
-    queryKey: ['tours', currentPage, debouncedValue, countries, tourTypes, tourDates],
+    queryKey: ['tours', currentPage, debouncedValue, countries, tourTypes, tourDates,language],
     retry: 2,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: true,
@@ -173,9 +235,18 @@ function Tours() {
     return <span>{tourConstants.somethingWentWrong[language]}</span>;
   }
 
-  const userDataFiltered = data?.tours.filter((keyword: any) =>
-    keyword.destination.toLowerCase().startsWith(debouncedValue ? debouncedValue.toLowerCase() : '')
-  ) || [];
+
+
+
+  let  userDataFiltered =   data?.tours.filter((keyword: any) =>
+        keyword.destinationes.toLowerCase().includes(debouncedValue ? debouncedValue.toLowerCase() : '') || 
+        keyword.destinationen.toLowerCase().includes(debouncedValue ? debouncedValue.toLowerCase() : '') ||
+        keyword.destination.toLowerCase().includes(debouncedValue ? debouncedValue.toLowerCase() : '') 
+   ) || [];
+
+
+
+
   
   const currentUrl = window.location.href;
 

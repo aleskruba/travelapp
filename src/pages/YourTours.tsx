@@ -11,10 +11,12 @@ import { useTourContext } from '../context/tourContext';
 import { showErrorToast, showSuccessToast } from '../utils/toastUtils';
 import Image from '../custom/Image';
 import fun from '../assets/images/fun.png';
+import { tourConstants } from '../constants/constantsTours';
+import { useLanguageContext } from '../context/languageContext';
 
 function YourTours() {
     const queryClient = useQueryClient();
-
+    const { language} = useLanguageContext();
     const [backendError, setBackendError] = useState<string | null>(null);
     const [selectedTourId, setSelectedTourId] = useState<number | null>(null);
     const [showModal, setShowModal] = useState<boolean>(false);
@@ -108,11 +110,11 @@ function YourTours() {
     };
 
     if (isLoading) {
-        return <div className='flex justify-center items-center h-screen'><span>Moment prosím ...</span></div>;
+        return <div className='flex justify-center items-center h-screen'><span>{tourConstants.waitplease[language] }</span></div>;
     }
 
     if (isError) {
-        return <span>Něco se pokazilo, spolucety nebyly načteny</span>;
+        return <span>{tourConstants.somethingWentWrongTours[language] }</span>;
     }
 
     return (
@@ -121,10 +123,10 @@ function YourTours() {
            { data.yourtours.length < 1 && 'Nemáš vytvořenou žádnou spolucestu' } 
            </h1>
            
-            <h1 className='text-center mt-4 text-2xl font-thin'>Můžeš vytvořit maximálně 4 spolucesty</h1>
+            <h1 className='text-center mt-4 text-2xl font-thin'>{tourConstants.maximumNumberOfTours[language] }</h1>
             <div className='text-center text-blue-500 text-xl'>
                 <Link to={'../createtour'}>
-                    Vytvoř spolucestu <span className="underline cursor-pointer text-blue-600">zde</span>
+                {tourConstants.createTour[language] } <span className="underline cursor-pointer text-blue-600">{tourConstants.here[language] }</span>
                 </Link>
             </div>
             { data.yourtours.length < 1 && <>
@@ -154,15 +156,15 @@ function YourTours() {
                             <div className='flex flex-col gap-0' key={tour.id}>
                                 <Tour tour={tour} />
                                 <div className="flex justify-center space-x-2 w-full border-dashed border-current dark:border-white border-b-2 border-r-2 border-l-2 pb-2 pt-2 rounded-md">
-                                    <Link to={`${tour.id}`} className='px-4 py-2 rounded font-semibold focus:outline-none bg-blue-500 text-white hover:bg-blue-600'>Upravit</Link>
-                                    <Button onClick={() => handleDeleteTourClick(tour.id)} color="red">Smazat</Button>
+                                    <Link to={`${tour.id}`} className='px-4 py-2 rounded font-semibold focus:outline-none bg-blue-500 text-white hover:bg-blue-600'>   {tourConstants.update[language] }</Link>
+                                    <Button onClick={() => handleDeleteTourClick(tour.id)} color="red">{tourConstants.delete[language] }</Button>
                                 </div>
                             </div>
                         );
                     } else {
                         return (
                             <div className='flex flex-col justify-center gap-2 relative' key={tour.id}>
-                                <div className='flex justify-center font-bold items-center gap-2 absolute top-16 right-14'>Prošlá splucesta <ImArrowUp /></div>
+                                <div className='flex justify-center font-bold items-center gap-2 absolute top-16 right-14'>{tourConstants.expiredTour[language] } <ImArrowUp /></div>
                                 <div className='flex flex-col gap-0'>
                                     <div className='opacity-30'>
                                         <Tour tour={tour} />
@@ -170,10 +172,10 @@ function YourTours() {
                                     <div className="flex justify-center space-x-2 w-full border-dashed border-current dark:border-white border-b-2 border-r-2 border-l-2 pb-2 pt-2 rounded-md">
                                         <Link to={`${tour.id}`} 
                                               className='px-4 py-2 rounded font-semibold focus:outline-none bg-blue-500 text-white hover:bg-blue-600'>
-                                        Upravit
+                                        {tourConstants.update[language] }
                                         </Link>
                                       
-                                        <Button  onClick={() => handleDeleteTourClick(tour.id)} color="red">Smazat</Button>
+                                        <Button  onClick={() => handleDeleteTourClick(tour.id)} color="red">{tourConstants.delete[language] }</Button>
                                     </div>
                                 </div>
                             </div>
@@ -186,7 +188,7 @@ function YourTours() {
                 show={showModal}
                 onClose={() => setShowModal(false)}
                 onConfirm={() => { selectedTourId && deleteTourMutation.mutate(selectedTourId); }}
-                message="Chceš opravdu smazat tuto zprávu?"
+                message={tourConstants.deleteTourAreYouSure[language] }
             />
         </div>
     );

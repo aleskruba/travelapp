@@ -1,6 +1,7 @@
-
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
+import { useLanguageContext } from '../../context/languageContext';
+import { tourConstants } from '../../constants/constantsTours';
 
 interface TourTypeProps {
   tourDates: any;
@@ -21,6 +22,7 @@ function SearchDateComponent({tourDates,setTourDates}:TourTypeProps) {
     const isClearable = true;
     const formattedDates = [];
     const currentDate = new Date();
+    const { language} = useLanguageContext();
 
     for (let i = 0; i < 12; i++) {
 
@@ -51,7 +53,7 @@ function SearchDateComponent({tourDates,setTourDates}:TourTypeProps) {
    
         isClearable={isClearable}
         components={animatedComponents}
-        placeholder="Vyber termín cesty ..."
+        placeholder={tourConstants.chooseTourDate[language]}
         options={formattedDateInTour}
         onChange={handleChange}
         defaultValue={tourDates} 

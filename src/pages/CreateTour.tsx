@@ -2,8 +2,9 @@ import React, { useState, FormEvent, ChangeEvent ,useRef, useEffect} from 'react
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import DOMPurify from 'dompurify';
-import { typeOfTour } from '../constants/constantsData';
-import { countryNames } from '../constants/constantsData';
+import { typeOfTourObject } from '../constants/constantsData';
+import { typeOfTourLang } from '../constants/constantsData';
+import { countryNames,countryNamesEs,countryNamesEn } from '../constants/constantsData';
 import { useAuthContext } from '../context/authContext';
 import { useTourContext } from '../context/tourContext';
 import { useNavigate } from "react-router-dom";
@@ -13,6 +14,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {  Flip, toast } from 'react-toastify';
 import { useLanguageContext } from '../context/languageContext';
 import { tourConstants } from '../constants/constantsTours';
+import { countryNameObjects } from '../constants/constantsData';
+import { countryTranslationsEn,countryTranslationsEs } from '../constants/constantsData';
 
 function CreateTour() {
     const queryClient = useQueryClient();
@@ -32,11 +35,29 @@ function CreateTour() {
     const navigate = useNavigate();
     const [tour, setTour] = useState<TourProps>(initialToureState);
     const { language} = useLanguageContext();
-    
+    const [selectedTourTypeIds, setSelectedTourTypeIds] = useState<number[]>([]); // Array to store selected IDs
+
+
+    let chosenLanguageCountries : string[] = [];
+
+        if (language === 'es') {
+      chosenLanguageCountries = countryNamesEs;
+    } else if (language === 'en') {
+      chosenLanguageCountries = countryNamesEn;
+    } else if (language === 'cz') {
+      chosenLanguageCountries = countryNames;
+    }
+
+    function getCountryTranslations(countryName:string) {
+      const enTranslation = countryTranslationsEn.find(item => item.cz === countryName)?.en;
+      const esTranslation = countryTranslationsEs.find(item => item.cz === countryName)?.es;
+      return { enTranslation, esTranslation };
+  }
+
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         const sanitizedValue = DOMPurify.sanitize(value); // Sanitize the value
-      
+        
         setTour(prevState => {
           const newState = { ...prevState, [name]: sanitizedValue };
       
@@ -78,10 +99,23 @@ function CreateTour() {
         setTour(prevState => ({ ...prevState, tourdateEnd: date || new Date() })); // Update tourdate property in the tour state with the selected date
       };
     
-      const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
+      const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>,tourKey: number) => {
         const { value } = e.target;
+
+        setSelectedTourTypeIds(prevSelectedIds => {
+          if (prevSelectedIds.includes(tourKey)) {
+            // If the ID is already selected, remove it (unselect)
+            return prevSelectedIds.filter(id => id !== tourKey);
+          } else {
+            // If the ID is not selected, add it to the array (select)
+            return [...prevSelectedIds, tourKey];
+          }
+        });
+
         setSelectedTypes(prevSelectedTypes => {
           if (prevSelectedTypes.includes(value)) {
+
+    
             return prevSelectedTypes.filter(type => type !== value);
           } else {
             return [...prevSelectedTypes, value];
@@ -89,7 +123,11 @@ function CreateTour() {
         });
       };
 
-    
+    useEffect(()=>{
+console.log(selectedTourTypeIds)
+    },[selectedTypes])
+
+
       const createTourMutation = useMutation({
         mutationFn: async (tour: any) => {
             const response = await fetch(`${BASE_URL}/tour`, {
@@ -139,17 +177,27 @@ function CreateTour() {
     
       const onSubmitFunction = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+
+        console.log(selectedTypes)
       
         const newTour = { 
           ...tour, 
-          tourtype: selectedTypes,
+          tourtype: selectedTourTypeIds,
           user_id:user?.id  // Assuming selectedTypes is the updated value for tourtype
         };
       
         const hasCompleted = !newTour.destination || newTour.tourtype.length === 0 || !newTour.fellowtraveler || !newTour.aboutme || !selectedDate ;
         if (hasCompleted) { setErrors('Nejsou vyplněna všechna pole')}
    
-        createTourMutation.mutate({ tour: newTour, user_id: tour.user_id });
+        const { enTranslation, esTranslation } = getCountryTranslations(chosenCountry);
+
+// Now pass the translations to your mutation
+            createTourMutation.mutate({
+                tour: newTour,
+                user_id: tour.user_id,
+                destinationen: enTranslation,
+                destinationes: esTranslation
+            });
       };
       
     const handleDropdownClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -157,18 +205,45 @@ function CreateTour() {
           setIsOpen(false);
         }
       };
+
+
+      const getCzechCountryName = (country:string, language:string) => {
+        let czechCountry;
+        if (language === 'es') {
+          czechCountry = countryTranslationsEs.find(item => item.es === country)?.cz;
+        } else if (language === 'en') {
+          czechCountry = countryTranslationsEn.find(item => item.en === country)?.cz;
+        }
+        return czechCountry;
+      };
     
       const handleSelectCountry = (country: string) => {
 
-        setChosenCountry(country);
+        const czechCountry = getCzechCountryName(country, language);
+        if (language !== 'cz' && czechCountry) {
+          setChosenCountry(czechCountry);  // Save Czech country name to state if not Czech
+        } else {
+          setChosenCountry(country);  // Save the original country name if the language is Czech
+        }
         setIsOpen(false);
         setSearchTerm('');
-        setTour(prevState => ({ ...prevState, destination: country}));
+
+     
+
+        let countryIdx = chosenLanguageCountries.findIndex(c => c === country);  
+        let countryOriginal = countryNames[countryIdx];
+
+        
+        setTour(prevState => ({ ...prevState, destination: countryOriginal}));
       };
       
       const maxDisplayedCountries = 15;
 
-      let filteredCountries = countryNames.filter((country) => {
+
+      
+
+
+      let filteredCountries = chosenLanguageCountries.filter((country) => {
         const normalizedCountry = country.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         const normalizedSearchTerm = searchTerm.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         
@@ -346,7 +421,7 @@ function CreateTour() {
       <label className="block text-sm font-bold mb-2" htmlFor="journey-type">{tourConstants.tourType[language]}</label>
       <div className="flex flex-wrap gap-3">
 
-        {typeOfTour.map((type, index) => (
+{/*         {typeOfTourLang[language].map((type, index) => (
           index % 2 === 0 && (
             <div key={index} className="mb-2 flex items-center   w-[180px]">
           <input
@@ -370,31 +445,69 @@ function CreateTour() {
             </div>
           )
         ))}
+ */}
 
-  {typeOfTour.map((type, index) => (
-            index % 2 !== 0 && (
-              <div key={index} className="mb-2 flex items-center   w-[180px]">
+{ typeOfTourObject.map((tour, index) => {
+  const key = Number(Object.keys(tour)[0]); // Convert the key to a number
+  const type = tour[key][language]; // Get the 'en' value (English translation)
+  const typeID = key
+
+  return index % 2 === 0 &&  (
+    <div key={index} className="mb-2 flex items-center w-[180px]">
       <input
         className="mr-2 hidden"
         id={`journey-type-${index}`}
         type="checkbox"
         value={type}
         checked={selectedTypes.includes(type)}
-        onChange={handleCheckboxChange}
+        onChange={(e) => handleCheckboxChange(e, typeID)}
       />
       <label htmlFor={`journey-type-${index}`} className="relative flex cursor-pointer">
         <div className="w-6 h-6 border border-gray-300 rounded-md flex items-center justify-center bg-white mr-2">
           {selectedTypes.includes(type) && (
-                <svg className="w-4 h-4 text-red-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="5" d="M5 13l4 4L19 7" />
-              </svg>
+            <svg className="w-4 h-4 text-red-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="5" d="M5 13l4 4L19 7" />
+            </svg>
           )}
         </div>
         {type}
       </label>
-              </div>
-            )
-          ))}
+    </div>
+  );
+})
+}
+
+{ typeOfTourObject.map((tour, index) => {
+  const key = Number(Object.keys(tour)[0]); // Convert the key to a number
+  const type = tour[key][language] ;// Get the 'en' value (English translation)
+  const typeID = key
+
+  return index % 2 !== 0 && (
+    <div key={index} className="mb-2 flex items-center w-[180px]">
+      <input
+        className="mr-2 hidden"
+        id={`journey-type-${index}`}
+        type="checkbox"
+        value={type}
+        checked={selectedTypes.includes(type)}
+        onChange={(e) => handleCheckboxChange(e, typeID)}
+      />
+      <label htmlFor={`journey-type-${index}`} className="relative flex cursor-pointer">
+        <div className="w-6 h-6 border border-gray-300 rounded-md flex items-center justify-center bg-white mr-2">
+          {selectedTypes.includes(type) && (
+            <svg className="w-4 h-4 text-red-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="5" d="M5 13l4 4L19 7" />
+            </svg>
+          )}
+        </div>
+        {type}
+      </label>
+    </div>
+  );
+})
+}
+
+
         </div>
       </div>
 
