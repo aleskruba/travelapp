@@ -216,6 +216,7 @@ function Tours() {
     staleTime: 100000,
   });
 
+  console.log(data)
   useEffect(() => {
     if (data?.allDestinations) {
       const formattedDestinations = data.allDestinations.map((destination: any) => ({
