@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import moment from "moment";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
 import { MessageProps } from "../../types";
 import { useAuthContext } from "../../context/authContext";
-import { BASE_URL, SOCKET_URL } from "../../constants/config";
-import useVote from "../../hooks/useVote";
+import { BASE_URL } from "../../constants/config";
 import { useCountryContext } from "../../context/countryContext";
 import { useThemeContext } from "../../context/themeContext";
-import { io } from "socket.io-client";
 import ConfirmationModal from "../ConfirmationModal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Reply from "./Reply";
@@ -20,6 +18,8 @@ import useRelativeDate from "../../hooks/DateHook";
 import Button from "../customButton/Button";
 import lide from "../../assets/images/lide.svg"
 import socket from "../../utils/socket";
+import { travelTipsConstants } from '../../constants/constantsTravelTips';
+import { useLanguageContext } from '../../context/languageContext';
 
 type Props = {
   message: MessageProps;
@@ -38,7 +38,6 @@ const Message: React.FC<Props> = ({
 
 }) => {
   const ITEMS_PER_PAGE = 5;
-/*   const socket = io(SOCKET_URL); */
 
   const { user } = useAuthContext();
   const { toggleModal } = useThemeContext();
@@ -51,30 +50,20 @@ const Message: React.FC<Props> = ({
     null
   );
   const { chosenCountry } = useCountryContext();
-  // const {votes,handleVote,setVotes} = useVote(chosenCountry);
   const [replyDiv, setReplyDiv] = useState(false);
   const [backendError, setBackendError] = useState<string | null>(null);
 
-  // Convert Date object to Moment object
+
   const replyDateMoment = moment(message.date);
-
-  // Use the custom hook to get the relative date
   const displayDateText = useRelativeDate(replyDateMoment);
+   const imageUrl = message?.user?.image ? message?.user?.image : lide;
 
-  //const socket = io(SOCKET_URL);
-  const imageUrl = message?.user?.image ? message?.user?.image : lide;
 
-/*   const handlePageChange = ({ selected }: { selected: number }) => {
-    setCurrentPageReply(selected);
-  }; */
-
- 
-  
+  const { language} = useLanguageContext();
   const [currentReplyPage, setCurrentReplyPage] = useState(0);
 
   const handleReplyPageChange = (selectedPage: { selected: React.SetStateAction<number>; }) => {
     setCurrentReplyPage(selectedPage.selected);
-    // Additional logic to fetch or display replies for the new page can go here
   };
   
   const handleDeleteMessageClick = (ID: number) => {
@@ -97,31 +86,12 @@ const Message: React.FC<Props> = ({
     const data = await response.json();
     return data;
   };
-
-  /*  const deleteMessageMutation = useMutation({
-      mutationFn: deleteMessageFunction,
-      onSuccess: () => {
-        // Invalidate the queries to refetch the updated data after deletion.
-        queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry, currentPage,currentPageReply] });
-        setShowModal(false);
-      },
-      onError: (error) => {
-        setShowModal(false);
-        setBackendError('Něco se pokazilo , zpráva nebyla smazána')
-        console.error('Error deleting message:', error);
-        // Handle error state, such as showing a toast notification
-      },
-      onSettled: () => {
-        // This will run after either success or error
-        queryClient.invalidateQueries({ queryKey: ['messages', chosenCountry, currentPage,currentPageReply] });
-      },
-    }); */ const deleteMessageMutation = useMutation({
+ const deleteMessageMutation = useMutation({
     mutationFn: deleteMessageFunction,
     onMutate: async (id) => {
    
 
-      // Cancel any outgoing refetches (so they don't overwrite optimistic update)
-      await queryClient.cancelQueries({
+     await queryClient.cancelQueries({
         queryKey: ["messages", chosenCountry, currentPage],
       });
 
@@ -152,13 +122,10 @@ const Message: React.FC<Props> = ({
 
       socket.emit('delete_message', {messageID:selectedMessageId, user_id:user?.id,chosenCountry});
   
-      // console.log(deletedMessage)
-      // If you need to confirm that the deletion was successful on the backend and matches your optimistic update,
-      // you can log the response or do additional checks here.
-    },
+      },
     onError: (error, id, context) => {
       setShowModal(false);
-      setBackendError("Něco se pokazilo, zpráva nebyla smazána");
+      setBackendError(travelTipsConstants.deleteMessageError[language]  );
       console.error("Error deleting message:", error);
 
       // Rollback cache to the previous state
@@ -235,7 +202,7 @@ const Message: React.FC<Props> = ({
 
           <div className="flex flex-row gap-4 md:gap-2">
             <p className="text-gray-600 dark:bg-gray-500 dark:text-gray-100 font-semibold">
-              {message?.user?.firstName?.slice(0, 10)} - {message.id}
+              {message?.user?.firstName?.slice(0, 10)} 
             </p>
             <p className="text-gray-600 dark:bg-gray-500 dark:text-gray-100  shrink-0 whitespace-nowrap overflow-hidden text-ellipsis">
               {/*  {moment(message?.date).format('DD-MM YYYY ')}
@@ -246,7 +213,7 @@ const Message: React.FC<Props> = ({
         </div>
         <div className="md:px-8  pb-2 p md:pb-0 break-all">
           <p className="">
-          {   deletedMessage === message.id ? <span className="font-semibold "> zpráva byla smazána</span>: message?.message} 
+          {   deletedMessage === message.id ? <span className="font-semibold "> {travelTipsConstants.messageDeleted[language]}</span>: message?.message} 
            
           </p>
         </div>
@@ -265,7 +232,7 @@ const Message: React.FC<Props> = ({
                 className=" px-4 py-1 text-sm	rounded-full focus:ring "
                 onClick={handleClick}
               >
-                Odpověz
+              {travelTipsConstants.reply[language]}
               </Button>
             )}
           </div>
@@ -295,13 +262,13 @@ const Message: React.FC<Props> = ({
               ? `${
                   message?.reply?.filter((r) => r.message_id === message.id)
                     .length
-                } odpovědí`
+                } ${travelTipsConstants.replies[language]}`
               : message?.reply?.filter((r) => r.message_id === message.id)
                   .length > 0
               ? `${
                   message?.reply?.filter((r) => r.message_id === message.id)
                     .length
-                } odpověď`
+                } ${travelTipsConstants.replyText[language]}`
               : ""}
           </h4>
         </div>
@@ -352,7 +319,7 @@ const Message: React.FC<Props> = ({
         onConfirm={() => {
           selectedMessageId && deleteMessageMutation.mutate(selectedMessageId);
         }}
-        message="Chceš opravdu smazat tuto zprávu?"
+        message={travelTipsConstants.confirmDeleteMessage[language]}
       />
     </div>
   );

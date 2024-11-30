@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import moment, { Moment } from 'moment';
+import { dateConstants } from '../constants/constantsDate';
+import { useLanguageContext } from '../context/languageContext';
 
 const useRelativeDate = (date: Moment) => {
     const [relativeDate, setRelativeDate] = useState<any>('');
+    const { language} = useLanguageContext();
 
   useEffect(() => {
     const currentDate = moment();
@@ -13,17 +16,28 @@ const useRelativeDate = (date: Moment) => {
     let displayText;
 
     if (diffMinutes < 1) {
-      displayText = 'před chvílí';
+      displayText = dateConstants.justNow[language];
     } else if (diffDays === 0) { // Check if it's today
-      displayText = 'dnes';
+      displayText = dateConstants.today[language];
     } else if (diffDays === 1) { // Check if it's yesterday
-      displayText = 'včera';
+      displayText = dateConstants.yesterday[language];
     } else if (diffDays > 1) { // Check for other past days
-      displayText = `před ${diffDays} dny`;
+      displayText = (language === 'cz' || language === 'es') 
+      ? `${dateConstants.ago[language]} ${diffDays} ${dateConstants.days[language]}`
+      : (language === 'en' 
+          ? `${diffDays} ${dateConstants.days[language]} ${dateConstants.ago[language]}`
+          : ''); // Add a fallback for other languages if needed
+    
+
     } else if (diffMonths === 1) { // Check if it's one month ago
-      displayText = 'před měsicem';
+      displayText = dateConstants.monthAgo[language];
     } else if (diffMonths > 1) { // Check for other past months
-      displayText = `před ${diffMonths} měsici`;
+      displayText = (language === 'cz' || language === 'es') 
+      ? `${dateConstants.ago[language]} ${diffDays} ${dateConstants.months[language]}`
+      : (language === 'en' 
+          ? `${diffDays} ${dateConstants.months[language]} ${dateConstants.ago[language]}`
+          : ''); // Add a fallback if necessary for other languages
+    
     } else { // For dates in the future or more than a day ago
       displayText = moment(date).format('YY DD-MM HH:mm');
     }

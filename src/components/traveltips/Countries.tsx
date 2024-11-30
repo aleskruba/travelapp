@@ -1,22 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { countryNames } from '../../constants/constantsData';
+import { countryNames,countryNamesEn,countryNamesEs,countryTranslationsEn,countryTranslationsEs  } from '../../constants/constantsData';
 import { useCountryContext } from '../../context/countryContext';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { travelTipsConstants } from '../../constants/constantsTravelTips';
+import { useLanguageContext } from '../../context/languageContext';
 
 const ComboBox: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
-  const { setChosenCountry, chosenCountry } = useCountryContext();
+  const { setChosenCountry, chosenCountry,chosenCountryTranslated, setChosenCountryTranslated ,chosenCountryData} = useCountryContext();
   const navigate = useNavigate();
   let { id } = useParams<string>();
+  const { language} = useLanguageContext();
+
+
 
   useEffect(() => {
     if (id && countryNames.includes(id)) {
       handleSelectCountry(id);
     }
-  }, [id, countryNames]);
+  }, [id, countryNames,language]);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -30,9 +35,36 @@ const ComboBox: React.FC = () => {
     setChosenCountry(country);
     setIsOpen(false);
     setSearchTerm('');
-    if (window.location.pathname !== `/traveltips/${country}`) {
-      navigate(`/traveltips/${country}`);
+
+
+    if (language && language =='en') {
+      const translation = countryTranslationsEn.find(c => c.en === country); 
+      if (translation) {
+
+        setChosenCountry(translation.cz);
+        setChosenCountryTranslated(translation.en)
+        navigate(`/traveltips/${translation.cz}`)
+
+      } 
     }
+    if (language && language =='es') {
+      const translation = countryTranslationsEs.find(c => c.es === country); 
+      if (translation) {
+      
+        setChosenCountry(translation.cz);
+        setChosenCountryTranslated(translation.es)
+        navigate(`/traveltips/${translation.cz}`)
+
+      } 
+    } if (language && language =='cz') {
+      if (window.location.pathname !== `/traveltips/${country}`) {
+        navigate(`/traveltips/${country}`);
+        setChosenCountry(country);
+        setChosenCountryTranslated(country)
+      } 
+     }
+
+
   };
 
   const handleDropdownClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -43,7 +75,23 @@ const ComboBox: React.FC = () => {
 
   const maxDisplayedCountries = 15;
 
-  let filteredCountries = countryNames.filter((country) => {
+  const getCountriesByLanguage = (language:string) => {
+    switch (language) {
+      case "en":
+        return countryNamesEn;
+      case "cz":
+        return countryNames;
+      case "es":
+        return countryNamesEs; // Assuming you have a Spanish array
+      default:
+        return countryNames; // Default to Czech if no match
+    }
+  };
+  
+ 
+  const selectedCountries = getCountriesByLanguage(language);
+  
+  let filteredCountries = selectedCountries.filter((country:string) => {
     const normalizedCountry = country.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const normalizedSearchTerm = searchTerm.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     return (
@@ -51,6 +99,16 @@ const ComboBox: React.FC = () => {
       country.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
+  
+
+/*   let filteredCountries = countryNames.filter((country) => {
+    const normalizedCountry = country.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const normalizedSearchTerm = searchTerm.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return (
+      normalizedCountry.toLowerCase().includes(normalizedSearchTerm.toLowerCase()) ||
+      country.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }); */
 
   if (filteredCountries.length > maxDisplayedCountries) {
     filteredCountries = filteredCountries.slice(0, maxDisplayedCountries);
@@ -97,14 +155,15 @@ const ComboBox: React.FC = () => {
     };
   }, []);
 
+
   return (
     <div className="relative w-full px-2 ">
       <label htmlFor="countryInput" 
-             className='md:hidden flex justify-center pb-2 '>Vyber zemi</label>
+             className='md:hidden flex justify-center pb-2 '>{travelTipsConstants.chooseCountry[language]}</label>
       <input
         id="countryInput"
         type="text"
-        placeholder={chosenCountry ? chosenCountry : 'vyber stát .... '}
+        placeholder={chosenCountryData && chosenCountryData.name ? chosenCountryData.name : ` ${travelTipsConstants.chooseCountry[language]} ...`}
         maxLength={8}
         value={searchTerm}
         onChange={handleInputChange}
@@ -117,7 +176,7 @@ const ComboBox: React.FC = () => {
           onClick={handleDropdownClick}
         >
           {filteredCountries.length === 0 ? (
-            <div className="px-4 py-2">Žádná shoda</div>
+            <div className="px-4 py-2">{travelTipsConstants.noMatch[language]}</div>
           ) : (
             filteredCountries.map((country, index) => (
               <div
@@ -133,7 +192,7 @@ const ComboBox: React.FC = () => {
           )}
           {countryNames.length > filteredCountries.length && (
             <div className="flex items-center justify-center opacity-50 italic">
-              + dalších {countryNames.length - filteredCountries.length} zemí
+              + {travelTipsConstants.next[language]} {countryNames.length - filteredCountries.length} {travelTipsConstants.noMatch[language]}
             </div>
           )}
         </div>

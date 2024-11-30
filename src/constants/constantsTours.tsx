@@ -55,7 +55,7 @@ back: {
 },
 createTourGuide: {
   en: `<div class="container mx-auto px-4 py-8">
-      <h1 class="text-3xl font-bold text-center mb-8">How to Create a Travel Companion Listing</h1>
+      <h1 class="text-3xl font-bold text-center mb-8 uppercase">How to Create a Travel Companion Listing</h1>
       <h2 class="text-xl font-semibold mb-4">1. Start by Registering:</h2>
       <p class="mb-4">If you're already a registered user, you can skip this step. If not, register on our website to create an account. This allows you to manage your travel companion listings and communicate with other users.</p>
       <h2 class="text-xl font-semibold mb-4">2. Log In:</h2>
@@ -72,7 +72,7 @@ createTourGuide: {
     </div>`,
     
   cz: `<div class="container mx-auto px-4 py-8">
-      <h1 class="text-3xl font-bold text-center mb-8">Jak vytvořit Spolucestu</h1>
+      <h1 class="text-3xl font-bold text-center mb-8 uppercase">Jak vytvořit Spolucestu</h1>
       <h2 class="text-xl font-semibold mb-4">1. Začněte Registrací:</h2>
       <p class="mb-4">Pokud jste již zaregistrovaní uživatelé, můžete tento krok přeskočit. Pokud ne, zaregistrujte se na našem webu a vytvořte si účet. Tím se vám umožní spravovat vaše nabídky spolucesty a komunikovat s ostatními uživateli.</p>
       <h2 class="text-xl font-semibold mb-4">2. Přihlaste se:</h2>
@@ -88,7 +88,7 @@ createTourGuide: {
       </ul>
     </div>`,
 
-  es: `<div class="container mx-auto px-4 py-8">
+  es: `<div class="container mx-auto px-4 py-8 uppercase">
       <h1 class="text-3xl font-bold text-center mb-8">Cómo Crear un Anuncio de Compañero de Viaje</h1>
       <h2 class="text-xl font-semibold mb-4">1. Comienza Registrándote:</h2>
       <p class="mb-4">Si ya eres usuario registrado, puedes saltarte este paso. Si no, regístrate en nuestro sitio web para crear una cuenta. Esto te permitirá gestionar tus anuncios de compañero de viaje y comunicarte con otros usuarios.</p>
@@ -146,7 +146,7 @@ tourBeginning: {
 }
 ,aboutMe: {
   en: 'About me:',
-  cz: 'Informace o sobě:',
+  cz: 'Informace o mně:',
   es: 'Acerca de mí:'
 },aboutMePlaceholder: {
   en: 'Write a brief description about yourself. Include your interests, preferences, and anything you think other users should know. Limit it to 500 characters.',
@@ -205,7 +205,64 @@ deleteTourAreYouSure: {
   en: 'Are you sure you want to delete this tour?',
   cz: 'Chceš opravdu smazat tuto tour?',
   es: '¿Estás seguro de que quieres eliminar este tour?'
+},backToList: {
+  en: 'Back to list',
+  cz: 'Zpět na výpis',
+  es: 'Volver a la lista',
+},
+joinTrip: {
+  en: 'Join the trip to the destination',
+  cz: 'Přidej se k cestě do destinace',
+  es: 'Únete al viaje a destino',
+},
+added: {
+  en: 'Added',
+  cz: 'Vloženo',
+  es: 'Añadido',
+},
+date: {
+  en: 'Date',
+  cz: 'Termín',
+  es: 'Fecha',
+},
+travelWith: {
+  en: 'Who I would like to travel with',
+  cz: 'S kým bych rád cestoval',
+  es: 'Con quién me gustaría viajar',
+},
+  backToYourTours : {
+  en: "Back to your tours",
+  cz: "Zpět na tvoje spolucesty",
+  es: "Volver a tus tours",
+},updateYourTour : {
+  en: "Update your tour",
+  cz: "Uprav spolucestu",
+  es: "Actualizar tu tour",
+},cannotChangeDestination: {
+  en: "Destination cannot be changed",
+  cz: "Destinace nelze měnit",
+  es: "El destino no se puede cambiar",
+},noChangeMade: {
+  en: "No change was made",
+  cz: "Nebyla provedena žádná změna",
+  es: "No se realizó ningún cambio",
+},allFieldsRequired: {
+  en: "Not all fields are filled",
+  cz: "Nejsou vyplněna všechna pole",
+  es: "No todos los campos están completos",
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

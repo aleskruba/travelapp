@@ -34,7 +34,7 @@ function Home() {
 
     }
 
-      <p> {homeWelcome[language]}<span className='dark:text-pink-300  text-pink-800 font-bold'> {user? user.firstName ? user.firstName : user.email : ''} </span>! </p>
+      <p> {homeWelcome[language]}<span className='dark:text-blue-500  text-blue-600 font-bold'> {user? user.firstName ? user.firstName : user.email : ''} </span>! </p>
       <br />
       <div
         dangerouslySetInnerHTML={{ __html: homeConstants[language] }}

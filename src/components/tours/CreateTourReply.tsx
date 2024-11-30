@@ -2,7 +2,7 @@ import React,{useState,FormEvent,useEffect,useRef} from 'react'
 import DOMPurify from 'dompurify';
 import { useAuthContext } from '../../context/authContext';
 import { useTourContext } from '../../context/tourContext';
-import { BASE_URL, SOCKET_URL } from '../../constants/config';
+import { BASE_URL } from '../../constants/config';
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import { BsEmojiGrin } from "react-icons/bs";
@@ -10,9 +10,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {   initialSingleTourReplyState, TourMessageProps, TourReplyProps } from '../../types';
 import { fetchData } from '../../hooks/useFetchData';
 import Button from '../customButton/Button';
-import { io } from 'socket.io-client';
 import socket from '../../utils/socket';
- 
+import { travelTipsConstants } from '../../constants/constantsTravelTips';
+import { useLanguageContext } from '../../context/languageContext';
+
+
 interface Props {
     setReplyDiv: React.Dispatch<boolean>; 
     message:TourMessageProps
@@ -32,7 +34,8 @@ function CreateTourReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,
        const [backendError,setBackendError] = useState<string | null>(null);
        const [tourreply, setTourReply] = useState<TourReplyProps>(initialSingleTourReplyState);
         const {isPrivate,setIsPrivate,setPrivateIdsArray} = useTourContext()
-    /*     const socket = io(SOCKET_URL); */
+        const { language} = useLanguageContext();
+
        
        useEffect(() => {
         const handleClickOutside = (event:any) => {
@@ -96,7 +99,7 @@ function CreateTourReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,
         const response = await fetchData(`${BASE_URL}/tourreply`,'POST',data)
 
         if (!response.ok) {
-          throw new Error('Chyba při odeslaní zprávy');
+          throw new Error('sending message error');
         }
     
         return response.json();
@@ -187,7 +190,7 @@ onSuccess: (data, variables) => {
 
 
 onError: (err, context) => {
- setBackendError('Něco se pokazilo, zpráva nebyla vytvořena')
+ setBackendError(travelTipsConstants.somethingWentWrong[language])
  queryClient.setQueryData(['tourmessages', currentPage], context?.previousMessages);
  console.log(err)
 },
@@ -242,7 +245,7 @@ onSettled: (data, error) => {
       onChange={handleChange}
       className="w-full min-h-[100px] py-2 pl-2 pr-6 bg-gray-200 dark:text-black rounded-lg focus:outline-none focus:ring focus:border-blue-500 resize-none"
       style={{ maxWidth: '100%', overflowWrap: 'break-word' }}
-      placeholder="Sdlej svůj názor (max 400 znaků)"
+      placeholder={travelTipsConstants.messageplaceholder[language]}
       maxLength={400} 
     />
            <div className={tourreply.message.length >= 400 ? 'hidden' :'absolute bottom-4 right-5 dark:text-black text-xl cursor-pointer '}
@@ -255,23 +258,13 @@ onSettled: (data, error) => {
       <div className='flex gap-1'>
 
 
-    {/*     <button
-          type="submit"
-          className={`${
-            !tourreply.message.length
-              ? 'bg-green-500 opacity-30 pointer-events-none'
-              : 'bg-green-500 hover:bg-green-600'
-          } w-[120px] text-white  px-2 py-2 rounded-md focus:outline-none focus:ring focus:border-green-700`}
-        >
-          Odešli 
-      </button> */}
-          <Button 
+         <Button 
               type="submit"   
               color='green'
               className={`${!tourreply.message.length || deletedMessage === message.id ? 'opacity-30 cursor-default pointer-events-none': '' } rounded-md shadow-md w-[100px]  focus:ring `}
              >
               
-              Odešli
+              {travelTipsConstants.send[language]}
           </Button>
 
       <div className="flex items-center ">
@@ -287,12 +280,7 @@ onSettled: (data, error) => {
           </label>
         </div>
         </div>
-{/*       <button className="bg-gray-300 w-[120px] text-gray-700 px-2 py-2 rounded-md hover:bg-gray-400 focus:outline-none focus:ring focus:border-gray-500" 
-              onClick={() => {setReplyDiv(false);setSelectedReplyDivId(null)}}
-              type='button'>
-        Zpět
-      </button>
- */}
+
           <Button 
        
               color='gray'
@@ -300,7 +288,7 @@ onSettled: (data, error) => {
               onClick={() => {setReplyDiv(false);setSelectedReplyDivId(null)}}
              >
               
-              Zpět
+              {travelTipsConstants.back[language]}
           </Button>
 
     </div>
@@ -318,7 +306,7 @@ onSettled: (data, error) => {
     )}
 </div>
 {tourreply.message.length >= 400  &&
-    <p className='text-red-800 dark:text-red-200 text-center'>Zpráva je příliš dlouhá !!!!!</p>
+    <p className='text-red-800 dark:text-red-200 text-center'>   {travelTipsConstants.tooLongMessage[language]}</p>
    }
 
   </form>

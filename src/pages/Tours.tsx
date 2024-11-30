@@ -14,8 +14,7 @@ import Button from '../components/customButton/Button';
 import { useLanguageContext } from '../context/languageContext';
 import { tourConstants } from '../constants/constantsTours';
 import { countryTranslationsEn,countryTranslationsEs } from '../constants/constantsData';
- import { typeOfTourEn } from '../constants/constantsData';
-import { typeOfTourEs } from '../constants/constantsData'; 
+import { monthNameObject } from '../constants/constantsData';
 
 interface CountryOption {
   readonly value: string;
@@ -54,29 +53,37 @@ function Tours() {
     : []);
   
 
-
-/*   const [tourTypes, setTourTypes] = useState<any[]>(tourTypesParam ? 
-      tourTypesParam.split(',').map(value => {
-        if (language === 'en') {
-          // Find the country translation in English
-          const t = typeOfTourEn.find(c => c.cz === value);
-          return { value, label: t ? t.en : value }; // Default to `value` if no translation found
-        } else if (language === 'es') {
-          // Find the country translation in Spanish
-          const t = typeOfTourEs.find(c => c.cz === value);
-          return { value, label: t ? t.es : value }; // Default to `value` if no translation found
-        }
-        return { value, label: value }; // Default case, no translation
-      })
-    : []); */
-
   const [tourTypes, setTourTypes] = useState<any[]>(tourTypesParam ? 
-    tourTypesParam.split(',').map(value => ({ value,   label: 'test'})) : []
+    tourTypesParam.split(',').map(value => ({ value})) : []
 );
-  const [tourDates, setTourDates] = useState<any>(
-    tourDatesParam ? { value: tourDatesParam, label: tourDatesParam } : null
-  );
 
+
+  
+  const [tourDates, setTourDates] = useState<any[]>(tourDatesParam 
+    ? tourDatesParam.split(',').map(value => {
+        const [month, year] = value.split('-'); // Split the value into month and year
+        let label = `${month}-${year}`; // Default label format
+  
+        if (language === 'en') {
+          // Find the month translation in English
+          const monthName = monthNameObject.find(c => c.cz === month);
+          if (monthName) {
+            label = `${monthName.en}-${year}`;
+          }
+        } else if (language === 'es') {
+          // Find the month translation in Spanish
+          const monthName = monthNameObject.find(c => c.cz === month);
+          if (monthName) {
+            label = `${monthName.es}-${year}`;
+          }
+        }
+  
+        return { value, label }; // Return the object with value and label
+    })
+    : []
+  );
+  
+  
   const currentPage = parseInt(searchParams.get('page') || '1', 10) - 1;
 
   const queryClient = useQueryClient();
@@ -103,26 +110,25 @@ function Tours() {
       
       
     }
- /*    if (tourTypesParam) {
-      setTourTypes(
-        tourTypesParam.split(',').map(value => ({
-          value,
-          label: language === 'en'
-            ? typeOfTourEn.find(c => c.cz === value)?.en
-            : language === 'es'
-            ? typeOfTourEs.find(c => c.cz === value)?.es
-            : value // Default to the country value if no translation is found
-        }))
-      );
-    } */
 
     if (tourTypesParam) {
       setTourTypes(tourTypesParam.split(',').map(value => ({ value, label: 'test' })));
     }
 
-    if (tourDatesParam) {
-      setTourDates({ value: tourDatesParam, label:tourDatesParam });
 
+    if (tourDatesParam) {
+        
+      setTourDates(
+        tourDatesParam.split(',').map(value => ({
+          value,
+          label: language === 'en'
+            ? countryTranslationsEn.find(c => c.cz === value)?.en
+            : language === 'es'
+            ? countryTranslationsEs.find(c => c.cz === value)?.es
+            : value // Default to the country value if no translation is found
+        }))
+      );
+      
     }
 
     if (searchParam) {
@@ -134,7 +140,7 @@ function Tours() {
     // Update the searchParams whenever countries or search text changes
     const params = new URLSearchParams();
 
-    // Add countries to the params
+
     if (countries && countries.length > 0) {
       const countryValues = countries.map(country => country.value).join(',');
       params.set('countries', countryValues);
@@ -144,11 +150,11 @@ function Tours() {
       const tourTypesValues = tourTypes.map(type => type.value).join(',');
       params.set('tourtypes', tourTypesValues);
     }
+  
+    if (tourDates && tourDates.length > 0) {
+      params.set('tourdates', tourDates[0].value);
+}
 
-    if (tourDates) {
-      params.set('tourdates', tourDates.value);
-    }
-    
     if (debouncedValue) {
       params.set('search', debouncedValue);
     }
@@ -179,9 +185,10 @@ function Tours() {
       params.set('tourtypes', tourTypesValues);
     }
 
-    if (tourDates) {
-      params.set('tourdates', tourDates.value);
-    }
+
+    if (tourDates && tourDates.length > 0) {
+                 params.set('tourdates', tourDates[0].value);
+      }
     
     const url = `${BASE_URL}/tours/?${params.toString()}`;
 
@@ -216,7 +223,6 @@ function Tours() {
     staleTime: 100000,
   });
 
-  console.log(data)
   useEffect(() => {
     if (data?.allDestinations) {
       const formattedDestinations = data.allDestinations.map((destination: any) => ({
@@ -257,7 +263,7 @@ function Tours() {
       <div className='text-center text-blue-500 pt-4'>
         {!user ? tourConstants.onlyRegistredUsersTour[language]
         :
-          <Link to={'../createtour'}>{tourConstants.createTour[language]}<span className="underline cursor-pointer text-blue-600 pl-2" >{tourConstants.here[language]}</span></Link>
+          <Link to={'../createtour'}>{tourConstants.createTour[language]}<span className="underline cursor-pointer text-blue-600 pl-2 hover:font-bold" >{tourConstants.here[language]}</span></Link>
         }
       </div>
 

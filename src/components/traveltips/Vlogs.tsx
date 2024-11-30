@@ -6,6 +6,8 @@ import ReactPaginate from 'react-paginate';
 import { useState } from 'react';
 import { useAuthContext } from '../../context/authContext';
 import CreateVlog from './CreateVlog';
+import { travelTipsConstants } from '../../constants/constantsTravelTips';
+import { useLanguageContext } from '../../context/languageContext';
 
 /* const ITEMS_PER_PAGE = 6; */
 
@@ -16,7 +18,7 @@ type Props = {
 
 function Vlogs({openDivCreateVlog,setOpenDivCreateVlog}:Props) {
 
-
+  const { language} = useLanguageContext()
     const { chosenCountry } = useCountryContext();
 
     const [currentPage, setCurrentPage] = useState(0);
@@ -28,7 +30,7 @@ function Vlogs({openDivCreateVlog,setOpenDivCreateVlog}:Props) {
         const response = await fetch(`${BASE_URL}/vlogs/${chosenCountry}?page=${currentPage+1}`)
         if (!response.ok) {
     
-          throw new Error('Chyba při získaní dat'); 
+          throw new Error('fetching data error'); 
           
         }
       
@@ -55,7 +57,7 @@ function Vlogs({openDivCreateVlog,setOpenDivCreateVlog}:Props) {
   {!user ? 
     'Pouze přihlášení uživatelé mohou vkládat Vlogy' : 
     (!openDivCreateVlog && 
-      <>Vložit Vlog <span className="underline cursor-pointer text-blue-600" onClick={() => setOpenDivCreateVlog(true)}>zde</span></>
+      <>{travelTipsConstants.addVlog[language]} <span className="underline cursor-pointer text-blue-600" onClick={() => setOpenDivCreateVlog(true)}>{travelTipsConstants.here[language]}</span></>
     )
   }
 </div>
@@ -81,9 +83,9 @@ function Vlogs({openDivCreateVlog,setOpenDivCreateVlog}:Props) {
                     })
 
 }
-  </div> : <div> ... is Loading </div> 
+  </div> : <div className='flex justify-center items-center '> {travelTipsConstants.momentPlease[language]} </div> 
   }
-
+{data?.vlogs.length > 10 && 
 <ReactPaginate
         previousLabel={'←'}
         nextLabel={'→'}
@@ -103,7 +105,7 @@ function Vlogs({openDivCreateVlog,setOpenDivCreateVlog}:Props) {
         nextLinkClassName={'page-link px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-100'}
         activeClassName={'active bg-blue-500 text-white'}
       />
-
+}
 </div>
   )
 }

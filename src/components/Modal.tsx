@@ -34,7 +34,7 @@ const Modal: React.FC = () => {
   }, [modal, toggleModal]);
 
   return (
-    <>
+    <div>
       {modal && (
         <div className="overlay fixed inset-0 w-full h-full bg-gray-800 bg-opacity-80 z-30 flex justify-center items-center ">
           <div ref={modalRef} className="modal-content relative bg-gray-100 p-1 rounded-md max-w-lg w-full mx-4 ">
@@ -58,7 +58,7 @@ const Modal: React.FC = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

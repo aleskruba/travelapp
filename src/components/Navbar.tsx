@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Image from '../custom/Image';
 import ThemeComponent from './ThemeComponent';
-import logo from '../assets/images/logo.png';
+import logo from '../assets/images/travel4.png';
 import { useAuthContext } from '../context/authContext';
 import { Flip, toast } from 'react-toastify';
 import { BASE_URL } from '../constants/config';
@@ -11,13 +11,17 @@ import FlagComponent from './FlagComponent';
 import { useLanguageContext } from '../context/languageContext';
 import { navbarConstants } from '../constants/constantsData';
 import { authConstants } from "../constants/constantsAuth";
+import { useQueryClient } from '@tanstack/react-query';
 
 function Navbar() {
     
+     const queryClient = useQueryClient();
     const [prevScrollPos, setPrevScrollPos] = useState(0);
     const [visible, setVisible] = useState(true);
     const { user, setUser, setUpdateUser } = useAuthContext();
      const { language} = useLanguageContext();
+     
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -41,6 +45,12 @@ function Navbar() {
             try {
                 const url = `${BASE_URL}/logout`;
                 const response = await axios.get(url, { withCredentials: true });
+
+      
+
+                    queryClient.clear(); // Clear all cached data
+              
+
                 if (response.status === 200) {
                     toast.success(authConstants.logout[language], {
                         position: "top-left",
@@ -69,7 +79,7 @@ function Navbar() {
         <>
             <nav className={`relative bg-gray-200 dark:bg-gray-700 top-0 flex justify-between items-center w-full dark:text-white text-yellow-800 md:px-4 md:py-4 font-bold pb-4`}>
                 <div className='flex flex-col md:flex-row md:space-x-16 space-x-2 md:space-y-0 space-y-2 items-start md:items-center'>
-                <NavLink to="/" className="md:w-[250px] w-[150px] pl-4 pt-2 block">
+                <NavLink to="/" className="md:w-[150px] w-[150px] pl-4 pt-2 block">
                     <Image src={logo} alt="Logo" className="blended-image" />
                     </NavLink>
 
@@ -115,6 +125,7 @@ function Navbar() {
                     </div>
                 ) : (
                     <div className='flex flex-col md:flex-row md:space-x-4 items-start justify-start pr-8 md:pr-0 '>
+                        {!user.isAdmin && 
                         <NavLink
                             to="/profil"
                             className={({ isActive }) =>
@@ -122,16 +133,16 @@ function Navbar() {
                             }
                         >
                           {navbarConstants.profile[language]}
-                        </NavLink>
+                        </NavLink>}
                         <div onClick={logOutFunction} className="dark:hover:text-gray-300 cursor-pointer hover:text-yellow-500">
                         {navbarConstants.logout[language]}
                         </div>
                     </div>
                 )}
-
+                    {!user?.isAdmin &&
                 <div className="flex items-center gap-2 dark:hover:text-gray-300 hover:text-yellow-500 absolute top-1 right-2">
                    <FlagComponent/> <ThemeComponent />
-                </div>
+                </div>}
             </nav>
 
             {/* BOTTOM NAVBAR */}
@@ -176,7 +187,7 @@ function Navbar() {
                             </NavLink>
                         </>
                     ) : (
-                        <>
+                        <> {!user.isAdmin && 
                             <NavLink
                                 to="/profil"
                                 className={({ isActive }) =>
@@ -184,7 +195,7 @@ function Navbar() {
                                 }
                             >
                                 {navbarConstants.profile[language]}
-                            </NavLink>
+                            </NavLink>}
                             <div onClick={logOutFunction} className="dark:hover:text-gray-300 hover:text-yellow-500 cursor-pointer">
                             {navbarConstants.logout[language]}
                             </div>

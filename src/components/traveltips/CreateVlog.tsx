@@ -8,6 +8,8 @@ import { BASE_URL } from '../../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Flip, toast } from 'react-toastify';
 import { fetchData } from '../../hooks/useFetchData';
+import { travelTipsConstants } from '../../constants/constantsTravelTips';
+import { useLanguageContext } from '../../context/languageContext';
 
 type Props = {
   setOpenDivCreateVlog: (value: boolean) => void;
@@ -19,6 +21,7 @@ function CreateVlog({ setOpenDivCreateVlog }: Props) {
   const { user } = useAuthContext();
   const { chosenCountry } = useCountryContext();
   const [errorMessage,setErrorMessage] = useState('')
+  const { language} = useLanguageContext();
 
 
   const [vlog, setVlog] = useState<Partial<VlogsProps>>({
@@ -38,15 +41,8 @@ function CreateVlog({ setOpenDivCreateVlog }: Props) {
 
     const response = await fetchData(`${BASE_URL}/vlog`,'POST',newVlog)
 
-/*     const response = await fetch(`${BASE_URL}/vlog`, {
-      ...HTTP_CONFIG, 
-      method: 'POST',
-      body: JSON.stringify(newVlog),
-      credentials: 'include',
-    });
- */
     if (!response.ok) {
-      throw new Error('Chyba při odeslaní zprávy');
+      throw new Error(travelTipsConstants.sendingMessageError[language]);
     }
 
     return response.json();
@@ -55,7 +51,7 @@ function CreateVlog({ setOpenDivCreateVlog }: Props) {
   const createVlogMutation = useMutation({
     mutationFn: createVlog,
     onSuccess: () => {
-      toast.success('Nový Vlog byl úspěšně uložen', {
+      toast.success(travelTipsConstants.successVlog[language], {
         position: "top-left",
         autoClose: 1500,
         hideProgressBar: true,
@@ -77,7 +73,7 @@ function CreateVlog({ setOpenDivCreateVlog }: Props) {
       setOpenDivCreateVlog(false);
     },
     onError: () =>  {
-      toast.error('Chyba při ukládáni ', {
+      toast.error(travelTipsConstants.saveError[language], {
         position: "top-left",
         autoClose: 1500,
         hideProgressBar: true,
@@ -97,17 +93,17 @@ function CreateVlog({ setOpenDivCreateVlog }: Props) {
     try {
 
       if ((!vlog.title || !vlog.title.trim()) || (!vlog.video || !vlog.video.trim())) {
-        setErrorMessage('Musí obsahovat text');
+        setErrorMessage(travelTipsConstants.mustContainText[language]);
         return;
       }
   
       if (vlog.title && vlog.title.length > 150) {
-        setErrorMessage('Příliš dlouhý text, max 150 znaků');
+        setErrorMessage(travelTipsConstants.tooLongText[language]);
         return;
       }
   
          if (vlog.video && vlog.video.length > 15) {
-        setErrorMessage('Příliš dlouhý text, max 15 znaků');
+        setErrorMessage(travelTipsConstants.tooLongText15[language]);
         return;
       }
   
@@ -125,7 +121,7 @@ function CreateVlog({ setOpenDivCreateVlog }: Props) {
     <form className="space-y-4 p-6 bg-white dark:bg-slate-400 shadow-md rounded-lg max-w-[22rem]" onSubmit={handleSubmit}>
       <input
         type="text"
-        placeholder="Titulek max 150 znaků"
+        placeholder={travelTipsConstants.titel[language]}
         maxLength={150}
         className="w-full p-2 border border-gray-300 rounded dark:bg-slate-200 text-white dark:text-black"
         name="title"
@@ -134,7 +130,7 @@ function CreateVlog({ setOpenDivCreateVlog }: Props) {
       />
       <input
         type="text"
-        placeholder="YouTube kód ve tvaru: 'dYJpPdSTzGs' "
+        placeholder={travelTipsConstants.youTube[language]  }
         maxLength={15}
         className="w-full p-2 border border-gray-300  dark:bg-slate-200 text-white dark:text-black"
         name="video"
@@ -150,8 +146,8 @@ function CreateVlog({ setOpenDivCreateVlog }: Props) {
                 className={( !vlog.title?.length && !vlog.video?.length ) 
                   ? 'opacity-30 pointer-events-none' 
                   : ''}
-                >Vytvořit Vlog</Button>
-        <Button onClick={() => setOpenDivCreateVlog(false)} color="gray" width="16rem">Zpět</Button>
+                >{travelTipsConstants.createVLog[language]  }</Button>
+        <Button onClick={() => setOpenDivCreateVlog(false)} color="gray" width="16rem">{travelTipsConstants.back[language]  }</Button>
 
       </div>
     </form>

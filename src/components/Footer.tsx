@@ -12,12 +12,14 @@ function Footer() {
           <div>
           <h3 className="text-lg font-bold mb-4 text-darkAccent ">{footerColumns.links[language]}</h3>
           <ul>
-              {footerConstants[language].map((item: string, index: number) => (
+          {footerConstants[language].map((item, index) => (
               <li key={index} className="mb-2">
-                <Link to="" className="hover:text-white">{item}</Link>
+                <Link to={`/${item.link}`} className="dark:hover:text-gray-200  hover:text-gray-600 ">
+                  {item.text}
+                </Link>
               </li>
             ))}
-          </ul>
+            </ul>
           </div>
         </div>
 
@@ -28,11 +30,15 @@ function Footer() {
           <div>
           <h3 className="text-lg font-bold mb-4 text-darkAccent ">{footerColumns.conditions[language]}</h3>
           <ul>
-            {footerConditions[language].map((condition, index) => (
-              <li key={index} className="mb-2">
-                <Link to="" className="hover:text-white">{condition}</Link>
-              </li>
-            ))}
+          {footerConditions[language].map((item, index) => (
+            <li key={index} className="mb-2">
+              <Link to={`/${item.link}`} className="dark:hover:text-gray-200  hover:text-gray-600 ">
+                {item.text}
+              </Link>
+            </li>
+          ))}
+
+
           </ul>
         </div>
         </div>

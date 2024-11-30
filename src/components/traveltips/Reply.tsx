@@ -5,8 +5,7 @@ import { useThemeContext } from '../../context/themeContext';
 import { useCountryContext } from '../../context/countryContext';
 import { FaRegTrashAlt } from "react-icons/fa";
 import moment from 'moment'; // Import moment
-import { io } from 'socket.io-client';
-import { BASE_URL, SOCKET_URL } from '../../constants/config';
+import { BASE_URL } from '../../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import ConfirmationModal from '../ConfirmationModal';
 import CreateReplyVote from './CreateReplyVote';
@@ -14,6 +13,8 @@ import { fetchData } from '../../hooks/useFetchData';
 import useRelativeDate from '../../hooks/DateHook';
 import lide from "../../assets/images/lide.svg"
 import socket from '../../utils/socket';
+import { travelTipsConstants } from '../../constants/constantsTravelTips';
+import { useLanguageContext } from '../../context/languageContext';
 
 type Props = {
   reply: ReplyProps;
@@ -34,6 +35,8 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,deletedReply}) => 
   const { chosenCountry } = useCountryContext();
   const [backendError, setBackendError] = useState<string | null>(null);
   const imageUrl = reply?.user.image ? reply?.user.image : lide;
+  const { language} = useLanguageContext();
+  
 
   // Convert Date object to Moment object
   const replyDateMoment = moment(reply.date);
@@ -94,7 +97,7 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,deletedReply}) => 
       return { previousMessages };
     },
     onError: (error, id, context) => {
-      setBackendError('Něco se pokazilo, odpověď nebyla smazána');
+      setBackendError(travelTipsConstants.somethingWentWrong[language]);
       console.error('Error deleting reply:', error);
       setShowModal(false);
   
@@ -146,7 +149,7 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,deletedReply}) => 
           </div>
           <div className="flex gap-1">
             <p className={`${reply.user_id === user?.id ? 'text-red-600 dark:text-red-200' : 'text-gray-600 dark:text-gray-100'} font-bold`}>
-              {reply.user.firstName ? reply.user.firstName.slice(0, 10) : ''} - {reply.id}
+              {reply.user.firstName ? reply.user.firstName.slice(0, 10) : ''} 
             </p>
             <p className="text-gray-600 dark:text-gray-100 italic">{displayDateText}</p>
           </div>
@@ -154,7 +157,7 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,deletedReply}) => 
         <div className="md:pl-14 break-all">
           <p className={`${reply.user_id === user?.id ? 'text-red-600 dark:text-red-200' : 'text-gray-600 dark:text-gray-100'}`}>
            
-            {   deletedReply === reply.id ? <span className="font-semibold "> zpráva byla smazána</span>: reply.message} 
+            {   deletedReply === reply.id ? <span className="font-semibold "> {travelTipsConstants.messageDeleted[language]}</span>: reply.message} 
           </p>
         </div>
       </div>
@@ -166,7 +169,7 @@ const Reply: React.FC<Props> = ({ reply, message ,currentPage,deletedReply}) => 
         show={showModal}
         onClose={() => setShowModal(false)}
         onConfirm={() => { selectedReplyId && deleteMessageMutation.mutate(selectedReplyId) }}
-        message="Chceš opravdu smazat tuto zprávu?"
+        message={travelTipsConstants.confirmDeleteMessage[language]}
       />
     </div>
   );

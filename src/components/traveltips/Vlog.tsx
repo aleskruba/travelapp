@@ -1,12 +1,14 @@
 import { VlogsProps } from '../../types';
-
+import { travelTipsConstants } from '../../constants/constantsTravelTips';
+import { useLanguageContext } from '../../context/languageContext';
 
 type VlogPropsData  = {
     vlog: VlogsProps;
   };
 
 function Vlog({ vlog}:VlogPropsData) {
-
+  const { language} = useLanguageContext();
+  
     return (
 <div className="box border border-black rounded-md p-8 text-center grid grid-rows-[subgrid] row-span-4">
   <h2 className='text-xl'>{vlog.title}</h2>
@@ -23,7 +25,7 @@ function Vlog({ vlog}:VlogPropsData) {
     ></iframe>
   </div>
 
-  <h2 className='flex justify-start items-center text-base'>vložil/a {vlog.user.firstName}</h2>
+  <h2 className='flex justify-start items-center text-base'>{travelTipsConstants.addedBy[language]}{vlog.user.firstName}</h2>
 
   <div>
 

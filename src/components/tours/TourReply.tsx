@@ -12,6 +12,8 @@ import ConfirmationModal from '../ConfirmationModal';
 import { fetchData } from '../../hooks/useFetchData';
 import useRelativeDate from '../../hooks/DateHook';
 import lide from "../../assets/images/lide.svg"
+import { travelTipsConstants } from '../../constants/constantsTravelTips';
+import { useLanguageContext } from '../../context/languageContext';
 
 type Props = {
   reply: TourReplyProps;
@@ -31,7 +33,7 @@ const TourReply: React.FC<Props> = ({ reply, message ,currentPage,deletedReply,t
   const imageUrl = reply?.user.image ? reply?.user.image : lide;
   const {privateIdsArray} = useTourContext()
   const replyDateMoment = moment(reply.date);
-
+  const { language} = useLanguageContext();
 
   // Use the custom hook to get the relative date
   const displayDateText = useRelativeDate(replyDateMoment);
@@ -47,7 +49,7 @@ const TourReply: React.FC<Props> = ({ reply, message ,currentPage,deletedReply,t
     const response = await fetchData(`${BASE_URL}/tourreply/${id}`, 'DELETE');
 
     if (!response.ok) {
-      throw new Error('Chyba při odeslaní zprávy');
+      throw new Error('Error while deleting the reply'); 
     }
     const data = response.json();
     return data;
@@ -86,7 +88,7 @@ const TourReply: React.FC<Props> = ({ reply, message ,currentPage,deletedReply,t
       return { previousMessages };
     },
     onError: (error, id, context) => {
-      setBackendError('Něco se pokazilo, odpověď nebyla smazána');
+      setBackendError(travelTipsConstants.somethingWentWrong[language]);
       console.error('Error deleting reply:', error);
       setShowModal(false);
   
@@ -118,7 +120,7 @@ const TourReply: React.FC<Props> = ({ reply, message ,currentPage,deletedReply,t
         >
 
     
-     <span className='px-2'>{    (reply.messagetype === 1 || (privateIdsArray.includes(reply.id)))  && ` soukromá zašifrovaná zpráva  , vidí ji pouze  ${message.user.firstName === user?.firstName ?  reply.user.firstName :message.user.firstName } a ty` } </span> 
+     <span className='px-2'>{    (reply.messagetype === 1 || (privateIdsArray.includes(reply.id)))  && ` ${travelTipsConstants.privateEncryptedMessage[language]}  ${message.user.firstName === user?.firstName ?  reply.user.firstName :message.user.firstName } ${travelTipsConstants.andYou[language]} ` } </span> 
       <div className="absolute right-1 bottom-1 text-red-500 dark:text-red-200 font-thin">
         {backendError && backendError}
       </div>
@@ -145,7 +147,7 @@ const TourReply: React.FC<Props> = ({ reply, message ,currentPage,deletedReply,t
         </div>
         <div className="md:pl-14 break-all">
           <p className={`${reply.user_id === user?.id ? 'text-gray-700 dark:text-gray-200' : 'text-gray-600 dark:text-gray-100'}`}>
-          {   deletedReply === reply.id ? <span className="font-semibold "> zpráva byla smazána</span>: reply.message} 
+          {   deletedReply === reply.id ? <span className="font-semibold ">{travelTipsConstants.messageDeleted[language]}</span>: reply.message} 
           </p>
         </div>
       </div>
@@ -154,7 +156,7 @@ const TourReply: React.FC<Props> = ({ reply, message ,currentPage,deletedReply,t
         show={showModal}
         onClose={() => setShowModal(false)}
         onConfirm={() => { selectedReplyId && deleteMessageMutation.mutate(selectedReplyId) }}
-        message="Chceš opravdu smazat tuto zprávu?"
+        message={travelTipsConstants.confirmDeleteMessage[language]}
       />
     </div>
   );

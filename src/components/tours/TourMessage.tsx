@@ -3,9 +3,8 @@ import moment from "moment";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { TourMessageProps } from "../../types";
 import { useAuthContext } from "../../context/authContext";
-import { BASE_URL, SOCKET_URL } from "../../constants/config";
+import { BASE_URL } from "../../constants/config";
 import { useThemeContext } from "../../context/themeContext";
-import { io } from "socket.io-client";
 import ConfirmationModal from "../ConfirmationModal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import TourReply from "./TourReply";
@@ -16,6 +15,8 @@ import useRelativeDate from "../../hooks/DateHook";
 import Button from "../customButton/Button";
 import lide from "../../assets/images/lide.svg"
 import socket from "../../utils/socket";
+import { travelTipsConstants } from '../../constants/constantsTravelTips';
+import { useLanguageContext } from '../../context/languageContext';
 
 type Props = {
   message: TourMessageProps;
@@ -57,7 +58,7 @@ const TourMessage: React.FC<Props> = ({
 
   //const socket = io(SOCKET_URL);
   const imageUrl = message?.user?.image ? message?.user?.image : lide;
-
+  const { language} = useLanguageContext();
 
   const [currentReplyPage, setCurrentReplyPage] = useState(0);
 
@@ -131,7 +132,7 @@ const TourMessage: React.FC<Props> = ({
     },
     onError: (error, id, context) => {
       setShowModal(false);
-      setBackendError("Něco se pokazilo, zpráva nebyla smazána");
+      setBackendError(travelTipsConstants.deleteMessageError[language]);
       console.error("Error deleting message:", error);
 
       // Rollback cache to the previous state
@@ -213,7 +214,7 @@ const TourMessage: React.FC<Props> = ({
         <div className="md:px-4 pt-4 break-all">
           <p className="">{/* {message?.message}  */}
 
-          {   deletedMessage === message.id ? <span className="font-semibold "> zpráva byla smazána</span>: message?.message} 
+          {   deletedMessage === message.id ? <span className="font-semibold "> {travelTipsConstants.messageDeleted[language]}</span>: message?.message} 
           </p>
           
         </div>
@@ -231,7 +232,7 @@ const TourMessage: React.FC<Props> = ({
                 setSelectedReplyDivId(message.id);
               }}
             >
-              Odpověz
+               {travelTipsConstants.reply[language]}
             </Button>
           )}
         </div>
@@ -258,7 +259,7 @@ const TourMessage: React.FC<Props> = ({
                   message?.tourreply?.filter(
                     (r) => r.tourmessage_id === message.id
                   ).length
-                } odpovědí`
+                } ${travelTipsConstants.replies[language]} `
               : message?.tourreply?.filter(
                   (r) => r.tourmessage_id === message.id
                 ).length > 0
@@ -266,7 +267,7 @@ const TourMessage: React.FC<Props> = ({
                   message?.tourreply?.filter(
                     (r) => r.tourmessage_id === message.id
                   ).length
-                } odpověď`
+                } ${travelTipsConstants.reply[language]} `
               : ""}
           </h4>
         </div>
@@ -319,7 +320,7 @@ const TourMessage: React.FC<Props> = ({
         onConfirm={() => {
           selectedMessageId && deleteMessageMutation.mutate(selectedMessageId);
         }}
-        message="Chceš opravdu smazat tuto zprávu?"
+        message={travelTipsConstants.confirmDeleteMessage[language]}
       />
     </div>
   );

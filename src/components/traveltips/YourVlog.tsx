@@ -7,6 +7,9 @@ import { BASE_URL } from '../../constants/config';
 import { Flip, toast } from 'react-toastify';
 import UpdateYourVlog from './UpdateYourVlog';
 import { fetchData } from '../../hooks/useFetchData';
+import { travelTipsConstants } from '../../constants/constantsTravelTips';
+import { useLanguageContext } from '../../context/languageContext';
+import { showErrorToast, showSuccessToast } from '../../utils/toastUtils';
 
 type Vlog = {
     vlog: VlogsProps;
@@ -18,6 +21,7 @@ function YourVlog({ vlog}:Vlog)  {
     const [selectedVlogEditId,setSelectedVlogEditIdtVlog] = useState<number | null>(null);
 
     const queryClient = useQueryClient();
+    const { language} = useLanguageContext()
 
     const handleEditVlogClick = (ID: number) => {
         setSelectedVlogEditIdtVlog(ID);
@@ -32,15 +36,10 @@ function YourVlog({ vlog}:Vlog)  {
 
       const response = await fetchData(`${BASE_URL}/vlog/${id}`,'DELETE') 
 
-/*             const response = await fetch(`${BASE_URL}/vlog/${id}`,{
-             ...HTTP_CONFIG, 
-             method: 'DELETE',
-             credentials: 'include',
-            }) */
             queryClient.invalidateQueries({queryKey: ['yourvlogs']});
          
             if (!response.ok) {
-             throw new Error('Chyba při odeslaní zprávy');
+             throw new Error(travelTipsConstants.saveVlogError[language]);
            }
            const data = response.json();
            return data;
@@ -49,33 +48,13 @@ function YourVlog({ vlog}:Vlog)  {
            const deleteVlogMutation = useMutation({
             mutationFn: deleteVlogFunction,
             onSuccess: () => {
-                toast.success('Vlog byl smazán', {
-                    position: "top-left",
-                    autoClose: 1500,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "colored",
-                    transition: Flip,
-                });
-              queryClient.invalidateQueries({queryKey: ['vlogs']});
+                showSuccessToast(travelTipsConstants.vlogDeleted[language])
+               queryClient.invalidateQueries({queryKey: ['vlogs']});
               setShowModal(false)
             },
             onError: () =>  {
-                toast.error('Chyba při mazání vlogu ', {
-                  position: "top-left",
-                  autoClose: 1500,
-                  hideProgressBar: true,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: true,
-                  progress: undefined,
-                  theme: "colored",
-                  transition: Flip,
-              });
-              }
+              showErrorToast(travelTipsConstants.deleteVlogError[language])
+                    }
           });
            
 
@@ -97,8 +76,8 @@ function YourVlog({ vlog}:Vlog)  {
           </div>
         
           <div className="flex justify-center space-x-2 w-full">
-        <Button onClick={() => handleEditVlogClick(vlog.id)} color="blue">Upravit</Button>
-        <Button onClick={() => handleDeleteVlogClick(vlog.id)} color="red">Smazat</Button>
+        <Button onClick={() => handleEditVlogClick(vlog.id)} color="blue">{travelTipsConstants.editVlog[language]}</Button>
+        <Button onClick={() => handleDeleteVlogClick(vlog.id)} color="red">{travelTipsConstants.deleteVlog[language]}</Button>
       </div>
         
           <div>
@@ -109,7 +88,7 @@ function YourVlog({ vlog}:Vlog)  {
       show={showModal}
       onClose={() => setShowModal(false)}
       onConfirm={()=>{selectedVlogId && deleteVlogMutation.mutate(selectedVlogId)}}             
-      message="Chceš opravdu smazat tuto zprávu?"
+      message={travelTipsConstants.confirmDeleteVlog[language]}
     /> 
         </div>
         : 

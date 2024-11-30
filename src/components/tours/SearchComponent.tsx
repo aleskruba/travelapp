@@ -47,10 +47,9 @@ const SearchComponent: React.FC<CountryProps> = ({ availableDestinations, countr
     }));
   };
   
-
+  ;    
   const handleChange = (selectedOption: any) => {
-;     console.log(selectedOption)
-    setCountries(selectedOption); // Update the countries state with selected options
+;    setCountries(selectedOption); // Update the countries state with selected options
   };
 
 

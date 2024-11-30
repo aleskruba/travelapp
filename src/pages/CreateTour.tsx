@@ -3,7 +3,6 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import DOMPurify from 'dompurify';
 import { typeOfTourObject } from '../constants/constantsData';
-import { typeOfTourLang } from '../constants/constantsData';
 import { countryNames,countryNamesEs,countryNamesEn } from '../constants/constantsData';
 import { useAuthContext } from '../context/authContext';
 import { useTourContext } from '../context/tourContext';
@@ -14,7 +13,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {  Flip, toast } from 'react-toastify';
 import { useLanguageContext } from '../context/languageContext';
 import { tourConstants } from '../constants/constantsTours';
-import { countryNameObjects } from '../constants/constantsData';
 import { countryTranslationsEn,countryTranslationsEs } from '../constants/constantsData';
 
 function CreateTour() {
@@ -334,7 +332,7 @@ console.log(selectedTourTypeIds)
     
     <div>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-center mb-8">{tourConstants.createTour[language]}</h1>
+        <h1 className="text-4xl font-extrabold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-blue-600 to-blue-400 uppercase ">{tourConstants.createTour[language]}</h1>
         <div>
           <form onSubmit={onSubmitFunction}>
             <div className="mb-4">

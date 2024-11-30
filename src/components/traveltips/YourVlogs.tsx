@@ -85,7 +85,7 @@ function YourVlogs() {
 }
   </div> </>: <div className='flex justify-center items-center h-screen'> ... moment prosím </div> 
   }
- { data?.vlogs.length > 0 && 
+ { data?.vlogs.length > 10 && 
 <ReactPaginate
         previousLabel={'←'}
         nextLabel={'→'}

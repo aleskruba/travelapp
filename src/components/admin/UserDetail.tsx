@@ -9,6 +9,7 @@ import { VscTriangleUp } from "react-icons/vsc";
 import { VscTriangleDown } from "react-icons/vsc";
 import ReactPaginate from 'react-paginate';
 import { VscArrowLeft, VscArrowRight } from 'react-icons/vsc';
+import Graphs from "./Graphs";
 
 function UserDetail() {
   let { id } = useParams<string>();
@@ -54,11 +55,12 @@ function UserDetail() {
 
   return (
     <div className="min-h-screen py-8">
+
       <div className="max-w-4xl mx-auto shadow-lg rounded-lg p-6">
         {/* Back Button */}
         <div className="flex justify-end mb-6">
           <Button onClick={() => navigate(-1)} color="gray">
-            Zpět na výpis
+            Back to List
           </Button>
         </div>
 
@@ -171,6 +173,11 @@ function UserDetail() {
 </div>
           </div>
         </div>
+  
+      </div>
+
+      <div className=" mt-4 max-w-4xl mx-auto shadow-lg rounded-lg p-6">
+          <Graphs user={user}/>
       </div>
     </div>
   );

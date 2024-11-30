@@ -55,33 +55,33 @@ const UpdateProfile = ({
 
         if (
           updateUser.username &&
-          (updateUser.username.trim().length < 4 ||
+          (updateUser.username.trim().length < 1 ||
             updateUser.username.trim().length > 15)
         ) {
-          setError("Username musí mít 4 až 15 znaků F");
+          setError(authConstants.username[language]);
           return;
         }
         if (
           updateUser.firstName &&
-          (updateUser.firstName.trim().length < 4 ||
+          (updateUser.firstName.trim().length < 1 ||
             updateUser.firstName.trim().length > 15)
         ) {
-          setError("Jméno musí mít 4 až 15 znaků F");
+          setError(authConstants.firstName[language]);
           return;
         }
         if (
           updateUser.lastName &&
-          (updateUser.lastName.trim().length < 4 ||
+          (updateUser.lastName.trim().length < 1 ||
             updateUser.lastName.trim().length > 15)
         ) {
-          setError("Příjmení musí mít 4 až 15 znaků F");
+          setError(authConstants.lastName[language]);
         }
         if (
-          updateUser.lastName &&
-          (updateUser.lastName.trim().length < 4 ||
-            updateUser.lastName.trim().length > 15)
+          updateUser.email &&
+          (updateUser.email.trim().length < 4 ||
+            updateUser.email.trim().length > 15)
         ) {
-          setError("Email  musí mít 4 až 50 znaků F");
+          setError(authConstants.email[language]);
         }
         setIsLoading(true);
 
@@ -100,14 +100,14 @@ const UpdateProfile = ({
         console.log(data.message)
         setUser(data.updatedUser);
         setIsLoading(false);
-        showSuccessToast("Update proběhl úspěšně")
+        showSuccessToast(authConstants.updateSuccess[language])
         setUpdateProfile(false);
       }
     } catch (e:any) {
     
       setError(e.message);
       setIsLoading(false);
-      showErrorToast("Chyba při úpravě profilu")
+      showErrorToast(authConstants.updateError[language])
     }
   };
   return (

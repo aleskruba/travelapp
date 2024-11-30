@@ -156,8 +156,8 @@ function YourTours() {
                             <div className='flex flex-col gap-0' key={tour.id}>
                                 <Tour tour={tour} />
                                 <div className="flex justify-center space-x-2 w-full border-dashed border-current dark:border-white border-b-2 border-r-2 border-l-2 pb-2 pt-2 rounded-md">
-                                    <Link to={`${tour.id}`} className='px-4 py-2 rounded font-semibold focus:outline-none bg-blue-500 text-white hover:bg-blue-600'>   {tourConstants.update[language] }</Link>
-                                    <Button onClick={() => handleDeleteTourClick(tour.id)} color="red">{tourConstants.delete[language] }</Button>
+                                    <Link to={`${tour.id}`} className='text-center px-2 py-2 w-28 rounded font-semibold focus:outline-none bg-blue-500 text-white hover:bg-blue-600'>   {tourConstants.update[language] }</Link>
+                                    <Button className='px-2 py-2 w-28' onClick={() => handleDeleteTourClick(tour.id)} color="red">{tourConstants.delete[language] }</Button>
                                 </div>
                             </div>
                         );
@@ -171,11 +171,11 @@ function YourTours() {
                                     </div>
                                     <div className="flex justify-center space-x-2 w-full border-dashed border-current dark:border-white border-b-2 border-r-2 border-l-2 pb-2 pt-2 rounded-md">
                                         <Link to={`${tour.id}`} 
-                                              className='px-4 py-2 rounded font-semibold focus:outline-none bg-blue-500 text-white hover:bg-blue-600'>
+                                              className='text-center px-2 py-2 w-28 rounded font-semibold focus:outline-none bg-blue-500 text-white hover:bg-blue-600'>
                                         {tourConstants.update[language] }
                                         </Link>
                                       
-                                        <Button  onClick={() => handleDeleteTourClick(tour.id)} color="red">{tourConstants.delete[language] }</Button>
+                                        <Button className='px-2 py-2 w-28'  onClick={() => handleDeleteTourClick(tour.id)} color="red">{tourConstants.delete[language] }</Button>
                                     </div>
                                 </div>
                             </div>

@@ -7,5 +7,5 @@ export const HTTP_CONFIG = {
   },
 };
 
-export const SOCKET_URL = 'http://localhost:3001';
-//export const SOCKET_URL = 'https://travelappsocket.onrender.com';
+//export const SOCKET_URL = 'http://localhost:3001';
+export const SOCKET_URL = 'https://travelappsocket.onrender.com';

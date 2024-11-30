@@ -2,26 +2,26 @@ import { useEffect, useState } from 'react';
 import Message from './Message';
 import { useAuthContext } from '../../context/authContext';
 import { useCountryContext } from '../../context/countryContext';
-import { BASE_URL, SOCKET_URL } from '../../constants/config';
+import { BASE_URL } from '../../constants/config';
 import CreateMessage from './CreateMessage';
-import { io } from 'socket.io-client';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useQueryClient } from "@tanstack/react-query";
 import socket from '../../utils/socket';
+import { travelTipsConstants } from '../../constants/constantsTravelTips';
+import { useLanguageContext } from '../../context/languageContext';
 
 function Messages() {
   const { user } = useAuthContext();
   const [searchParams, setSearchParams] = useSearchParams();
   const { chosenCountry } = useCountryContext();
   const navigate = useNavigate();
-
   const queryClient = useQueryClient();
   const currentPage = parseInt(searchParams.get('page') || '1', 10) - 1;
   const [deletedMessage,setDeletedMessage] = useState<number | null>(null)
   const [deletedReply,setDeletedReply] = useState<number | null>(null)
-/* 
-  const socket = io(SOCKET_URL); */
+  const { language} = useLanguageContext();
+  
   useEffect(() => {
     if (chosenCountry) {
       socket.emit('join_room', chosenCountry, user?.id);
@@ -53,7 +53,6 @@ function Messages() {
                queryClient.setQueryData(['messages', chosenCountry, currentPage], (old: any) => {
  
         
-          // Clone the old messages array
           const updatedMessages = (old?.messages || []).map((msg: any) => {
             // Check if the current message is the one to update
             if (msg.id === socketdata.message_id) {
@@ -156,7 +155,7 @@ function Messages() {
   const fetchMessages = async (page = 0) => {
     const response = await fetch(`${BASE_URL}/messages/${chosenCountry}?page=${page + 1}`);
     if (!response.ok) {
-      throw new Error('Chyba při získaní dat');
+      throw new Error('Fetching Error');
     }
     return response.json();
   };
@@ -172,11 +171,11 @@ function Messages() {
 
 
   if (isLoading || isFetching) {
-    return    <div className='flex justify-center items-center '>Moment prosim...</div>
+    return    <div className='flex justify-center items-center '>{travelTipsConstants.momentPlease[language]}</div>
   }
 
   if (isError) {
-    return <span>Něco se pokazilo , spolucety nebyly načteny </span>;
+    return <span>{travelTipsConstants.somethingWentWrong[language]} </span>;
   }
 
 
@@ -190,12 +189,12 @@ function Messages() {
         />
       ) : (
         <div className="p-4 bg-blue-100 text-blue-800 border border-blue-300 rounded-md shadow-lg">
-          Jenom přihlášení uživatelé mohou sdílet své názory,
+          {travelTipsConstants.travelMateError[language]}
           <span
             onClick={() => navigate('/login')}
             className="cursor-pointer text-blue-500 hover:underline pl-2"
           >
-            Přihlaš se zde
+         {travelTipsConstants.loginHere[language]}
           </span>
         </div>
       )}
@@ -219,7 +218,7 @@ function Messages() {
         </div>
         <div className="flex items-center justify-center space-x-4 py-2">
         <span className="text-gray-700 dark:text-gray-200 font-medium">
-          Aktuální stránka: {currentPage + 1} of {data.totalPages}
+        {travelTipsConstants.currentPage[language]} {currentPage + 1}    {travelTipsConstants.of[language]} {data.totalPages}
         </span>
        
         <button
@@ -227,24 +226,24 @@ function Messages() {
             setSearchParams({ page: Math.max(currentPage, 1).toString() }) // Convert result to string
           }
           disabled={currentPage === 0}
-          className={`px-4 py-2 rounded-md border text-sm font-medium transition-colors duration-200 ${
+          className={`px-2 py-2 w-32 rounded-md border text-sm font-medium transition-colors duration-200 ${
             currentPage === 0
               ? 'bg-gray-200 text-gray-500 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed'
               : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:border-gray-500'
           }`}
         >
-          Minulá stránka
+          {travelTipsConstants.previousPage[language]} 
         </button>
         <button
           onClick={() => setSearchParams({ page: (currentPage + 2).toString() })}
           disabled={isPlaceholderData || currentPage + 1 >= data.totalPages}
-          className={`px-4 py-2 rounded-md border text-sm font-medium transition-colors duration-200 ${
+          className={`px-2 py-2 w-32 rounded-md border text-sm font-medium transition-colors duration-200 ${
             isPlaceholderData || currentPage + 1 >= data.totalPages
               ? 'bg-gray-200 text-gray-500 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed'
               : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:border-gray-500'
           }`}
         >
-          Další stránka
+        {travelTipsConstants.nextPage[language]} 
         </button>
       </div>
         </>

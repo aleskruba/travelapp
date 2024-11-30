@@ -45,7 +45,7 @@ const UpdatePassword = ({
       setError(null)
       if (updateUser) {
         if (updateUser.password !== updateUser.confirmPassword) {
-          setError("Hesla nejsou stejná ");
+          setError(authConstants.passwordsMatch[language]);
           return;
         }
         if (

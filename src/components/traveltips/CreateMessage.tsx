@@ -4,14 +4,15 @@ import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { BsEmojiGrin } from "react-icons/bs";
 import DOMPurify from 'dompurify';
-import { BASE_URL, SOCKET_URL } from '../../constants/config';
+import { BASE_URL } from '../../constants/config';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCountryContext } from '../../context/countryContext';
 import { fetchData } from '../../hooks/useFetchData';
 import Button from '../customButton/Button';
 import lide from "../../assets/images/lide.svg"
-import { io } from 'socket.io-client';
 import socket from '../../utils/socket';
+import { travelTipsConstants } from '../../constants/constantsTravelTips';
+import { useLanguageContext } from '../../context/languageContext';
 
 interface CreateMessageProps {
   user: UserProps;
@@ -28,7 +29,7 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage }) => {
   const [message, setMessage] = useState<MessageProps>(initialMessageState);
   const { chosenCountry } = useCountryContext();
   const [backendError,setBackendError] = useState<string | null>(null);
-/*   const socket = io(SOCKET_URL); */
+  const { language} = useLanguageContext();
 
   useEffect(() => {
     const handleClickOutside = (event:any) => {
@@ -173,7 +174,7 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage }) => {
 
     },
     onError: (err, context) => {
-      setBackendError('Něco se pokazilo, zpráva nebyla vytvořena')
+      setBackendError(travelTipsConstants.somethingWentWrong[language])
       queryClient.setQueryData(['messages', chosenCountry, currentPage], context?.previousMessages);
       console.log(err)
     },
@@ -230,7 +231,7 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage }) => {
   onChange={handleChange}
   className="w-full min-h-28 py-2 pl-2 pr-10 bg-gray-200 dark:text-black rounded-lg focus:outline-none focus:ring focus:border-blue-500 resize-none"
   style={{ maxWidth: '100%', overflowWrap: 'break-word' }}  
-  placeholder="Sdlej svůj názor (max 400 znaků)"
+  placeholder={travelTipsConstants.messageplaceholder[language]}
   maxLength={400}
 />
        <div className={message.message.length >= 400  ? 'hidden' : `absolute bottom-2  right-5 dark:text-black text-xl cursor-pointer `} 
@@ -254,7 +255,7 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage }) => {
               className={`${!message.message.length ? 'opacity-30 cursor-default pointer-events-none': '' } rounded-lg shadow-md  focus:ring `}
              >
               
-              Odešli
+              {travelTipsConstants.send[language]}
               </Button>
             </div>
 
@@ -268,7 +269,7 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage }) => {
         value={message.message}
         onChange={handleChange}
         className="w-full  min-h-28 py-2 pl-2 pr-8 bg-gray-200 text-black focus:outline-none focus:ring focus:border-blue-500 resize-none"
-        placeholder="Sdlej svůj názor (max 400 znaků)"
+        placeholder={travelTipsConstants.messageplaceholder[language]}
         maxLength={400} 
    />
      <div className={message.message.length >= 400  ? 'hidden' : 'absolute bottom-4 right-5 dark:text-black text-xl cursor-pointer'}
@@ -279,7 +280,7 @@ const CreateMessage: React.FC<CreateMessageProps> = ({ user, currentPage }) => {
 
     {backendError && <div className=" w full text-base font bold dark:text-red-200 text-red-800 mt-2 mb-2 px-2 text-center rounded">{backendError} </div>}
    {message.message.length >= 400  &&
-    <p className='text-red-800 dark:text-red-200 text-center'>Zpráva je příliš dlouhá !!!!!</p>
+    <p className='text-red-800 dark:text-red-200 text-center'>{travelTipsConstants.tooLongMessage[language]}</p>
    }
 
     </form> 

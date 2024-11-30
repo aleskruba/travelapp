@@ -262,7 +262,43 @@ export const authConstants = {
             en: 'Verifying token...',
             cz: 'Ověřuji token...',
             es: 'Verificando el token...',
+        },
+        username: {
+            en: 'Username must be 1 to 15 characters long',
+            cz: 'Username musí mít 1 až 15 znaků',
+            es: 'El nombre de usuario debe tener entre 1 y 15 caracteres',
+        },
+        firstName: {
+            en: 'First name must be 1 to 15 characters long',
+            cz: 'Jméno musí mít 1 až 15 znaků',
+            es: 'El nombre debe tener entre 1 y 15 caracteres',
+        },
+        lastName: {
+            en: 'Last name must be 1 to 15 characters long',
+            cz: 'Příjmení musí mít 1 až 15 znaků',
+            es: 'El apellido debe tener entre 1 y 15 caracteres',
+        },
+        email: {
+            en: 'Email must be 4 to 50 characters long',
+            cz: 'Email musí mít 4 až 50 znaků',
+            es: 'El correo electrónico debe tener entre 4 y 50 caracteres',
+        },
+        updateSuccess: {
+            en: 'Update was successful',
+            cz: 'Update proběhl úspěšně',
+            es: 'La actualización fue exitosa',
+        },
+        updateError: {
+            en: 'Error updating profile',
+            cz: 'Chyba při úpravě profilu',
+            es: 'Error al actualizar el perfil',
         }
+        
+        
+        
+        
+        
+        
         
         
         

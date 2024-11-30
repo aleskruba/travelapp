@@ -26,6 +26,11 @@ import NotFound404 from './pages/NotFound404';
 import AdminRoutes from './components/AdminRoutes';
 import AdminPage from './pages/AdminPage';
 import UserDetail from './components/admin/UserDetail';
+import AboutUs from './pages/AboutUs';
+import Contact from './pages/Contact';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
+import Cookies from './pages/Cookies';
 
 
 function App() {
@@ -34,7 +39,7 @@ function App() {
   const location = useLocation();
 
   return (
-    <div className={`relative ${theme === 'dark' ? 'bg-darkBackground text-white' : 'bg-lightBackground text-black'}`}>
+    <div className={`relative min-h-screen ${theme === 'dark' ? 'bg-darkBackground text-white' : 'bg-lightBackground text-black'}`}>
 {modal && <Modal/>}
       <Navbar/>
       <ScrollToTop />
@@ -50,6 +55,12 @@ function App() {
             <Route path="/traveltips" element={<TravelTips />}/> 
             <Route path="/traveltips/:id" element={<TravelTips />}/> 
             <Route path="/tours" element={<Tours />}/> 
+
+            <Route path="/about" element={<AboutUs />}/> 
+            <Route path="/contact" element={<Contact />}/> 
+            <Route path="/terms" element={<Terms />}/> 
+            <Route path="/privacy" element={<Privacy />}/> 
+            <Route path="/cookies" element={<Cookies />}/> 
             
             
             <Route element={<ProtectedRoutes />}>

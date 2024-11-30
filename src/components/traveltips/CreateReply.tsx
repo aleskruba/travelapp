@@ -2,7 +2,7 @@ import React,{useState,FormEvent,useEffect,useRef} from 'react'
 import DOMPurify from 'dompurify';
 import { useAuthContext } from '../../context/authContext';
 import { useCountryContext } from '../../context/countryContext';
-import { BASE_URL, SOCKET_URL } from '../../constants/config';
+import { BASE_URL } from '../../constants/config';
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import { BsEmojiGrin } from "react-icons/bs";
@@ -10,8 +10,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {  initialSingleReplyState, MessageProps, ReplyProps } from '../../types';
 import { fetchData } from '../../hooks/useFetchData';
 import Button from '../customButton/Button';
-import { io } from 'socket.io-client';
 import socket from '../../utils/socket';
+import { travelTipsConstants } from '../../constants/constantsTravelTips';
+import { useLanguageContext } from '../../context/languageContext';
 
   interface Props {
     setReplyDiv: React.Dispatch<boolean>; 
@@ -31,9 +32,8 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,dele
        const [showEmojiPicker, setShowEmojiPicker] = useState(false);
        const [backendError,setBackendError] = useState<string | null>(null);
        const [reply, setReply] = useState<ReplyProps>(initialSingleReplyState);
-   /*     const socket = io(SOCKET_URL);
- */
-       
+       const { language} = useLanguageContext();
+
        useEffect(() => {
         const handleClickOutside = (event:any) => {
           // Check if the clicked target is outside the emoji picker div
@@ -96,7 +96,7 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,dele
         const response = await fetchData(`${BASE_URL}/reply`,'POST',data)
 
         if (!response.ok) {
-          throw new Error('Chyba při odeslaní zprávy');
+          throw new Error('sending message error');
         }
     
         return response.json();
@@ -190,7 +190,7 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,dele
         
 
         onError: (err, context) => {
-          setBackendError('Něco se pokazilo, zpráva nebyla vytvořena')
+          setBackendError(travelTipsConstants.somethingWentWrong[language])
           queryClient.setQueryData(['messages', chosenCountry, currentPage], context?.previousMessages);
           console.log(err)
         },
@@ -241,7 +241,7 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,dele
       onChange={handleChange}
       className="w-full min-h-[100px] py-2 pl-2 pr-6 bg-gray-200 dark:text-black rounded-lg focus:outline-none focus:ring focus:border-blue-500 resize-none"
       style={{ maxWidth: '100%', overflowWrap: 'break-word' }}
-      placeholder="Sdlej svůj názor (max 400 znaků)"
+      placeholder={travelTipsConstants.messageplaceholder[language]}
       maxLength={400} 
     />
            <div className={reply.message.length >= 400 ? 'hidden' :'absolute bottom-4 right-5 dark:text-black text-xl cursor-pointer '}
@@ -252,39 +252,22 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,dele
     <div className={showEmojiPicker ? 'hidden':"flex justify-center space-x-4"}>
       
  
-{/*         <button
-          type="submit"
-          className={`${
-            !reply.message.length
-              ? 'bg-blue-500 opacity-30 pointer-events-none'
-              : 'bg-blue-500 hover:bg-blue-600'
-          } w-[80px] text-white py-2 px-4 rounded-md focus:outline-none focus:ring focus:border-blue-700`}
-        >
-          Odešli
-      </button>
- */}
-
       <Button 
               type="submit"   
               color='green'
               className={`${!reply.message.length || deletedMessage === message.id? 'opacity-30 cursor-default pointer-events-none': '' } rounded-md shadow-md w-[100px]  focus:ring `}
              >
               
-              Odešli
+              {travelTipsConstants.send[language]}
           </Button>
- {/*      <button className="bg-gray-300 w-[80px] text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 focus:outline-none focus:ring focus:border-gray-500" 
-              onClick={() => {setReplyDiv(false);setSelectedReplyDivId(null)}}
-              type='button'>
-        Zpět
-      </button> */}
-      <Button 
-       
+          <Button 
+
        color='gray'
        className={` rounded-md shadow-md w-[100px] focus:ring `}
        onClick={() => {setReplyDiv(false);setSelectedReplyDivId(null)}}
       >
        
-       Zpět
+       {travelTipsConstants.back[language]}
    </Button>
 
     </div>
@@ -302,7 +285,7 @@ function CreateReply({setReplyDiv,message,currentPage,setSelectedReplyDivId,dele
     )}
 </div>
 {reply.message.length >= 400  &&
-    <p className='text-red-800 dark:text-red-200 text-center'>Zpráva je příliš dlouhá !!!!!</p>
+    <p className='text-red-800 dark:text-red-200 text-center'>{travelTipsConstants.tooLongMessage[language]}</p>
    }
 
   </form>
