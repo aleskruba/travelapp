@@ -183,14 +183,14 @@ export const travelTipsConstants = {
         es: "de"
       },
      previousPage : {
-        en: "Previous page",
-        cz: "Minulá stránka",
-        es: "Página anterior"
+        en: "Previous",
+        cz: "Minulá",
+        es: "Anterior"
       },
     nextPage :{
-        en: "Next page",
-        cz: "Další stránka",
-        es: "Página siguiente"
+        en: "Next",
+        cz: "Další",
+        es: "Siguiente"
       },
       addedBy: {
         en: 'added by',
