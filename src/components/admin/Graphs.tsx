@@ -88,7 +88,7 @@ function Graphs({ user }: Props) {
   });
 
   return (
-    <div > 
+    <div className='flex flex-col items-center pr-10'> 
       {/* Year Selection */}
       <div style={{ marginBottom: '20px' }}>
         <span>Select Year: </span>
@@ -96,8 +96,7 @@ function Graphs({ user }: Props) {
           <button
             key={year}
             style={{
-              marginLeft: '10px',
-              padding: '5px 10px',
+                padding: '5px 10px',
               backgroundColor: selectedYear === year ? '#8884d8' : '#f0f0f0',
               border: '1px solid #ccc',
               cursor: 'pointer',

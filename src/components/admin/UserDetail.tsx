@@ -54,24 +54,24 @@ function UserDetail() {
   const displayedLogs = user?.loginLogs.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen py-8  " >
 
-      <div className="max-w-4xl mx-auto shadow-lg rounded-lg p-6 ">
+      <div className="flex flex-col items-center px-2 sm:px-10 md:px-40 lg:px-60">
         {/* Back Button */}
-        <div className="flex justify-end mb-6">
+        <div className="mb-6">
           <Button onClick={() => navigate(-1)} color="gray">
             Back to List
           </Button>
         </div>
 
         {/* User Information */}
-        <div className="space-y-6">
+        <div className="space-y-6  w-full ">
           <div className="text-2xl font-semibold">User Details</div>
 
           {/* User Information Section */}
           <div className="grid grid-cols-2 gap-x-4 gap-y-2">
             <div className="font-medium">ID:</div>
-            <div>{user?.id}</div>
+            <div className="">{user?.id}</div>
 
             <div className="font-medium">Username:</div>
             <div>{user?.username}</div>
@@ -151,22 +151,27 @@ function UserDetail() {
             {/* Pagination */}
             {pageCount > 1 && (
               <div className="flex justify-center mt-6">
-                <ReactPaginate
-                  previousLabel={<VscArrowLeft />}
-                  nextLabel={<VscArrowRight />}
-                  breakLabel={"..."}
-                  pageCount={pageCount}
-                  onPageChange={handlePageChange}
-                  marginPagesDisplayed={2}
-                  pageRangeDisplayed={5}
-                  containerClassName={"flex items-center space-x-2"}
-                  pageClassName={"px-3 py-1 border border-gray-300 rounded-full cursor-pointer"}
-                  pageLinkClassName={"italic"}
-                  previousClassName={`px-3 py-1 border border-gray-300 rounded-full bold cursor-pointer ${currentPage === 0 ? ' cursor-not-allowed' : ''}`}
-                  nextClassName={`px-3 py-1 border border-gray-300 rounded-full cursor-pointer ${currentPage === pageCount - 1 ? 'cursor-not-allowed' : ''}`}
-                  activeClassName={"bg-blue-500 text-white"}
-                  disabledClassName={" opacity-30 cursor-not-allowed"}
-                />
+          <ReactPaginate
+  previousLabel={<VscArrowLeft />}
+  nextLabel={<VscArrowRight />}
+  breakLabel={"..."}
+  pageCount={pageCount}
+  onPageChange={handlePageChange}
+  marginPagesDisplayed={1} // Show 1 page at the start and end
+  pageRangeDisplayed={3}  // Show 3 pages around the current page
+  containerClassName={"flex items-center space-x-2"}
+  pageClassName={"px-3 py-1 border border-gray-300 rounded-full cursor-pointer"}
+  pageLinkClassName={"italic"}
+  previousClassName={`px-3 py-1 border border-gray-300 rounded-full cursor-pointer ${
+    currentPage === 0 ? "cursor-not-allowed" : ""
+  }`}
+  nextClassName={`px-3 py-1 border border-gray-300 rounded-full cursor-pointer ${
+    currentPage === pageCount - 1 ? "cursor-not-allowed" : ""
+  }`}
+  activeClassName={"bg-blue-500 text-white"}
+  disabledClassName={"opacity-30 cursor-not-allowed"}
+/>
+
               </div>
             )}
 
@@ -176,7 +181,7 @@ function UserDetail() {
   
       </div>
 
-      <div className=" mt-4 max-w-4xl mx-auto shadow-lg rounded-lg p-6">
+      <div className=" mt-4 shadow-lg rounded-lg ">
           <Graphs user={user}/>
       </div>
     </div>

@@ -146,19 +146,19 @@ function Register() {
   });
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto ">
-      <div className='flex flex-wrap items-center  overflow-y-auto min-h-[600px] mt-20'>
+    <div className="fixed inset-0 flex md:items-center justify-center bg-black bg-opacity-50 overflow-y-auto ">
+      <div className='flex flex-wrap md:items-center  overflow-y-auto max-h-[510px] md:max-h-[550px] mt-2 md:mt-20'>
       {isLoding ? (
           <h1>{navbarConstants.waitplease[language]}</h1>
         ) : (
         <div className={` ${isLoding ? 'opacity-30 pointer-events-none' : ''}relative bg-white px-4 py-4 rounded-lg flex items-center justify-center flex-col `}>
-          <h1 className='mt-4 text-black poppins-extrabold text-3xl'>{authConstants.registration[language]}</h1>
+          <h1 className='pb-2 md:mt-4 text-black poppins-extrabold text-2xl md:text-3xl'>{authConstants.registration[language]}</h1>
 
           <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
             {({ values, errors }) => {
               const isFormValid = values.email && !errors.email && !errors.password && !errors.confirmPassword && values.password && values.confirmPassword;
               return (
-                <Form className="flex flex-col space-y-4 items-center w-[350px] ">
+                <Form className="flex flex-col space-y-3 items-center md:w-[380px] w-[300px]">
                   <Field name="email"
                     type="email"
                     id="email"

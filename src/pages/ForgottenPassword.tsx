@@ -87,11 +87,11 @@ function ForgottenPassword() {
 
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto ">
       <div className="flex flex-wrap items-center  overflow-y-auto min-h-[500px] mt-20">
-        <div className="relative bg-white p-2 rounded-lg flex items-center justify-center flex-col w-[350px] min-w-[350px] h-full max-h-[400px] md:w-[450px] md:h-[550px] ">
+        <div className="relative bg-white p-2 rounded-lg flex items-center justify-center flex-col  w-[330px] md:min-w-[350px] h-full max-h-[400px] md:w-[450px] md:h-[550px] ">
           <div className="absolute text-2xl top-2 right-2  text-gray-500 hover:text-gray-700 cursor-pointer">
 
           </div>
-          <h1 className="mt-4 text-black poppins-extrabold text-3xl mb-4">
+          <h1 className="mt-4 text-black poppins-extrabold text-2xl md:text-3xl mb-4">
           {authConstants.forgottenPasswordTitle[language]}
           </h1>
 
@@ -105,7 +105,7 @@ function ForgottenPassword() {
     const isFormValid = values.email;  
 
     return (
-                    <Form className="flex flex-col space-y-4 items-center w-[350px] ">
+                    <Form className="flex flex-col space-y-4 items-center w-[320px] md:w-[350px] ">
                       <Field
                         name="email"
                         type="email"

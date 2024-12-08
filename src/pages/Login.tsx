@@ -195,8 +195,8 @@ function Login() {
   });
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
-      <div className="flex flex-wrap items-center overflow-y-auto min-h-[600px] mt-20">
+    <div className="fixed inset-0 flex md:items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
+      <div className="flex flex-wrap md:items-center overflow-y-auto max-h-[500px] mt-2  md:mt-20">
         {isLoding ? (
           <h1>{navbarConstants.waitplease[language]}</h1>
         ) : (
@@ -205,7 +205,7 @@ function Login() {
               isLoding ? "opacity-10 pointer-events-none" : ""
             }relative bg-white px-4 py-4 rounded-lg flex items-center justify-center flex-col `}
           >
-            <h1 className="mt-4 text-black poppins-extrabold text-3xl">
+            <h1 className="pb-4 text-black poppins-extrabold text-2xl md:text-3xl">
               {authConstants.login[language]}
             </h1>
 
@@ -218,7 +218,7 @@ function Login() {
                 const isFormValid = values.email &&  !errors.email && values.password 
 
                 return (
-                  <Form className="flex flex-col space-y-4 items-center w-[350px] relative">
+                  <Form className="flex flex-col space-y-4 items-center md:w-[380px] w-[300px] relative">
                     <Field
                       name="email"
                       type="email"
