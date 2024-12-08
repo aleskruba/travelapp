@@ -88,7 +88,7 @@ function Graphs({ user }: Props) {
   });
 
   return (
-    <div>
+    <div > 
       {/* Year Selection */}
       <div style={{ marginBottom: '20px' }}>
         <span>Select Year: </span>

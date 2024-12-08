@@ -35,10 +35,10 @@ function Users() {
   });
 
   return (
-    <div>
-      <h1 className='text-center pb-8 '>Users</h1>
+    <div className='max-w-[380px] md:w-full px-2'>
+      <h1 className='text-center pb-8 '>Search User</h1>
     
-      <ul className="user-list border rounded-lg shadow-md bg-white p-4">
+      <ul className="user-list text-xl border rounded-lg shadow-md bg-white p-4">
 
 
       <li className="flex space-x-4 mb-4">

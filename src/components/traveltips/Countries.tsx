@@ -10,7 +10,7 @@ const ComboBox: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
-  const { setChosenCountry, chosenCountry,chosenCountryTranslated, setChosenCountryTranslated ,chosenCountryData} = useCountryContext();
+  const { setChosenCountry, setChosenCountryTranslated ,chosenCountryData} = useCountryContext();
   const navigate = useNavigate();
   let { id } = useParams<string>();
   const { language} = useLanguageContext();

@@ -29,7 +29,7 @@ function Logs() {
   }, []);
 
   return (
-    <div className="p-6  rounded-lg shadow-lg">
+    <div className="px-8  w-[380px] pt-8 md:pt-0 rounded-lg shadow-lg ">
       <h2 className="text-2xl font-bold mb-6 leading-none">Suspicious Logs       <span className="text-xs font-bold mb-6 ">In two last months </span></h2>
 
       {backendError && (
@@ -59,7 +59,7 @@ function Logs() {
                 className="hover:bg-gray-100 even:bg-gray-50 transition duration-200"
               >
                 <td className="px-6 py-4 text-sm text-gray-900">{log.userId}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">{log.failureCount}</td>
+                <td className="px-6 py-4 text-sm text-red-800 font-bold">{log.failureCount}</td>
               </tr>
             ))}
           </tbody>

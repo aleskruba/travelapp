@@ -56,7 +56,7 @@ function UserDetail() {
   return (
     <div className="min-h-screen py-8">
 
-      <div className="max-w-4xl mx-auto shadow-lg rounded-lg p-6">
+      <div className="max-w-4xl mx-auto shadow-lg rounded-lg p-6 ">
         {/* Back Button */}
         <div className="flex justify-end mb-6">
           <Button onClick={() => navigate(-1)} color="gray">

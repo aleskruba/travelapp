@@ -19,7 +19,7 @@ import { useLanguageContext } from "../context/languageContext";
 import { typeOfTourObject } from "../constants/constantsData";
 import { showErrorToast, showSuccessToast } from "../utils/toastUtils";
 import { tourConstants } from '../constants/constantsTours';
-import { countryTranslationsEn,countryTranslationsEs } from "../constants/constantsData";
+import { countryTranslationsEn } from "../constants/constantsData";
 
 function UpdateTour() {
   let { id } = useParams<string>();
@@ -346,14 +346,14 @@ function UpdateTour() {
         setTranslatedLanguage(data.tour.destination)
      }
 
-    if (language == 'en'){
+    if (language === 'en'){
       countryTranslationsEn.map(country=>{
         if (country.cz === data.tour.destination ) {
           setTranslatedLanguage(country.en);
         }
       })
     }
-    if (language == 'es'){
+    if (language === 'es'){
       countryTranslationsEn.map(country=>{
         if (country.cz === data.tour.destination ) {
           setTranslatedLanguage(country.en);

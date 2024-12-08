@@ -19,7 +19,7 @@ function PopularCountries({ setUrlError }: ErrorProps) {
   const chooseCountryFunction: React.MouseEventHandler<HTMLDivElement> = (event) => {
     const country = event.currentTarget.textContent || '';
    
-    if (language && language =='en') {
+    if (language && language ==='en') {
       const translation = countryTranslationsEn.find(c => c.en === country); 
       if (translation) {
         setUrlError(false)
@@ -31,7 +31,7 @@ function PopularCountries({ setUrlError }: ErrorProps) {
         console.log('Translation not found');
       }
     }
-    if (language && language =='es') {
+    if (language && language ==='es') {
       const translation = countryTranslationsEs.find(c => c.es === country); 
       if (translation) {
         setUrlError(false)
@@ -42,7 +42,7 @@ function PopularCountries({ setUrlError }: ErrorProps) {
       } else {
         console.log('Translation not found');
       }
-    } if (language && language =='cz') {
+    } if (language && language ==='cz') {
       if (window.location.pathname !== `/traveltips/${country}`) {
         setUrlError(false)
         navigate(`/traveltips/${country}`);

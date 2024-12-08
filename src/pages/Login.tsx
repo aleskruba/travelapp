@@ -81,10 +81,10 @@ function Login() {
       const data = await response.json();
    
       if (!response.ok) {
-      
-        setWrongData({email:data.error.email,password:data.error.password})
+        console.log(data)
+       setWrongData({email:data.error.email,password:data.error.password})
         setIsLoding(false);
-        throw new Error("Nesprávný email nebo heslo");
+        throw new Error(response.statusText);
       }
 
    
@@ -93,10 +93,12 @@ function Login() {
       return data;
     } catch (error:any) {
       setIsLoding(false);
-      setBackendError(error.message)
-      console.error(error.message);
-      throw new Error("Nesprávný email nebo heslo");
-    }
+      console.log('error',error.message);
+      if (error.message === 'Unauthorized') {
+        throw new Error(`BACKEND - ${authConstants.loginError[language] }`);
+      }
+        }
+
   };
   const getClientIp = async () => {
     try {
@@ -142,8 +144,8 @@ function Login() {
       showSuccessToast(authConstants.success[language])
     
     } catch (error: any) {
-      setBackendError(authConstants.loginError[language]);
-      showErrorToast(authConstants.loginError[language])
+       setBackendError(error.message)
+       showErrorToast(authConstants.loginError[language])
     }
   };
 

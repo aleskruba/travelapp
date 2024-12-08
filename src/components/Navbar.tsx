@@ -139,10 +139,10 @@ function Navbar() {
                         </div>
                     </div>
                 )}
-                    {!user?.isAdmin &&
+                    
                 <div className="flex items-center gap-2 dark:hover:text-gray-300 hover:text-yellow-500 absolute top-1 right-2">
-                   <FlagComponent/> <ThemeComponent />
-                </div>}
+                {!user?.isAdmin &&<FlagComponent/>} <ThemeComponent />
+                </div>
             </nav>
 
             {/* BOTTOM NAVBAR */}

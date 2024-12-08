@@ -4,7 +4,6 @@ import Button from '../customButton/Button';
 import ConfirmationModal from '../ConfirmationModal';
 import { useMutation,useQueryClient } from '@tanstack/react-query';
 import { BASE_URL } from '../../constants/config';
-import { Flip, toast } from 'react-toastify';
 import UpdateYourVlog from './UpdateYourVlog';
 import { fetchData } from '../../hooks/useFetchData';
 import { travelTipsConstants } from '../../constants/constantsTravelTips';
