@@ -33,16 +33,7 @@ function Test() {
 
             <button onClick={translateFunction}>Translate</button>
 
-            {locale !== 'cs' && (
-                <IntlProvider locale={locale} messages={messages[locale]}>
-                    <div>
-                        <h1>
-                            <FormattedMessage id="greeting" defaultMessage="Hello, World!" />
-                        </h1>
-                    </div>
-                </IntlProvider>
-            )}
-
+        
             {/* Additional session validity handling */}
             {/* sessionValid logic omitted for simplicity */}
         </div>
