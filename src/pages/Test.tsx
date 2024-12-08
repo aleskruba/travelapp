@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IntlProvider, FormattedMessage } from 'react-intl';
+
 
 // Define the available locales as a union type
 type Locale = 'en' | 'fr';
