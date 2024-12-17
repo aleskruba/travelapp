@@ -50,7 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const checkCookiesBlocked = async () => {
     try {
         // Send a request to the server to set a cookie
-        await fetch(`${BASE_URL}/api/test`, {
+        await fetch(`${BASE_URL}/test`, {
             method: 'GET',
             credentials: 'include', // Ensure cookies are sent and received
         });
