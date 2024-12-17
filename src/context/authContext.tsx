@@ -55,7 +55,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         });
 
         // Delay checking the cookie to give the browser time to process it
-        await new Promise((resolve) => setTimeout(resolve, 500)); // 100ms delay
+        await new Promise((resolve) => setTimeout(resolve, 2500)); // 100ms delay
 
         // Check if the test cookie is stored in the browser
         const cookies = document.cookie;
