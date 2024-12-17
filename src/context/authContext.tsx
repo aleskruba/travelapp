@@ -49,52 +49,46 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkCookiesBlocked = async () => {
     try {
-        // Send a request to the server to set a cookie
-        await fetch(`${BASE_URL}/test`, {
+        const response = await fetch(`${BASE_URL}/test`, {
             method: 'GET',
-            credentials: 'include', // Ensure cookies are sent and received
+            credentials: 'include', // Include cookies in the request
         });
-
-        // Check if the test cookie is stored in the browser
-        const cookies = document.cookie;
-        if (cookies.includes('sessionTest')) {
-            // Cookie exists in the browser
-            return { ok: true };
-        } else {
-            // Cookie was not stored (likely blocked by the browser)
-            return { ok: false, error: 'Cookies are blocked or third-party cookies are disabled.' };
-        }
+        console.log(response)
+        return response; // Return the response to the caller
     } catch (error) {
-        console.error('Error during cookie check:', error);
-        return { ok: false, error: 'An error occurred while testing cookies.' };
+        console.error('Error during cookie test:', error);
+        throw error; // Rethrow the error for the caller to handle
     }
 };
 
 
-
 useEffect(() => {
   const initializeApp = async () => {
-      const response = await checkCookiesBlocked();
-
-      if (response.ok) {
-          // Cookies are enabled, proceed with fetching user data
-          const getUserData = async () => {
-              setIsLoading(true);
-              const userData = await fetchUserData();
-              setUser(userData);
-              setUpdateUser(userData);
-              setIsLoading(false);
-          };
-          getUserData();
-      } else {
-          // Cookies are blocked, alert the user
-          alert(response.error);
+      try {
+          // First, check if cookies are blocked
+          const response = await checkCookiesBlocked();
+          if (response.ok) {
+              // If cookies are enabled, fetch user data
+              const getUserData = async () => {
+                  setIsLoading(true);
+                  const userData = await fetchUserData();
+                  setUser(userData);
+                  setUpdateUser(userData);
+                  setIsLoading(false);
+              };
+              getUserData();
+          } else {
+              // Handle cookies blocked scenario
+              alert('Cookies are blocked. Please enable third-party cookies to continue.');
+          }
+      } catch (error) {
+          console.error('Error during initialization:', error);
+          alert('An error occurred. Please check your browser settings.');
       }
   };
 
   initializeApp();
 }, []);
-
 
 
 /*   useEffect(() => {
