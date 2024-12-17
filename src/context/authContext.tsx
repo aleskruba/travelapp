@@ -46,7 +46,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  useEffect(() => {
+
+  const checkCookiesBlocked = async () => {
+    try {
+        const response = await fetch(`${BASE_URL}/api/test`, {
+            method: 'GET',
+            credentials: 'include', // Include cookies in the request
+        });
+        return response; // Return the response to the caller
+    } catch (error) {
+        console.error('Error during cookie test:', error);
+        throw error; // Rethrow the error for the caller to handle
+    }
+};
+
+
+useEffect(() => {
+  const initializeApp = async () => {
+      try {
+          // First, check if cookies are blocked
+          const response = await checkCookiesBlocked();
+          if (response.ok) {
+              // If cookies are enabled, fetch user data
+              const getUserData = async () => {
+                  setIsLoading(true);
+                  const userData = await fetchUserData();
+                  setUser(userData);
+                  setUpdateUser(userData);
+                  setIsLoading(false);
+              };
+              getUserData();
+          } else {
+              // Handle cookies blocked scenario
+              alert('Cookies are blocked. Please enable third-party cookies to continue.');
+          }
+      } catch (error) {
+          console.error('Error during initialization:', error);
+          alert('An error occurred. Please check your browser settings.');
+      }
+  };
+
+  initializeApp();
+}, []);
+
+
+/*   useEffect(() => {
     const getUserData = async () => {
       setIsLoading(true);
       const userData = await fetchUserData();
@@ -56,7 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     getUserData();
-  }, []);
+  }, []); */
 
   useEffect(() => {
     if (backendServerError) {
@@ -64,34 +108,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [backendServerError]);
 
-/*   function checkCookiesBlocked() {
-    // Attempt a test fetch with credentials (cookies)
-    fetch(`${BASE_URL}/api/test`, {
-        method: 'GET',
-        credentials: 'include', // Ensure cookies are included in the request
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.json().then(data => {
-                if (data.message === 'Cookies are enabled.') {
-                    console.log('Cookies are enabled.');
-                } else {
-                    alert('Cookies might be blocked or a CORS issue occurred.');
-                }
-            });
-        } else {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-    })
-    .catch(error => {
-        console.error('Error during fetch:', error);
-        alert('Cookies are blocked or a CORS error occurred. Please enable third-party cookies.');
-    });
-}
 
-useEffect(() => {
-  checkCookiesBlocked() 
-},[]) */
 
   return (
     <AuthContext.Provider value={{ user, setUser, updateUser, setUpdateUser, isLoading, backendServerError, setBackendServerError }}>
