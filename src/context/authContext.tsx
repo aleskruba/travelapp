@@ -64,6 +64,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [backendServerError]);
 
+
+  function checkCookiesBlocked() {
+    // Attempt a test fetch with credentials (cookies)
+    fetch(`${BASE_URL}/test`, {
+        method: 'GET',
+        credentials: 'include' // Ensure cookies are included in cross-origin requests
+    })
+    .then(response => {
+        // Save the response for later use
+        if (response.ok) {
+            return response.json().then(data => {
+                if (data.message === 'Cookies are enabled.') {
+                    console.log('Cookies are enabled.');
+                } else {
+                    alert('Cookies might be blocked or CORS issue occurred.');
+                }
+            });
+        } else {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+    })
+    .catch(error => {
+        // Handle CORS errors or blocked cookies
+        console.error('Error during fetch:', error);
+        alert('Cookies are blocked or a CORS error occurred. Please enable third-party cookies.');
+    });
+}
+
+useEffect(() => {
+  checkCookiesBlocked() 
+},[])
+
   return (
     <AuthContext.Provider value={{ user, setUser, updateUser, setUpdateUser, isLoading, backendServerError, setBackendServerError }}>
       {children}
