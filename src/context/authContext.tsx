@@ -46,7 +46,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const checkCookiesBlocked = async () => {
+/*   const checkCookiesBlocked = async () => {
     try {
         // Send a request to the server to set a cookie
         await fetch(`${BASE_URL}/test`, {
@@ -96,11 +96,11 @@ useEffect(() => {
   };
 
   initializeApp();
-}, []);
+}, []); */
 
 
 
-/*   useEffect(() => {
+  useEffect(() => {
     const getUserData = async () => {
       setIsLoading(true);
       const userData = await fetchUserData();
@@ -110,7 +110,7 @@ useEffect(() => {
     };
 
     getUserData();
-  }, []); */
+  }, []);
 
   useEffect(() => {
     if (backendServerError) {
