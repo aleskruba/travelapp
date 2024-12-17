@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [backendServerError]);
 
-  function checkCookiesBlocked() {
+/*   function checkCookiesBlocked() {
     // Attempt a test fetch with credentials (cookies)
     fetch(`${BASE_URL}/api/test`, {
         method: 'GET',
@@ -91,7 +91,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 useEffect(() => {
   checkCookiesBlocked() 
-},[])
+},[]) */
 
   return (
     <AuthContext.Provider value={{ user, setUser, updateUser, setUpdateUser, isLoading, backendServerError, setBackendServerError }}>
