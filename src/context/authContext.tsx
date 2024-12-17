@@ -46,7 +46,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-
   const checkCookiesBlocked = async () => {
     try {
         // Send a request to the server to set a cookie
@@ -54,6 +53,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             method: 'GET',
             credentials: 'include', // Ensure cookies are sent and received
         });
+
+        // Delay checking the cookie to give the browser time to process it
+        await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms delay
 
         // Check if the test cookie is stored in the browser
         const cookies = document.cookie;
@@ -69,6 +71,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return { ok: false, error: 'An error occurred while testing cookies.' };
     }
 };
+
 
 
 useEffect(() => {
