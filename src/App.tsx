@@ -38,6 +38,24 @@ function App() {
   const { theme,modal } = useThemeContext();
   const location = useLocation();
 
+  function checkCookiesBlocked() {
+    // Try to set a test cookie
+    document.cookie = "testCookie=true; SameSite=None; Secure; path=/; max-age=3600";
+    
+    // Check if the cookie was successfully set
+    const cookiesEnabled = document.cookie.indexOf("testCookie=true") !== -1;
+
+    // If cookies are blocked, show a warning and return false
+    if (!cookiesEnabled) {
+        alert("It seems that third-party cookies are blocked. Please enable them in your browser settings to log in.");
+        return false;
+    }
+
+    return true;
+}
+
+checkCookiesBlocked()
+
   return (
     <div className={`relative min-h-screen ${theme === 'dark' ? 'bg-darkBackground text-white' : 'bg-lightBackground text-black'}`}>
 {modal && <Modal/>}
