@@ -49,6 +49,8 @@ function App() {
     if (!cookiesEnabled) {
         alert("It seems that third-party cookies are blocked. Please enable them in your browser settings to log in.");
         return false;
+    } else {
+      alert('cookies enabled')
     }
 
     return true;
