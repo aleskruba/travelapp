@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import { useThemeContext } from './context/themeContext';
+import { useAuthContext } from './context/authContext';
 import Footer from './components/Footer';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -31,19 +32,26 @@ import Contact from './pages/Contact';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import Cookies from './pages/Cookies';
-
-
+import CookiesInfoModal from './components/CookiesInfoModal';
+import { authConstants } from "./constants/constantsAuth";
+import { useLanguageContext } from './context/languageContext';
 function App() {
 
   const { theme,modal } = useThemeContext();
+  const { showModal,handleConfirm } = useAuthContext();
   const location = useLocation();
-
+ const { language} = useLanguageContext();
 
 
   return (
     <div className={`relative min-h-screen ${theme === 'dark' ? 'bg-darkBackground text-white' : 'bg-lightBackground text-black'}`}>
 {modal && <Modal/>}
       <Navbar/>
+      {showModal  &&     <CookiesInfoModal
+        show={showModal}
+        onConfirm={() => {handleConfirm()}}
+        message={authConstants.cookies[language]}
+      />}
       <ScrollToTop />
       <Routes>
  

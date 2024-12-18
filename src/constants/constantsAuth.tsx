@@ -292,28 +292,11 @@ export const authConstants = {
             en: 'Error updating profile',
             cz: 'Chyba při úpravě profilu',
             es: 'Error al actualizar el perfil',
-        }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-
-        
-        
-        
-        
-  
-        
+        },cookies: {
+            en:'Oops! It looks like third-party cookies are disabled in your browser. To use this app, please enable them. Check your browser settings to allow third-party cookies. ',
+            cz:'Ups! Vypadá to, že máte v prohlížeči zakázané soubory cookie třetích stran. Aby bylo možné tuto aplikaci používat, povolte je. Zkontrolujte nastavení prohlížeče a povolte soubory cookie třetích stran',
+            es:'¡Vaya! Parece que las cookies de terceros están deshabilitadas en tu navegador. Para usar esta aplicación, por favor habilítalas. Revisa la configuración de tu navegador para permitir las cookies de terceros'
+        }        
     
 
 }

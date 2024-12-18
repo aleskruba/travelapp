@@ -3,6 +3,7 @@ import { UserProps } from '../types';
 import { BASE_URL } from '../constants/config';
 import { fetchData } from '../hooks/useFetchData';
 
+
 interface AuthContextProps {
   user: UserProps | null;
   setUser: Dispatch<SetStateAction<UserProps | null>>;
@@ -11,6 +12,9 @@ interface AuthContextProps {
   isLoading: boolean;
   setBackendServerError: Dispatch<SetStateAction<boolean>>;
   backendServerError: boolean;
+  showModal: boolean;  // Add modal visibility state
+  setShowModal: Dispatch<SetStateAction<boolean>>;
+  handleConfirm: () => Promise<void>; 
 }
 
 export const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -24,83 +28,94 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [updateUser, setUpdateUser] = useState<UserProps | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [backendServerError, setBackendServerError] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const fetchUserData = async (): Promise<UserProps | null> => {
     try {
       setBackendServerError(false);
-      const response = await fetchData(`${BASE_URL}/checksession`,'GET')
-
+      const response = await fetchData(`${BASE_URL}/checksession`, 'GET');
+  
       if (!response.ok) {
         return null;
       }
       const responseData = await response.json();
-      if (responseData && responseData.user) {
-        return responseData.user;
-      } else {
-        return null;
-      }
+      return responseData?.user || null;
     } catch (err) {
       setBackendServerError(true);
       console.error('Error fetching user data:', err);
       return null;
     }
   };
-
-/*   const checkCookiesBlocked = async () => {
+  
+  const checkCookiesBlocked = async (): Promise<{ ok: boolean; error?: string }> => {
     try {
-        // Send a request to the server to set a cookie
-        await fetch(`${BASE_URL}/test`, {
-            method: 'GET',
-            credentials: 'include', // Ensure cookies are sent and received
-        });
-
-        // Delay checking the cookie to give the browser time to process it
-        await new Promise((resolve) => setTimeout(resolve, 2500)); // 100ms delay
-
-        // Check if the test cookie is stored in the browser
-        const cookies = document.cookie;
-        console.log('document.cookie',document.cookie)
-        if (cookies.includes('sessionTest')) {
-            // Cookie exists in the browser
-            return { ok: true };
-        } else {
-            // Cookie was not stored (likely blocked by the browser)
-            return { ok: false, error: 'Cookies are blocked or third-party cookies are disabled.' };
-        }
-    } catch (error) {
-        console.error('Error during cookie check:', error);
-        return { ok: false, error: 'An error occurred while testing cookies.' };
-    }
-};
-
-
-
-useEffect(() => {
-  const initializeApp = async () => {
-      const response = await checkCookiesBlocked();
-
-      if (response.ok) {
-          // Cookies are enabled, proceed with fetching user data
-          const getUserData = async () => {
-              setIsLoading(true);
-              const userData = await fetchUserData();
-              setUser(userData);
-              setUpdateUser(userData);
-              setIsLoading(false);
-          };
-          getUserData();
-      } else {
-          // Cookies are blocked, alert the user
-          alert(response.error);
+      // Step 1: Set the cookie
+      const setCookieResponse = await fetchData(`${BASE_URL}/setcookietest`, 'GET');
+  
+      if (!setCookieResponse.ok) {
+        return { ok: false, error: 'Failed to set cookies.' };
       }
+  
+      // Step 2: Wait for a small delay to allow the cookie to be set properly (optional, adjust as needed)
+      await new Promise((resolve) => setTimeout(resolve, 300)); // Delay of 300ms to allow cookie setting
+  
+      // Step 3: Check if the cookie is blocked
+      const getCookieResponse = await fetchData(`${BASE_URL}/getcookietest`, 'GET');
+  
+      if (!getCookieResponse.ok) {
+        return { ok: false, error: 'Failed to validate cookies.' };
+      }
+  
+      const responseData = await getCookieResponse.json();
+      console.log(responseData);
+  
+      if (responseData.status === 'blocked') {
+        return { ok: false, error: 'Third-party cookies are blocked in your browser.' };
+      }
+  
+      return { ok: true };
+    } catch (error) {
+      console.error('Error while checking cookies:', error);
+      return { ok: false, error: 'An error occurred while checking cookies.' };
+    }
   };
-
-  initializeApp();
-}, []); */
-
-
-
+  
   useEffect(() => {
+    const initializeApp = async () => {
+      const response = await checkCookiesBlocked();
+      if (response.ok) {
+        // Cookies are enabled, proceed with fetching user data
+        setShowModal(false);
+        setIsLoading(true);
+        const userData = await fetchUserData();
+        setUser(userData);
+        setUpdateUser(userData);
+        setIsLoading(false);
+      } else {
+        setShowModal(true);
+        console.log(response.error);
+      }
+    };
+
+    initializeApp();
+
+    const intervalId = setInterval(() => {
+      // Check every 15 seconds if cookies are blocked
+      checkCookiesBlocked().then(response => {
+        if (!response.ok) {
+          setShowModal(true);
+        }
+      });
+    }, 15000);
+
+    return () => clearInterval(intervalId); // Clean up the interval when component unmounts
+  }, []);
+  
+  
+
+
+
+/*   useEffect(() => {
     const getUserData = async () => {
       setIsLoading(true);
       const userData = await fetchUserData();
@@ -110,7 +125,7 @@ useEffect(() => {
     };
 
     getUserData();
-  }, []);
+  }, []); */
 
   useEffect(() => {
     if (backendServerError) {
@@ -118,10 +133,27 @@ useEffect(() => {
     }
   }, [backendServerError]);
 
+  const handleConfirm = async () => {
+    const response = await checkCookiesBlocked();
+    console.log(response);
 
+    if (response.ok) {
+      // Cookies are enabled, fetch user data again
+      setShowModal(false);
+      setIsLoading(true);
+      const userData = await fetchUserData();
+      setUser(userData);
+      setUpdateUser(userData);
+      setIsLoading(false);
+    } else {
+      // If cookies are still blocked, log the error and keep the modal open
+      console.log(response.error);
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, updateUser, setUpdateUser, isLoading, backendServerError, setBackendServerError }}>
+    <AuthContext.Provider value={{ user, setUser, updateUser, setUpdateUser, isLoading, backendServerError, setBackendServerError, handleConfirm, showModal, 
+      setShowModal  }}>
       {children}
     </AuthContext.Provider>
   );
