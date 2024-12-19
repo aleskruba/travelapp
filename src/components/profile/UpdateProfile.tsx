@@ -61,21 +61,21 @@ const UpdateProfile = ({
   
     if (
       updateUser?.username &&
-      (updateUser.username.trim().length < 4 || updateUser.username.trim().length > 15)
+      (updateUser.username.trim().length < 1 || updateUser.username.trim().length > 15)
     ) {
       validationErrors.username = authConstants.username[language];
     }
   
     if (
       updateUser?.firstName &&
-      (updateUser.firstName.trim().length < 4 || updateUser.firstName.trim().length > 15)
+      (updateUser.firstName.trim().length < 1 || updateUser.firstName.trim().length > 15)
     ) {
       validationErrors.firstName = authConstants.firstName[language];
     }
   
     if (
       updateUser?.lastName &&
-      (updateUser.lastName.trim().length < 4 || updateUser.lastName.trim().length > 15)
+      (updateUser.lastName.trim().length < 1 || updateUser.lastName.trim().length > 15)
     ) {
       validationErrors.lastName = authConstants.lastName[language];
     }
