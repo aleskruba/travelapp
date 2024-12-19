@@ -22,8 +22,12 @@ const UpdateProfile = ({
   setIsLoading,
 }: UpdateProfileProps) => {
 
-  const { user, updateUser, setUser } = useAuthContext();
-  const [error, setError] = useState<string | null>(null);
+  const { user, updateUser,setUpdateUser, setUser } = useAuthContext();
+  const [errorBackend, setErrorBackend] = useState<string | null>(null);
+  const [errorUsername, setErrorUsername] = useState<string | null>(null);
+  const [errorfirstName, setErrorfirstName] = useState<string | null>(null);
+  const [errorlasttName, setErrorlastName] = useState<string | null>(null);
+  const [errorEmail, setErrorEmail] = useState<string | null>(null);
   const { language} = useLanguageContext();
 
   const isFalse =
@@ -39,77 +43,81 @@ const UpdateProfile = ({
   const handleSubmitProfile = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    try {
-      //  setError(null);
-
-      if (isFalse) return;
-
-      if (updateUser) {
-
-         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Simple email regex validation
-
-        if (!emailRegex.test(updateUser.email)) {
-            setError(authConstants.emailFormat[language]);
-            return;
-        }
-
-        if (
-          updateUser.username &&
-          (updateUser.username.trim().length < 1 ||
-            updateUser.username.trim().length > 15)
-        ) {
-          setError(authConstants.username[language]);
-          return;
-        }
-        if (
-          updateUser.firstName &&
-          (updateUser.firstName.trim().length < 1 ||
-            updateUser.firstName.trim().length > 15)
-        ) {
-          setError(authConstants.firstName[language]);
-          return;
-        }
-        if (
-          updateUser.lastName &&
-          (updateUser.lastName.trim().length < 1 ||
-            updateUser.lastName.trim().length > 15)
-        ) {
-          setError(authConstants.lastName[language]);
-        }
-        if (
-          updateUser.email &&
-          (updateUser.email.trim().length < 4 ||
-            updateUser.email.trim().length > 15)
-        ) {
-          setError(authConstants.email[language]);
-        }
-        setIsLoading(true);
-
-        const response = await fetchData(
-          `${BASE_URL}/updateprofile`,
-          "PUT",
-          updateUser
-        );
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to update profile");
-        }
-
-        const data = await response.json();
-        console.log(data.message)
-        setUser(data.updatedUser);
-        setIsLoading(false);
-        showSuccessToast(authConstants.updateSuccess[language])
-        setUpdateProfile(false);
-      }
-    } catch (e:any) {
     
-      setError(e.message);
+    const validationErrors = {
+      username: null as string | null,
+      firstName: null as string | null,
+      lastName: null as string | null,
+      email: null as string | null,
+  };
+
+  
+  
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+    if (!emailRegex.test(updateUser?.email || "")) {
+      validationErrors.email = authConstants.emailFormat[language];
+    }
+  
+    if (
+      updateUser?.username &&
+      (updateUser.username.trim().length < 4 || updateUser.username.trim().length > 15)
+    ) {
+      validationErrors.username = authConstants.username[language];
+    }
+  
+    if (
+      updateUser?.firstName &&
+      (updateUser.firstName.trim().length < 4 || updateUser.firstName.trim().length > 15)
+    ) {
+      validationErrors.firstName = authConstants.firstName[language];
+    }
+  
+    if (
+      updateUser?.lastName &&
+      (updateUser.lastName.trim().length < 4 || updateUser.lastName.trim().length > 15)
+    ) {
+      validationErrors.lastName = authConstants.lastName[language];
+    }
+  
+    const hasErrors = Object.values(validationErrors).some((error) => error !== null);
+  
+    if (hasErrors) {
+      setErrorUsername(validationErrors.username);
+      setErrorfirstName(validationErrors.firstName);
+      setErrorlastName(validationErrors.lastName);
+      setErrorEmail(validationErrors.email);
+      return;
+    }
+  
+    // Proceed with form submission if no validation errors
+    try {
+      setIsLoading(true);
+      const response = await fetchData(
+        `${BASE_URL}/updateprofile`,
+        "PUT",
+        updateUser
+      );
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update profile");
+      }
+  
+      const data = await response.json();
+      setUser(data.updatedUser);
       setIsLoading(false);
-      showErrorToast(authConstants.updateError[language])
+      showSuccessToast(authConstants.updateSuccess[language]);
+      setUpdateProfile(false);
+    } catch (e: any) {
+      setErrorBackend(e.message);
+      setIsLoading(false);
+      showErrorToast(authConstants.updateError[language]);
     }
   };
+  
+
+
   return (
     <div className="bg-gray-100 dark:bg-gray-500 dark:text-gray-100 p-6 rounded-lg shadow-md w-full md:w-[35rem]">
       {!updateProfile ? (
@@ -134,6 +142,7 @@ const UpdateProfile = ({
             value={updateUser?.username ?? ""}
             maxLength={20}
           />
+            {errorUsername && <div className="text-red-800">{errorUsername}</div>}
           <input
             type="text"
             placeholder={authConstants.name[language]}
@@ -143,6 +152,7 @@ const UpdateProfile = ({
             value={updateUser?.firstName ?? ""}
             maxLength={20}
           />
+           {errorfirstName && <div className="text-red-800">{errorfirstName}</div>}
           <input
             type="text"
             placeholder={authConstants.surname[language]}
@@ -152,6 +162,7 @@ const UpdateProfile = ({
             value={updateUser?.lastName ?? ""}
             maxLength={20}
           />
+              {errorlasttName && <div className="text-red-800">{errorlasttName}</div>}
           <div style={{ position: "relative" }}>
             <input
               type="text"
@@ -167,6 +178,7 @@ const UpdateProfile = ({
               maxLength={35}
               style={{ paddingRight: "40px" }} // Adjust padding to accommodate the image
             />
+
             {updateUser?.googleEmail && (
               <img
                 src={google}
@@ -180,7 +192,7 @@ const UpdateProfile = ({
                   height: "25px",
                 }}
               />
-            )}
+            )}  {errorEmail && <div className="text-red-800">{errorEmail}</div>}
           </div>
 
           {user?.googleEmail ? (
@@ -190,7 +202,7 @@ const UpdateProfile = ({
           ) : (
             ""
           )}
-          {error && <div className="text-red-800">{error}</div>}
+          {errorBackend && <div className="text-red-800">{errorBackend}</div>}
 
           <Button
             type="submit"
@@ -209,7 +221,7 @@ const UpdateProfile = ({
         <Button
           onClick={() => {
             setUpdateProfile(true);
-            setError("");
+            setErrorBackend("");
           }}
           color="blue"
           className="mt-4 w-full"
@@ -219,8 +231,9 @@ const UpdateProfile = ({
       ) : (
         <Button
           onClick={() => {
+            setUpdateUser(user)
             setUpdateProfile(false);
-            setError("");
+            setErrorBackend("");
           }}
           color="gray"
           className="mt-4 w-full border-1.5"

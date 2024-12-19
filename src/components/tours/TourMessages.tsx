@@ -247,11 +247,12 @@ function TourMessages({tourID}:Props) {
                 />
             ))}
         </div>
-        <div className="flex items-center justify-center space-x-4 py-2">
+        <div className="flex items-center flex-col">
         <span className="text-gray-700 dark:text-gray-200 font-medium">
         {travelTipsConstants.currentPage[language]}  {currentPage + 1} of {data.totalPages}
         </span>
-       
+
+       <div className='flex gap-2'>    
         <button
           onClick={() =>
             setSearchParams({ page: Math.max(currentPage, 1).toString() }) // Convert result to string
@@ -276,6 +277,7 @@ function TourMessages({tourID}:Props) {
         >
          {travelTipsConstants.nextPage[language]} 
         </button>
+        </div>   
       </div>
         </>
 

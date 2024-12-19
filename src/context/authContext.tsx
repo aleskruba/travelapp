@@ -67,7 +67,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
   
       const responseData = await getCookieResponse.json();
-      console.log(responseData);
+
   
       if (responseData.status === 'blocked') {
         return { ok: false, error: 'Third-party cookies are blocked in your browser.' };

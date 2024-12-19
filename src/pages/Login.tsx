@@ -150,8 +150,10 @@ function Login() {
   };
 
   const login = useGoogleLogin({
+    
     onSuccess: async (res) => {
       try {
+        setIsLoding(true);
         const responseGoogle = await fetch(
           "https://www.googleapis.com/oauth2/v3/userinfo",
           {
@@ -165,11 +167,14 @@ function Login() {
           throw new Error(`HTTP error! status: ${responseGoogle.status}`);
         }
 
+        const clientIpAddress = await getClientIp();
+
         const dataGoogle = await responseGoogle.json();
         const values = {
           email: dataGoogle.email,
           name: dataGoogle.given_name,
           profilePicture: dataGoogle.picture,
+          ipAddress: clientIpAddress, 
         };
 
         const response = await fetch(`${BASE_URL}/googleauthLogin`, {
@@ -180,6 +185,7 @@ function Login() {
         });
 
         if (!response.ok) {
+          
           setIsLoding(false);
           throw new Error(authConstants.loginError[language]);
         }
