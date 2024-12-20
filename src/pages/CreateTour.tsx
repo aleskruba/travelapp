@@ -70,7 +70,7 @@ function CreateTour() {
       const handleDateChange = (date: Date | null) => {
         setSelectedDate(date); 
         setSelectedDateEnd(date);// Update selectedDate state with the selected date
-        setTour(prevState => ({ ...prevState, tourdate: date || new Date(), tourdateEnd:  date || new Date()})); // Update tourdate property in the tour state with the selected date
+        setTour(prevState => ({ ...prevState, tourdate: date , tourdateEnd:  date })); // Update tourdate property in the tour state with the selected date
       
         if (date && selectedDateEnd) {
           if
@@ -78,7 +78,7 @@ function CreateTour() {
               setSelectedDateEnd(date)
            };
         }
-    
+        console.log(date)
     
       };
       const filterPastMonths = (date: Date | null)  => {
@@ -94,7 +94,8 @@ function CreateTour() {
     
       const handleDateEndChange = (date: Date | null) => {
         setSelectedDateEnd(date); // Update selectedDate state with the selected date
-        setTour(prevState => ({ ...prevState, tourdateEnd: date || new Date() })); // Update tourdate property in the tour state with the selected date
+        setTour(prevState => ({ ...prevState, tourdateEnd: date })); // Update tourdate property in the tour state with the selected date
+        console.log(date)
       };
     
       const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>,tourKey: number) => {
@@ -128,12 +129,15 @@ console.log(selectedTourTypeIds)
 
       const createTourMutation = useMutation({
         mutationFn: async (tour: any) => {
-            const response = await fetch(`${BASE_URL}/tour`, {
+          console.log(tour)
+          const response = await fetch(`${BASE_URL}/tour`, {
               ...HTTP_CONFIG,
               method: 'POST',
               body: JSON.stringify(tour),  // Just passing the tour object
               credentials: 'include',
             });
+
+   
           
             if (!response.ok) throw new Error('Error occurred while creating tour');
             return response.json();

@@ -41,6 +41,7 @@ function UpdateTour() {
   const url = `${BASE_URL}/tour/${id}`;
   queryClient.invalidateQueries({ queryKey: ["yourtour"] });
 
+  console.log(id)
   const fetchTour = async () => {
     try {
       const response = await fetchData(url, "GET");
@@ -279,6 +280,8 @@ function UpdateTour() {
   };
 
   const updateTourFunction = async (tour: any) => {
+
+    console.log(tour)
     try {
       const response = await fetchData(url, "PUT", tour);
 
@@ -341,25 +344,27 @@ function UpdateTour() {
  
 
   useEffect(()=>{
-    
+    if (data?.tour)  {
+
     if (language === 'cz') {
-        setTranslatedLanguage(data.tour.destination)
+        setTranslatedLanguage(data.tour?.destination)
      }
 
     if (language === 'en'){
       countryTranslationsEn.map(country=>{
-        if (country.cz === data.tour.destination ) {
+        if (country.cz === data.tour?.destination ) {
           setTranslatedLanguage(country.en);
         }
       })
     }
     if (language === 'es'){
       countryTranslationsEn.map(country=>{
-        if (country.cz === data.tour.destination ) {
+        if (country.cz === data.tour?.destination ) {
           setTranslatedLanguage(country.en);
         }
       })
     }
+  }
 
   },[language])
 
