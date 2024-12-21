@@ -1,6 +1,6 @@
 import React, { createContext, useState, ReactNode, useContext, Dispatch, SetStateAction, useEffect } from 'react';
 import { UserProps } from '../types';
-import { BASE_URL } from '../constants/config';
+import { BASE_URL, SOCKET_URL } from '../constants/config';
 import { fetchData } from '../hooks/useFetchData';
 
 
@@ -17,6 +17,8 @@ interface AuthContextProps {
   handleConfirm: () => Promise<void>; 
   isServerOn: boolean | null; // Add server status state
   setIsServerOn: Dispatch<SetStateAction<boolean | null>>
+  isSocketServerOn: boolean | null; // Add server status state
+  setIsSocketServerOn: Dispatch<SetStateAction<boolean | null>>
 }
 
 export const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -32,6 +34,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [backendServerError, setBackendServerError] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isServerOn, setIsServerOn] = useState<null | boolean>(null);
+  const [isSocketServerOn, setIsSocketServerOn] = useState<null | boolean>(null);
 
   const fetchUserData = async (): Promise<UserProps | null> => {
     try {
@@ -76,6 +79,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+
+const checkSocketServer = async () => {
+  try {
+    const response = await fetch(`${SOCKET_URL}/health`, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      setIsSocketServerOn(false);
+      console.error('Socket Server returned an error:', response.statusText);
+    } else {
+      const data = await response.json();
+      if (data.status === 'success') {
+        setIsSocketServerOn(true);
+        console.log('Socket server is On:', data.message);
+      } else {
+        setIsSocketServerOn(false);
+        console.log('Socket server is Off');
+      }
+    }
+  } catch (error) {
+    setIsSocketServerOn(false);
+    console.error('Error checking socket server status:', error);
+  }
+};
+
+useEffect(()=>{
+  checkSocketServer()
+},[])
 
   const checkCookiesBlocked = async (): Promise<{ ok: boolean; error?: string }> => {
     try {
@@ -188,7 +220,7 @@ useEffect(() => {
 
   return (
     <AuthContext.Provider value={{ user, setUser, updateUser, setUpdateUser, isLoading, backendServerError, setBackendServerError, handleConfirm, showModal,isServerOn,setIsServerOn, 
-      setShowModal  }}>
+      setShowModal ,isSocketServerOn, setIsSocketServerOn }}>
       {children}
     </AuthContext.Provider>
   );

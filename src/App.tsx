@@ -35,10 +35,11 @@ import Cookies from './pages/Cookies';
 import CookiesInfoModal from './components/CookiesInfoModal';
 import { authConstants } from "./constants/constantsAuth";
 import { useLanguageContext } from './context/languageContext';
+import InfoMessage from './components/InfoMessage';
 function App() {
 
   const { theme,modal } = useThemeContext();
-  const { showModal,handleConfirm } = useAuthContext();
+  const { showModal,handleConfirm,isServerOn,isSocketServerOn } = useAuthContext();
   const location = useLocation();
  const { language} = useLanguageContext();
 
@@ -46,6 +47,25 @@ function App() {
   return (
     <div className={`relative min-h-screen ${theme === 'dark' ? 'bg-darkBackground text-white' : 'bg-lightBackground text-black'}`}>
 {modal && <Modal/>}
+
+<div className=' absolute pt-8 w-full '>
+    {isServerOn !== null && 
+
+
+      <div className='relative '>   
+        <InfoMessage message={isServerOn ? 'Server is ON' : ' Server is OFF'} status={isServerOn}/>
+      </div>
+}
+{isSocketServerOn !== null && 
+
+
+  <div className='relative pt-32 '>   
+          <InfoMessage message={isSocketServerOn ? 'Socket Server is ON' : 'Socket Server is OFF'} status={isSocketServerOn}/>
+          </div>
+}
+  
+  </div>
+
       <Navbar/>
       {showModal  &&     <CookiesInfoModal
         show={showModal}
