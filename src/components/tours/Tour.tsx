@@ -107,7 +107,7 @@ const truncateText = (text: string, maxLength: number): string => {
        <span className='italic dark:text-yellow-200 text-yellow-800'>{tourConstants.iLookFor[language] }</span>      {tour.fellowtraveler && truncateText(tour.fellowtraveler, 30)}
   </div>
 
-  <div className='flex justify-start px-2   items-center text-xs dark:bg-purple-900 bg-purple-200 absolute bottom-1 w-full'>
+  <div className='flex justify-start px-2   items-center text-xs dark:bg-purple-900 bg-purple-200 absolute bottom-1 w-[99%] md:w-[100%]'>
   {tourtypeArray &&
 
     tourtypeArray.slice(0, 3).map((item: any, index: number) => (

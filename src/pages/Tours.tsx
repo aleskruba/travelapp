@@ -258,7 +258,7 @@ function Tours() {
   const currentUrl = window.location.href;
 
   return (
-    <div className='px-2 '>
+    <div className='md:px-2'>
 
   {/*     <div className='text-center text-blue-500 pt-4'>
         {!user ? tourConstants.onlyRegistredUsersTour[language]

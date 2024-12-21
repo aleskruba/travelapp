@@ -15,6 +15,8 @@ interface AuthContextProps {
   showModal: boolean;  // Add modal visibility state
   setShowModal: Dispatch<SetStateAction<boolean>>;
   handleConfirm: () => Promise<void>; 
+  isServerOn: boolean | null; // Add server status state
+  setIsServerOn: Dispatch<SetStateAction<boolean | null>>
 }
 
 export const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -29,6 +31,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [backendServerError, setBackendServerError] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [isServerOn, setIsServerOn] = useState<null | boolean>(null);
 
   const fetchUserData = async (): Promise<UserProps | null> => {
     try {
@@ -47,6 +50,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
   
+
+
+  // Function to check if the server is on
+  const checkServer = async () => {
+    try {
+      const response = await fetchData(`${BASE_URL}/servertest`,  'GET' );
+
+      if (!response.ok) {
+        setIsServerOn(false);
+        console.error('Server returned an error:', response.statusText);
+      } else {
+        const data = await response.json();
+        if (data.status === 'success') {
+          setIsServerOn(true);
+          console.log('Server is On');
+        } else {
+          setIsServerOn(false);
+          console.log('Server is Off');
+        }
+      }
+    } catch (error) {
+      setIsServerOn(false);
+      console.error('Error checking server status:', error);
+    }
+  };
+
+
   const checkCookiesBlocked = async (): Promise<{ ok: boolean; error?: string }> => {
     try {
       // Step 1: Set the cookie
@@ -80,54 +110,59 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
   
-  useEffect(() => {
-    const initializeApp = async () => {
-      const response = await checkCookiesBlocked();
-      if (response.ok) {
-        // Cookies are enabled, proceed with fetching user data
-        setShowModal(false);
-        setIsLoading(true);
-        const userData = await fetchUserData();
-        setUser(userData);
-        setUpdateUser(userData);
-        setIsLoading(false);
-      } else {
-        setShowModal(true);
-        console.log(response.error);
-      }
-    };
+useEffect(() => {
+  const initializeApp = async () => {
+    // Step 1: Check server status first
+    await checkServer();
+    console.log('Checking server status');
 
-    initializeApp();
+    if (!isServerOn) {
+      // If the server is offline, terminate further checks
+      console.log('Server is offline. Skipping further checks.');
+    /*   setShowModal(true);  */// Optionally show a modal indicating server is down
+      return; // Exit early
+    }
 
-    const intervalId = setInterval(() => {
-      // Check every 15 seconds if cookies are blocked
-      checkCookiesBlocked().then(response => {
-        if (!response.ok) {
-          setShowModal(true);
-        }
-      });
-    }, 15000);
-
-    return () => clearInterval(intervalId); // Clean up the interval when component unmounts
-  }, []);
-  
-  
-
-
-
-/*   useEffect(() => {
-    const getUserData = async () => {
+   console.log(isServerOn)
+    // Step 2: Proceed only if the server is online
+    const response = await checkCookiesBlocked();
+    if (response.ok) {
+      // Cookies are enabled, proceed with fetching user data
+      setShowModal(false);
       setIsLoading(true);
       const userData = await fetchUserData();
       setUser(userData);
       setUpdateUser(userData);
       setIsLoading(false);
+    } else {
+      setShowModal(true);
+      console.log(response.error);
+    }
+  };
+
+  initializeApp();
+
+  // Step 3: Set up the interval to check cookies every 15 seconds only if the server is online
+  if (isServerOn) {
+    const intervalId = setInterval(() => {
+      checkCookiesBlocked().then(response => {
+        if (!response.ok) {
+          setShowModal(true); // Show modal if cookies are blocked
+        }
+      });
+    }, 15000);
+
+    return () => {
+      clearInterval(intervalId); // Clean up the interval when component unmounts
     };
+  }
+}, [isServerOn]); // This effect will now run whenever `isServerOn` changes
 
-    getUserData();
-  }, []); */
+  
 
-  useEffect(() => {
+
+
+ useEffect(() => {
     if (backendServerError) {
       console.error('Error fetching user data');
     }
@@ -152,7 +187,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, updateUser, setUpdateUser, isLoading, backendServerError, setBackendServerError, handleConfirm, showModal, 
+    <AuthContext.Provider value={{ user, setUser, updateUser, setUpdateUser, isLoading, backendServerError, setBackendServerError, handleConfirm, showModal,isServerOn,setIsServerOn, 
       setShowModal  }}>
       {children}
     </AuthContext.Provider>

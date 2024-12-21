@@ -15,7 +15,7 @@ import { useLanguageContext } from '../context/languageContext';
 import { tourConstants } from '../constants/constantsTours';
 import { countryTranslationsEn,countryTranslationsEs } from '../constants/constantsData';
 import { FaCheck } from "react-icons/fa";
-
+import { FaAsterisk } from 'react-icons/fa';
 function CreateTour() {
     const queryClient = useQueryClient();
     const {yourToursLength } = useTourContext();
@@ -352,9 +352,9 @@ console.log(selectedTourTypeIds)
               {tourConstants.destination[language]}
               </div>
               {!chosenCountry ? 
-              <div className='flex justify-center items-center p-2 rounded-full bg-red-600 text-white' >
-                  {tourConstants.requiredFields[language]}
-              </div>:
+            <div className='h-8 min-w-8  flex justify-center items-center p-2 rounded-full bg-red-600 text-white text-sm font-bold'  >
+            <FaAsterisk  />
+           </div>:
               <div className='inline-block bg-green-600 p-2 rounded-full text-white'>
               <FaCheck />
 
@@ -435,8 +435,8 @@ console.log(selectedTourTypeIds)
             /> </>}
 
     {!selectedDate ? 
-              <div className='flex justify-center items-center p-2 rounded-full bg-red-600 text-white text-sm font-bold'  >
-             {tourConstants.requiredFields[language]}
+              <div className='h-8 min-w-8  flex justify-center items-center p-2 rounded-full bg-red-600 text-white text-sm font-bold'  >
+               <FaAsterisk  />
               </div>:
               <div className='inline-block bg-green-600 p-2 rounded-full text-white text-sm font-bold'>
               <FaCheck />
@@ -450,9 +450,9 @@ console.log(selectedTourTypeIds)
       <label className="flex h-8 items-center  gap-2 text-sm font-bold mb-2" htmlFor="journey-type">
         {tourConstants.tourType[language]}
         {!selectedTypes.length ? 
-              <div className='flex justify-center items-center p-2 rounded-full bg-red-600 text-white text-sm font-bold'  >
-              {tourConstants.requiredFields[language]}
-              </div>:
+          <div className='h-8 min-w-8  flex justify-center items-center p-2 rounded-full bg-red-600 text-white text-sm font-bold'  >
+          <FaAsterisk  />
+         </div>:
               <div className=' inline-block bg-green-600 p-2 rounded-full text-white text-sm font-bold'>
               <FaCheck />
 
@@ -559,9 +559,9 @@ console.log(selectedTourTypeIds)
               <FaCheck />
 
               </div>:
-              <div className='flex justify-center items-center p-2 rounded-full bg-red-600 text-white text-sm font-bold'  >
-                 {tourConstants.requiredFields[language]}
-              </div> }
+           <div className='h-8 min-w-8  flex justify-center items-center p-2 rounded-full bg-red-600 text-white text-sm font-bold'  >
+           <FaAsterisk  />
+          </div> }
               </label>
               <textarea
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-gray-200 leading-tight focus:outline-none focus:shadow-outline"
@@ -585,9 +585,9 @@ console.log(selectedTourTypeIds)
               <FaCheck />
 
               </div>:
-              <div className='flex justify-center items-center p-2 rounded-full bg-red-600 text-white text-sm font-bold'  >
-             {tourConstants.requiredFields[language]}
-              </div> }
+      <div className='h-8 min-w-8  flex justify-center items-center p-2 rounded-full bg-red-600 text-white text-sm font-bold'  >
+      <FaAsterisk  />
+     </div> }
 
               </label>
               <textarea

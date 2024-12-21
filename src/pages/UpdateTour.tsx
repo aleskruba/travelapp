@@ -485,9 +485,10 @@ function UpdateTour() {
                   </>
                 )}
             {  dateInPast && 
-   <div className='flex justify-center items-center p-2 rounded-full bg-red-600 text-white text-sm font-bold'  >
-                {tourConstants.dateInPast[language] }
-              </div>
+              <div className="h-8 min-w-8 flex justify-center items-center rounded-full bg-red-600 text-white text-sm font-bold">
+  !
+</div>
+
 }
                 
               </div>
