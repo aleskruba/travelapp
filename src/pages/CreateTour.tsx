@@ -14,6 +14,7 @@ import {  Flip, toast } from 'react-toastify';
 import { useLanguageContext } from '../context/languageContext';
 import { tourConstants } from '../constants/constantsTours';
 import { countryTranslationsEn,countryTranslationsEs } from '../constants/constantsData';
+import { FaCheck } from "react-icons/fa";
 
 function CreateTour() {
     const queryClient = useQueryClient();
@@ -45,6 +46,8 @@ function CreateTour() {
     } else if (language === 'cz') {
       chosenLanguageCountries = countryNames;
     }
+
+
 
     function getCountryTranslations(countryName:string) {
       const enTranslation = countryTranslationsEn.find(item => item.cz === countryName)?.en;
@@ -322,6 +325,8 @@ console.log(selectedTourTypeIds)
               </div>);
         }
         
+
+    
     
   return (
     <div className="text-black dark:text-white">
@@ -341,7 +346,20 @@ console.log(selectedTourTypeIds)
           <form onSubmit={onSubmitFunction}>
             <div className="mb-4">
             
-            <label className="block text-sm font-bold mb-2" htmlFor="destination">{tourConstants.destination[language]}</label>
+            <label className="flex items-center text-sm font-bold mb-2 " htmlFor="destination">
+              
+              <div className='mr-2'>
+              {tourConstants.destination[language]}
+              </div>
+              {!chosenCountry ? 
+              <div className='flex justify-center items-center p-2 rounded-full bg-red-600 text-white' >
+                  {tourConstants.requiredFields[language]}
+              </div>:
+              <div className='inline-block bg-green-600 p-2 rounded-full text-white'>
+              <FaCheck />
+
+              </div>}
+            </label>
 <div className="relative w-full px-2">
 <input
   type="text"
@@ -392,7 +410,7 @@ console.log(selectedTourTypeIds)
 
 
 
-            <div className='flex gap-4 items-center mt-4'>
+            <div className='flex  gap-4 items-center mt-4'>
             <label className="block text-sm font-bold " htmlFor="date">{tourConstants.tourBeginning[language]}</label>
             <DatePicker
               selected={selectedDate}
@@ -415,12 +433,32 @@ console.log(selectedTourTypeIds)
               filterDate={filterPastMonths}
               className={` shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
             /> </>}
+
+    {!selectedDate ? 
+              <div className='flex justify-center items-center p-2 rounded-full bg-red-600 text-white text-sm font-bold'  >
+             {tourConstants.requiredFields[language]}
+              </div>:
+              <div className='inline-block bg-green-600 p-2 rounded-full text-white text-sm font-bold'>
+              <FaCheck />
+
+              </div>}
      </div>
     {/*  checkboxes */}
 
      <div className="mb-4 text-sm mt-4	">
 
-      <label className="block text-sm font-bold mb-2" htmlFor="journey-type">{tourConstants.tourType[language]}</label>
+      <label className="flex h-8 items-center  gap-2 text-sm font-bold mb-2" htmlFor="journey-type">
+        {tourConstants.tourType[language]}
+        {!selectedTypes.length ? 
+              <div className='flex justify-center items-center p-2 rounded-full bg-red-600 text-white text-sm font-bold'  >
+              {tourConstants.requiredFields[language]}
+              </div>:
+              <div className=' inline-block bg-green-600 p-2 rounded-full text-white text-sm font-bold'>
+              <FaCheck />
+
+              </div>}
+
+        </label>
       <div className="flex flex-wrap gap-3">
 
 {/*         {typeOfTourLang[language].map((type, index) => (
@@ -510,11 +548,21 @@ console.log(selectedTourTypeIds)
 }
 
 
+
         </div>
       </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-bold mb-2" htmlFor="looking-for">{tourConstants.whoLookFor[language]}</label>
+              <label className="flex h-8 items-center gap-2 text-sm font-bold mb-2" htmlFor="looking-for">{tourConstants.whoLookFor[language]}
+              {tour.fellowtraveler && tour.fellowtraveler.length  ? 
+              <div className=' inline-block bg-green-600 p-2 rounded-full text-white text-sm font-bold'>
+              <FaCheck />
+
+              </div>:
+              <div className='flex justify-center items-center p-2 rounded-full bg-red-600 text-white text-sm font-bold'  >
+                 {tourConstants.requiredFields[language]}
+              </div> }
+              </label>
               <textarea
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-gray-200 leading-tight focus:outline-none focus:shadow-outline"
                 id="looking-for"
@@ -528,7 +576,20 @@ console.log(selectedTourTypeIds)
               ></textarea>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-bold mb-2" htmlFor="about-you">{tourConstants.aboutMe[language]}</label>
+              <label className="flex items-center gap-2 h-8 text-sm font-bold mb-2" htmlFor="about-you">
+                <div>
+                {tourConstants.aboutMe[language]}
+                </div>
+              {tour.aboutme && tour.aboutme.length  ? 
+              <div className=' inline-block bg-green-600 p-2 rounded-full text-white text-sm font-bold'>
+              <FaCheck />
+
+              </div>:
+              <div className='flex justify-center items-center p-2 rounded-full bg-red-600 text-white text-sm font-bold'  >
+             {tourConstants.requiredFields[language]}
+              </div> }
+
+              </label>
               <textarea
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-gray-200  leading-tight focus:outline-none focus:shadow-outline"
                 id="about-you"

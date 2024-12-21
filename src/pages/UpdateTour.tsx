@@ -21,6 +21,7 @@ import { showErrorToast, showSuccessToast } from "../utils/toastUtils";
 import { tourConstants } from '../constants/constantsTours';
 import { countryTranslationsEn } from "../constants/constantsData";
 
+
 function UpdateTour() {
   let { id } = useParams<string>();
   const { language } = useLanguageContext();
@@ -37,11 +38,11 @@ function UpdateTour() {
   const [tour, setTour] = useState<TourProps>(initialToureState);
   const [updateTour, setUpdateTour] = useState<TourProps>(initialToureState);
   const [translatedLanguage,setTranslatedLanguage] = useState<string>()
+  const [dateInPast, setDateInPast] = useState(false);
 
   const url = `${BASE_URL}/tour/${id}`;
   queryClient.invalidateQueries({ queryKey: ["yourtour"] });
 
-  console.log(id)
   const fetchTour = async () => {
     try {
       const response = await fetchData(url, "GET");
@@ -206,7 +207,11 @@ function UpdateTour() {
 
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
-    setSelectedDateEnd(date); // Update selectedDate state with the selected date
+    if (selectedDateEnd) {
+      if (data < selectedDateEnd)
+        setSelectedDateEnd(date); 
+      }
+// Update selectedDate state with the selected date
     setUpdateTour((prevState) => ({
       ...prevState,
       tourdate: date || new Date(),
@@ -250,6 +255,18 @@ function UpdateTour() {
         ...prevState,
         tourdateEnd: date || new Date(),
       };
+
+      const selectedMonth = selectedDate?.getMonth();
+      const selectedYear = selectedDate?.getFullYear();
+      const currentMonth = currentDate.getMonth();
+      const currentYear = currentDate.getFullYear();
+      if (selectedYear&& selectedMonth) {
+      if (selectedYear < currentYear || (selectedYear === currentYear && selectedMonth < currentMonth )) {
+
+
+        setSelectedDate(date);
+      }
+    }
       setSelectedDateEnd(date);
 
       return newState;
@@ -341,7 +358,29 @@ function UpdateTour() {
   };
 
 
+  const currentDate = new Date();
  
+ 
+  // Function to check if a date is in the past
+  const isDateInPast = (date: Date | null): boolean => {
+    if (!date) return false; // Null or invalid date is treated as not in the past
+    const selectedMonth = date.getMonth();
+    const selectedYear = date.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+  
+    return selectedYear < currentYear || (selectedYear === currentYear && selectedMonth < currentMonth);
+  };
+
+  useEffect(() => {
+    if (isDateInPast(selectedDate) || isDateInPast(selectedDateEnd)) {
+      setDateInPast(true);
+    } else {
+      setDateInPast(false);
+    }
+  }, [selectedDate, selectedDateEnd]);
+  
+
 
   useEffect(()=>{
     if (data?.tour)  {
@@ -375,6 +414,10 @@ function UpdateTour() {
   if (isError) {
     return <span>  {tourConstants.somethingWentWrong[language] }</span>;
   }
+
+
+  
+
 
   return (
     <div className="text-black dark:text-white">
@@ -434,13 +477,19 @@ function UpdateTour() {
                       selected={selectedDateEnd}
                       onChange={handleDateEndChange}
                       dateFormat="MM/yyyy"
-                      minDate={selectedDate}
+                      minDate={selectedDate < currentDate ? currentDate : selectedDate}
                       showMonthYearPicker
                       filterDate={filterPastMonths}
                       className={` shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
                     />{" "}
                   </>
                 )}
+            {  dateInPast && 
+   <div className='flex justify-center items-center p-2 rounded-full bg-red-600 text-white text-sm font-bold'  >
+                {tourConstants.dateInPast[language] }
+              </div>
+}
+                
               </div>
               {/*  checkboxes */}
 

@@ -250,42 +250,16 @@ travelWith: {
   en: "Not all fields are filled",
   cz: "Nejsou vyplněna všechna pole",
   es: "No todos los campos están completos",
+},requiredFields: {
+  en: "Required field",
+  cz: "Povinné pole",
+  es: "Campo obligatorio",
+},
+dateInPast: {
+  en: "in the past !!!",
+  cz: "Prošlé datum !!!",
+  es: "en el pasado !!!",
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
-
 

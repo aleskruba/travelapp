@@ -260,12 +260,12 @@ function Tours() {
   return (
     <div className='px-2 '>
 
-      <div className='text-center text-blue-500 pt-4'>
+  {/*     <div className='text-center text-blue-500 pt-4'>
         {!user ? tourConstants.onlyRegistredUsersTour[language]
         :
           <Link to={'../createtour'}>{tourConstants.createTour[language]}<span className="underline cursor-pointer text-blue-600 pl-2 hover:font-bold" >{tourConstants.here[language]}</span></Link>
         }
-      </div>
+      </div> */}
 
       <div className="wrapper grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4 mt-20 dark:text-gray-600 md:px-20">
         <div className={`${(!text) ? '' : 'opacity-30 pointer-events-none'}`}>
