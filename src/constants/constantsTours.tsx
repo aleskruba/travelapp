@@ -259,7 +259,12 @@ dateInPast: {
   en: "in the past !!!",
   cz: "Prošlé datum !!!",
   es: "en el pasado !!!",
+},moreThan4Tours : {
+  en: "You have already created 4 tours, which is the maximum number...",
+  cz: "Již máš vytvořené 4 spolucesty, což je maximální počet...",
+  es: "Ya has creado 4 tours, que es el número máximo...",
 }
+
 
 }
 

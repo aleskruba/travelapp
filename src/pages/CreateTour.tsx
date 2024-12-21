@@ -319,7 +319,7 @@ console.log(selectedTourTypeIds)
             }, 1000); // Navigate after 1 second
             return (
               <div className='flex h-screen justify-center items-center'>
-                <span>Již máš vytvořené 4 spolucesty, což je maximální počet...
+                <span>       {tourConstants.moreThan4Tours[language] }
 
                 </span>
               </div>);
