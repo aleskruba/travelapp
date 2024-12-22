@@ -19,6 +19,8 @@ interface AuthContextProps {
   setIsServerOn: Dispatch<SetStateAction<boolean | null>>
   isSocketServerOn: boolean | null; // Add server status state
   setIsSocketServerOn: Dispatch<SetStateAction<boolean | null>>
+  isRedisOn: boolean | null; // Add server status state
+  setIsRedisOn: Dispatch<SetStateAction<boolean | null>>
 }
 
 export const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -35,6 +37,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [showModal, setShowModal] = useState(false);
   const [isServerOn, setIsServerOn] = useState<null | boolean>(null);
   const [isSocketServerOn, setIsSocketServerOn] = useState<null | boolean>(null);
+  const [isRedisOn, setIsRedisOn] = useState<null | boolean>(null);
 
   const fetchUserData = async (): Promise<UserProps | null> => {
     try {
@@ -80,17 +83,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
 
+  const checkRedis = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/checkredis`, { method: 'GET' });
+        console.log(response)
+      if (!response.ok) {
+        setIsRedisOn(false);
+        console.error('Server returned an error:', response.statusText);
+      } else {
+        const data = await response.json();
+        console.log(data);
+        // Check if the data is not null or undefined
+        if (data && data.status === 'success') {
+          setIsRedisOn(true);
+          console.log('Redis is On');
+        } else {
+          setIsRedisOn(false);
+          console.log('Redis is Off');
+        }
+      }
+    } catch (error) {
+      setIsRedisOn(false);
+      console.error('Error checking server status:', error);
+    }
+  };
+  
+
 const checkSocketServer = async () => {
   try {
     const response = await fetch(`${SOCKET_URL}/health`, {
       method: 'GET',
     });
-
+ 
     if (!response.ok) {
       setIsSocketServerOn(false);
       console.error('Socket Server returned an error:', response.statusText);
     } else {
       const data = await response.json();
+
       if (data.status === 'success') {
         setIsSocketServerOn(true);
         console.log('Socket server is On:', data.message);
@@ -107,6 +137,7 @@ const checkSocketServer = async () => {
 
 useEffect(()=>{
   checkSocketServer()
+  checkRedis()
 },[])
 
   const checkCookiesBlocked = async (): Promise<{ ok: boolean; error?: string }> => {
@@ -220,7 +251,7 @@ useEffect(() => {
 
   return (
     <AuthContext.Provider value={{ user, setUser, updateUser, setUpdateUser, isLoading, backendServerError, setBackendServerError, handleConfirm, showModal,isServerOn,setIsServerOn, 
-      setShowModal ,isSocketServerOn, setIsSocketServerOn }}>
+      setShowModal ,isSocketServerOn, setIsSocketServerOn,isRedisOn, setIsRedisOn }}>
       {children}
     </AuthContext.Provider>
   );

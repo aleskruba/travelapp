@@ -39,7 +39,7 @@ import InfoMessage from './components/InfoMessage';
 function App() {
 
   const { theme,modal } = useThemeContext();
-  const { showModal,handleConfirm,isServerOn,isSocketServerOn } = useAuthContext();
+  const { showModal,handleConfirm,isServerOn,isSocketServerOn,isRedisOn } = useAuthContext();
   const location = useLocation();
  const { language} = useLanguageContext();
 
@@ -49,21 +49,42 @@ function App() {
 {modal && <Modal/>}
 
 <div className=' absolute pt-8 w-full '>
-    {isServerOn !== null && 
-
-
-      <div className='relative '>   
-        <InfoMessage message={isServerOn ? 'Server is ON' : ' Server is OFF'} status={isServerOn}/>
-      </div>
-}
-{isSocketServerOn !== null && 
-
-
-  <div className='relative pt-32 '>   
-          <InfoMessage message={isSocketServerOn ? 'Socket Server is ON' : 'Socket Server is OFF'} status={isSocketServerOn}/>
-          </div>
-}
-  
+<div className='relative top-0'>
+       <InfoMessage
+          message={
+            isServerOn === null
+              ? 'Checking Server...'
+              : isServerOn
+              ? 'Server is ON'
+              : 'Server is OFF'
+          }
+          status={isServerOn}
+        />
+     </div>
+     <div className='relative top-16'>
+  <InfoMessage
+          message={
+            isSocketServerOn === null
+              ? 'Checking Socket Server...'
+              : isSocketServerOn
+              ? 'Socket Server is ON'
+              : 'Socket Server is OFF'
+          }
+          status={isSocketServerOn}
+        />
+   </div>
+   <div className='relative top-32'>
+          <InfoMessage
+        message={
+          isRedisOn === null
+            ? 'Checking Redis Server...'
+            : isRedisOn
+            ? 'Redis Server is ON'
+            : 'Redis is OFF'
+        }
+        status={isRedisOn}
+      />
+</div>
   </div>
 
       <Navbar/>
