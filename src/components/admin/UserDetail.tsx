@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import Button from "../customButton/Button";
 import { fetchData } from "../../hooks/useFetchData";
 import { useEffect, useState } from "react";
@@ -58,10 +58,10 @@ function UserDetail() {
 
       <div className="flex flex-col items-center px-2 sm:px-10 md:px-40 lg:px-60">
         {/* Back Button */}
-        <div className="mb-6">
-          <Button onClick={() => navigate(-1)} color="gray">
+        <div className="mb-6 w-full flex justify-end md:justify-center px-6">
+          <Link to={`../admin`} className="p-3 text-black bg-gray-300 rounded-md">
             Back to List
-          </Button>
+          </Link>
         </div>
 
         {/* User Information */}

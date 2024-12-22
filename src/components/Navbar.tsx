@@ -90,11 +90,11 @@ function Navbar() {
                     </NavLink>
 
 
-                    <div className='flex text-lg  gap-2 md:gap-6   '>
+                    <div className='flex text-lg  gap-2 md:gap-6    '>
                         <NavLink
                             to="/traveltips"
                             className={({ isActive }) =>
-                                ` p-4 font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                                ` p-4 z-40 font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                             }
                         >
                            {navbarConstants.traveltips[language]}
@@ -102,7 +102,7 @@ function Navbar() {
                         <NavLink
                             to="/tours"
                             className={({ isActive }) =>
-                                `p-4 font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                                `p-4 z-50   font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                             }
                         >
                              {navbarConstants.travelMates[language]}
@@ -111,16 +111,16 @@ function Navbar() {
                 </div>
 
                 {!user ? (
-                       <div className="mt-8  flex text-lg md:text-base  md:gap-4 flex-col sm:flex-row items-center justify-center  p-2 mr-4 bg-gray-300 text-gray-900 rounded-lg shadow-md">
-                        <div className='text-xs font-thin md:hidden '>start here</div>
+                       <div className="mt-8  flex text-lg md:text-base sm:gap-2  flex-col sm:flex-row items-center justify-center  p-2 mr-4 bg-gray-300 text-gray-900 rounded-lg shadow-md">
+                        <div className='text-xs font-thin md:hidden sm:hidden '>start here</div>
                        <Link 
                            to="/login" 
-                           className="flex justify-center w-full hover:text-gray-700 ">
+                           className="z-40 flex justify-center w-full hover:text-gray-700 ">
                               {navbarConstants.login[language]}
                        </Link>
                        <Link 
                            to="/register" 
-                           className=" flex justify-center w-full hover:text-gray-700">
+                           className=" z-40 flex justify-center w-full hover:text-gray-700">
                              {navbarConstants.signUp[language]}
                        </Link>
                    </div>
@@ -132,10 +132,10 @@ function Navbar() {
                         {!user.isAdmin && 
                       <Link 
                       to="/profil" 
-                      className="auth-link text-center hover:text-gray-700">
+                      className="z-40 text-center hover:text-gray-700">
                         {navbarConstants.profile[language]}
                   </Link> }
-                        <div onClick={logOutFunction} className="auth-link text-center hover:text-gray-700 cursor-pointer">
+                        <div onClick={logOutFunction} className="z-40 text-center hover:text-gray-700 cursor-pointer">
                         {navbarConstants.logout[language]}
                         </div>
                     </div>
@@ -147,7 +147,7 @@ function Navbar() {
             </nav>
 
             {/* BOTTOM NAVBAR */}
-            <nav className={`${visible ? 'hidden' : 'fixed'} bg-gray-200 dark:bg-gray-700 bottom-0 flex flex-col md:flex-row justify-between items-center w-full dark:text-white text-yellow-800 px-2 md:px-4 md:py-4 md:text-xl font-bold text-base pb-4 z-50`}>
+            <nav className={`${visible ? 'hidden' : 'fixed'} bg-gray-200 dark:bg-gray-700 bottom-0 flex flex-col md:flex-row justify-between items-center w-full dark:text-white text-yellow-800 px-2 md:px-4 md:py-4 md:text-xl font-bold text-base pb-4 `}>
                 <div className='flex gap-2 md:items-center'>
                     <NavLink
                         to="/traveltips"

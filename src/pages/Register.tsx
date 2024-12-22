@@ -146,7 +146,7 @@ function Register() {
   });
 
   return (
-    <div className="fixed inset-0 flex md:items-center justify-center bg-black bg-opacity-50 overflow-y-auto ">
+    <div className="fixed z-50 inset-0 flex md:items-center justify-center bg-black bg-opacity-50 overflow-y-auto ">
       <div className='flex flex-wrap md:items-center  overflow-y-auto max-h-[510px] md:max-h-[550px] mt-2 md:mt-20'>
       {isLoding ? (
           <h1>{navbarConstants.waitplease[language]}</h1>

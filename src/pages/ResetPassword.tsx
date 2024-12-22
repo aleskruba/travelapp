@@ -147,7 +147,7 @@ function ResetPassword() {
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto ">
+    <div className="fixed z-50 inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto ">
       <div className='flex flex-wrap items-center overflow-y-auto min-h-[600px] mt-20'>
         <div className={` ${isLoding ? 'opacity-30 pointer-events-none' : ''}relative bg-white px-4 py-4 rounded-lg flex items-center justify-center flex-col `}>
           <h1 className='mt-4 text-black poppins-extrabold text-3xl'>RESET HESLA</h1>
