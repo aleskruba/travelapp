@@ -75,6 +75,12 @@ function Navbar() {
         fetchUserData();
     };
 
+   
+        const today = new Date();
+        const formattedDate = `${String(today.getDate()).padStart(2, "0")}.${String(
+          today.getMonth() + 1
+        ).padStart(2, "0")} ${today.getFullYear()}`;
+
     return (
         <>
             <nav className={`relative bg-gray-200 dark:bg-gray-700 top-0 flex justify-between items-center w-full dark:text-white text-yellow-800 md:px-4 md:py-4 font-bold pb-4`}>
@@ -105,42 +111,42 @@ function Navbar() {
                 </div>
 
                 {!user ? (
-             <div className="flex flex-row gap-4 bg-blue-300 pl-8 ">
-                <div>
-            <NavLink
-               to="/login"
-               className={({ isActive }) =>
-                 ` w-44 ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
-               }
-             ><div className='block  py-2 bg-red-200 ml-6'>
-               {navbarConstants.login[language]}
-               </div>
-             </NavLink>
-             </div>
-             <div>
-             <NavLink
-               to="/register"
-               className={({ isActive }) =>
-                 ` w-44 ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
-               }
-             ><div className='block  py-2 bg-red-200 mr-6'>
-               {navbarConstants.signUp[language]}
-               </div>
-             </NavLink>
-           </div>
-           </div>
+                    <div className='flex flex-col md:mt-0 mt-5 text-xl md:gap-0 gap-4 md:flex-row md:space-x-4 items-start justify-start  md:pr-0 '>
+                        <div className=" px-8 text-xs md:hidden">
+                    {`${formattedDate}`}
+                    </div>
+
+                
+                        <NavLink
+                            to="/login"
+                            className={({ isActive }) =>
+                                `w-36  ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                            }
+                        >
+                       {navbarConstants.login[language]}
+                        </NavLink>
+                        <NavLink
+                            to="/register"
+                            className={({ isActive }) =>
+                                `w-36  ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                            }
+                        >
+                            {navbarConstants.signUp[language]}
+                        </NavLink>
+                     
+                    </div>
                 ) : (
-                    <div className='flex flex-col md:flex-row md:space-x-4 items-start justify-start  md:pr-0 mr-8'>
+                    <div className='flex flex-col md:flex-row md:space-x-4 items-start justify-start pr-8 md:pr-0 '>
                         {!user.isAdmin && 
                         <NavLink
                             to="/profil"
                             className={({ isActive }) =>
-                           `block px-4 py-2 ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                                `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                             }
                         >
                           {navbarConstants.profile[language]}
                         </NavLink>}
-                        <div onClick={logOutFunction} className=" block px-4 py-2 dark:hover:text-gray-300 cursor-pointer hover:text-yellow-500">
+                        <div onClick={logOutFunction} className="dark:hover:text-gray-300 cursor-pointer hover:text-yellow-500">
                         {navbarConstants.logout[language]}
                         </div>
                     </div>
