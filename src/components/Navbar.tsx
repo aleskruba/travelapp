@@ -83,14 +83,14 @@ function Navbar() {
 
     return (
         <>
-            <nav className={`relative bg-gray-200 dark:bg-gray-700 top-0 flex justify-between items-center w-full dark:text-white text-yellow-800 md:px-4 md:py-4 font-bold pb-4`}>
+            <nav className={`relative bg-gray-200 dark:bg-gray-700 top-0 flex justify-between items-center w-full dark:text-white text-yellow-800 md:px-4 px-2 md:py-4 font-bold pb-4`}>
                 <div className='flex flex-col md:flex-row md:space-x-16 space-x-2 md:space-y-0 space-y-2 items-start md:items-center'>
                 <NavLink to="/" className="md:w-[150px] w-[150px] pl-4 pt-2 block">
                     <Image src={logo} alt="Logo" className="blended-image" />
                     </NavLink>
 
 
-                    <div className='flex text-lg  gap-2 md:gap-6 '>
+                    <div className='flex text-lg  gap-2 md:gap-6   '>
                         <NavLink
                             to="/traveltips"
                             className={({ isActive }) =>
@@ -111,15 +111,16 @@ function Navbar() {
                 </div>
 
                 {!user ? (
-                       <div className="mt-8  mr-4 flex text-xl md:text-base  flex-col sm:flex-row items-center justify-center gap-4 p-4 bg-gray-300 text-gray-900 rounded-lg shadow-md">
+                       <div className="mt-8  mr-0 flex text-xl md:text-base md:gap-4 flex-col sm:flex-row items-center justify-center gap-0 p-4 bg-gray-300 text-gray-900 rounded-lg shadow-md">
+                        <div className='text-xs font-thin md:hidden '>start here</div>
                        <Link 
                            to="/login" 
-                           className="auth-link text-center hover:text-gray-700">
-                             {navbarConstants.login[language]}
+                           className="flex justify-center w-full hover:text-gray-700 ">
+                              {navbarConstants.login[language]}
                        </Link>
                        <Link 
                            to="/register" 
-                           className="auth-link text-center hover:text-gray-700">
+                           className=" flex justify-center w-full hover:text-gray-700">
                              {navbarConstants.signUp[language]}
                        </Link>
                    </div>
