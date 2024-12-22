@@ -94,7 +94,7 @@ function Navbar() {
                         <NavLink
                             to="/traveltips"
                             className={({ isActive }) =>
-                                ` p-4 z-50 font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                                ` p-4 z-50  font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                             }
                         >
                            {navbarConstants.traveltips[language]}
@@ -115,12 +115,12 @@ function Navbar() {
                         <div className='text-xs font-thin md:hidden sm:hidden '>start here</div>
                        <Link 
                            to="/login" 
-                           className="z-50 flex justify-center w-full hover:text-gray-700 ">
+                           className="z-50 w-20 flex justify-center  hover:text-gray-700 ">
                               {navbarConstants.login[language]}
                        </Link>
                        <Link 
                            to="/register" 
-                           className=" z-50 flex justify-center w-full hover:text-gray-700">
+                           className=" z-50 w-20 flex justify-center  hover:text-gray-700">
                              {navbarConstants.signUp[language]}
                        </Link>
                    </div>
@@ -132,10 +132,10 @@ function Navbar() {
                         {!user.isAdmin && 
                       <Link 
                       to="/profil" 
-                      className="z-50 text-center hover:text-gray-700">
+                      className="z-50 w-20 text-center hover:text-gray-700">
                         {navbarConstants.profile[language]}
                   </Link> }
-                        <div onClick={logOutFunction} className="z-50 text-center hover:text-gray-700 cursor-pointer">
+                        <div onClick={logOutFunction} className="z-50 w-20 text-center hover:text-gray-700 cursor-pointer">
                         {navbarConstants.logout[language]}
                         </div>
                     </div>
