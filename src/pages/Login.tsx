@@ -239,22 +239,23 @@ function Login() {
                       className="text-red-500"
                     />
 
-                    <div className="relative w-full">
-                      <Field
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        id="password"
-                        placeholder={authConstants.password[language]}
-                        autoComplete="off"
-                        className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                      />
-                      <div
-                        className="absolute inset-y-0 right-1 text-xl flex items-center pr-3 cursor-pointer"
-                        onClick={showPasswordToggle}
-                      >
-                        {showPassword ? <FaEye /> : <FaEyeSlash />}
-                      </div>
+                <div className="relative w-full">
+                <Field
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      id="password"
+                      placeholder={authConstants.password[language]}
+                      autoComplete="off"
+                      className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                    />
+                    <div
+                      className="absolute inset-y-0 right-1 text-xl flex items-center pr-3 cursor-pointer"
+                      onClick={showPasswordToggle}
+                    >
+                      {showPassword ? <FaEye /> : <FaEyeSlash />}
                     </div>
+                </div>
+
                     <ErrorMessage
                       name="password"
                       component="div"
