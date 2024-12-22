@@ -209,7 +209,7 @@ function TourMessages({tourID}:Props) {
 
 
   return (
-    <div className="flex flex-col px-2 md:px-4 w-full">
+    <div className="flex flex-col px-2 md:px-4 w-full pb-6">
 
       {user ? (
         <CreateTourMessage
