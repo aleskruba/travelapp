@@ -2,7 +2,7 @@ import React, { createContext, useState, ReactNode, useContext, Dispatch, SetSta
 import { UserProps } from '../types';
 import { BASE_URL, SOCKET_URL } from '../constants/config';
 import { fetchData } from '../hooks/useFetchData';
-
+import { useNavigate } from 'react-router-dom';
 
 interface AuthContextProps {
   user: UserProps | null;
@@ -39,18 +39,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isSocketServerOn, setIsSocketServerOn] = useState<null | boolean>(null);
   const [isRedisOn, setIsRedisOn] = useState<null | boolean>(null);
 
+  const navigate = useNavigate()
+
   const fetchUserData = async (): Promise<UserProps | null> => {
     try {
       setBackendServerError(false);
       const response = await fetchData(`${BASE_URL}/checksession`, 'GET');
   
       if (!response.ok) {
-        return null;
+          return null;
       }
       const responseData = await response.json();
       return responseData?.user || null;
     } catch (err) {
       setBackendServerError(true);
+      navigate('../login')
       console.error('Error fetching user data:', err);
       return null;
     }
@@ -81,6 +84,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error('Error checking server status:', error);
     }
   };
+
+
 
 
   const checkRedis = async () => {
@@ -206,7 +211,7 @@ useEffect(() => {
   initializeApp();
 
   // Step 3: Set up the interval to check cookies every 15 seconds only if the server is online
-  if (isServerOn) {
+/*   if (isServerOn) {
     const intervalId = setInterval(() => {
       checkCookiesBlocked().then(response => {
         if (!response.ok) {
@@ -218,7 +223,7 @@ useEffect(() => {
     return () => {
       clearInterval(intervalId); // Clean up the interval when component unmounts
     };
-  }
+  } */
 }, [isServerOn]); // This effect will now run whenever `isServerOn` changes
 
   

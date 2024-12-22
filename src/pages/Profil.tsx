@@ -39,7 +39,6 @@ function Profil() {
     });
   };
 
-  console.log(user)
   return (
     <div className="flex items-center h-full min-h-screen pb-4 flex-col pt-8 px-2 gap-6 ">
       {isLoading ? (
