@@ -115,12 +115,12 @@ function Navbar() {
                         <div className='text-xs font-thin md:hidden sm:hidden '>start here</div>
                        <Link 
                            to="/login" 
-                           className="z-40 flex justify-center w-full hover:text-gray-700 ">
+                           className="z-50 flex justify-center w-full hover:text-gray-700 ">
                               {navbarConstants.login[language]}
                        </Link>
                        <Link 
                            to="/register" 
-                           className=" z-40 flex justify-center w-full hover:text-gray-700">
+                           className=" z-50 flex justify-center w-full hover:text-gray-700">
                              {navbarConstants.signUp[language]}
                        </Link>
                    </div>
