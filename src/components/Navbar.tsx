@@ -111,7 +111,7 @@ function Navbar() {
                 </div>
 
                 {!user ? (
-                       <div className="mt-8  mr-0 flex text-xl md:text-base md:gap-4 flex-col sm:flex-row items-center justify-center gap-0 p-4 bg-gray-300 text-gray-900 rounded-lg shadow-md">
+                       <div className="mt-8  flex text-base  md:gap-4 flex-col sm:flex-row items-center justify-center  p-4 bg-gray-300 text-gray-900 rounded-lg shadow-md">
                         <div className='text-xs font-thin md:hidden '>start here</div>
                        <Link 
                            to="/login" 
