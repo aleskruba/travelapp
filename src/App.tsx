@@ -48,8 +48,8 @@ function App() {
     <div className={`relative min-h-screen ${theme === 'dark' ? 'bg-darkBackground text-white' : 'bg-lightBackground text-black'}`}>
 {modal && <Modal/>}
 
-<div className=' absolute  w-full '>
-<div className='relative top-40'>
+      <div className=''> 
+
        <InfoMessage
           message={
             isServerOn === null
@@ -60,8 +60,7 @@ function App() {
           }
           status={isServerOn}
         />
-     </div>
-     <div className='relative top-52'>
+
   <InfoMessage
           message={
             isSocketServerOn === null
@@ -72,8 +71,8 @@ function App() {
           }
           status={isSocketServerOn}
         />
-   </div>
-   <div className='relative top-64'>
+ 
+  
           <InfoMessage
         message={
           isRedisOn === null
@@ -84,8 +83,8 @@ function App() {
         }
         status={isRedisOn}
       />
+
 </div>
-  </div>
 
       <Navbar/>
       {showModal  &&     <CookiesInfoModal
