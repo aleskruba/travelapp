@@ -94,7 +94,7 @@ function Navbar() {
                         <NavLink
                             to="/traveltips"
                             className={({ isActive }) =>
-                                ` p-4 z-40 font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                                ` p-4 z-50 font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                             }
                         >
                            {navbarConstants.traveltips[language]}
@@ -132,10 +132,10 @@ function Navbar() {
                         {!user.isAdmin && 
                       <Link 
                       to="/profil" 
-                      className="z-40 text-center hover:text-gray-700">
+                      className="z-50 text-center hover:text-gray-700">
                         {navbarConstants.profile[language]}
                   </Link> }
-                        <div onClick={logOutFunction} className="z-40 text-center hover:text-gray-700 cursor-pointer">
+                        <div onClick={logOutFunction} className="z-50 text-center hover:text-gray-700 cursor-pointer">
                         {navbarConstants.logout[language]}
                         </div>
                     </div>
