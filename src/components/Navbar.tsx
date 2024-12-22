@@ -126,20 +126,15 @@ function Navbar() {
                    
 
                 ) : (
-                    <div className='flex flex-col md:flex-row md:space-x-4 items-start justify-start pr-8 md:pr-0 '>
-                               <div className=" px-8 text-xs md:hidden">
-                    {`${formattedDate}`}
-                    </div>
+                    <div className="mt-8  mr-4 flex text-xl md:text-base  flex-col sm:flex-row items-center justify-center gap-4 p-4 bg-gray-300 text-gray-900 rounded-lg shadow-md">
+
                         {!user.isAdmin && 
-                                                <NavLink
-                            to="/profil"
-                            className={({ isActive }) =>
-                                `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
-                            }
-                        >
-                          {navbarConstants.profile[language]}
-                        </NavLink>}
-                        <div onClick={logOutFunction} className="dark:hover:text-gray-300 cursor-pointer hover:text-yellow-500">
+                      <Link 
+                      to="/profil" 
+                      className="auth-link text-center hover:text-gray-700">
+                        {navbarConstants.profile[language]}
+                  </Link> }
+                        <div onClick={logOutFunction} className="auth-link text-center hover:text-gray-700 cursor-pointer">
                         {navbarConstants.logout[language]}
                         </div>
                     </div>
