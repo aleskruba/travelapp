@@ -48,8 +48,8 @@ function App() {
     <div className={`relative min-h-screen ${theme === 'dark' ? 'bg-darkBackground text-white' : 'bg-lightBackground text-black'}`}>
 {modal && <Modal/>}
 
-<div className=' absolute top-20 w-full '>
-<div className='relative top-0'>
+<div className=' absolute  w-full '>
+<div className='relative top-20'>
        <InfoMessage
           message={
             isServerOn === null
@@ -61,7 +61,7 @@ function App() {
           status={isServerOn}
         />
      </div>
-     <div className='relative top-32'>
+     <div className='relative top-36'>
   <InfoMessage
           message={
             isSocketServerOn === null
@@ -73,7 +73,7 @@ function App() {
           status={isSocketServerOn}
         />
    </div>
-   <div className='relative top-44'>
+   <div className='relative top-48'>
           <InfoMessage
         message={
           isRedisOn === null
