@@ -49,7 +49,7 @@ function App() {
 {modal && <Modal/>}
 
 <div className=' absolute  w-full '>
-<div className='relative top-20'>
+<div className='relative top-40'>
        <InfoMessage
           message={
             isServerOn === null
@@ -61,7 +61,7 @@ function App() {
           status={isServerOn}
         />
      </div>
-     <div className='relative top-36'>
+     <div className='relative top-52'>
   <InfoMessage
           message={
             isSocketServerOn === null
@@ -73,7 +73,7 @@ function App() {
           status={isSocketServerOn}
         />
    </div>
-   <div className='relative top-48'>
+   <div className='relative top-64'>
           <InfoMessage
         message={
           isRedisOn === null
