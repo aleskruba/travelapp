@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, NavLink, useNavigate ,useLocation} from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import Image from '../custom/Image';
 import ThemeComponent from './ThemeComponent';
 import logo from '../assets/images/travel4.png';
@@ -20,7 +20,7 @@ function Navbar() {
     const [visible, setVisible] = useState(true);
     const { user, setUser, setUpdateUser } = useAuthContext();
      const { language} = useLanguageContext();
-     const location = useLocation();
+
 
     const navigate = useNavigate();
 
@@ -90,7 +90,7 @@ function Navbar() {
                     </NavLink>
 
 
-                    <div className='flex text-lg  gap-2 md:gap-6    '>
+                    <div className='flex text-lg  gap-2 md:gap-6 w-72 '>
                         <NavLink
                             to="/traveltips"
                             className={({ isActive }) =>
