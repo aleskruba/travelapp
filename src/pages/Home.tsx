@@ -5,15 +5,16 @@ import { useAuthContext } from '../context/authContext';
 import { Link } from 'react-router-dom';
 import { useLanguageContext } from '../context/languageContext';
 import { homeConstants, homeWelcome } from '../constants/constantsHome';
+import { navbarConstants } from "../constants/constantsData";
 function Home() {
 
   const {user,isLoading} = useAuthContext()
   const { language} = useLanguageContext();
 
-  if (isLoading) return <div className='flex h-screen justify-center items-center'>Moment prosím...</div>;
+  if (isLoading) return <div className='flex h-screen justify-center items-center'>   {navbarConstants.waitplease[language]}</div>;
 
   return (
-    <div className="flex h-full flex-col md:flex-row dark:text-lighTextColor px-2 py:2 md:px-6 md:py-6 ">
+    <div className="flex h-full flex-col md:flex-row dark:text-lighTextColor px-2 py-2 md:px-6 md:py-6 ">
 
 
     <div className="flex  flex-col md:flex-row">
