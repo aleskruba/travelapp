@@ -247,7 +247,9 @@ function TourMessages({tourID}:Props) {
                 />
             ))}
         </div>
+        {data.tourmessages > 10 &&
         <div className="flex items-center flex-col">
+          
         <span className="text-gray-700 dark:text-gray-200 font-medium">
         {travelTipsConstants.currentPage[language]}  {currentPage + 1} of {data.totalPages}
         </span>
@@ -277,8 +279,11 @@ function TourMessages({tourID}:Props) {
         >
          {travelTipsConstants.nextPage[language]} 
         </button>
-        </div>   
+        </div>
+        
       </div>
+}
+      
         </>
 
     </div>
