@@ -112,7 +112,7 @@ function Navbar() {
 
                 {!user ? (
                        <div className="mt-8 w-24 md:w-48 flex text-lg md:text-base sm:gap-2  flex-col  md:flex-row items-center md:justify-between justify-center  p-2  bg-gray-300 text-gray-900 rounded-lg shadow-md">
-                        <div className='text-xs   pl-2 font-thin md:hidden sm:hidden '>start here</div>
+                        <div className='text-xs   pl-2 font-thin md:hidden sm:hidden '>traveltips</div>
                        <Link 
                            to="/login" 
                            className="z-50 w-22 flex justify-center  hover:text-gray-700 ">
