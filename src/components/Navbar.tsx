@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate ,useLocation} from 'react-router-dom';
 import Image from '../custom/Image';
 import ThemeComponent from './ThemeComponent';
 import logo from '../assets/images/travel4.png';
@@ -20,7 +20,7 @@ function Navbar() {
     const [visible, setVisible] = useState(true);
     const { user, setUser, setUpdateUser } = useAuthContext();
      const { language} = useLanguageContext();
-     
+     const location = useLocation();
 
     const navigate = useNavigate();
 
@@ -111,30 +111,20 @@ function Navbar() {
                 </div>
 
                 {!user ? (
-                    <div className='flex flex-col md:mt-0 mt-5  md:gap-0 gap-4 md:flex-row md:space-x-4 items-start justify-start  md:pr-0 '>
-                        <div className=" px-8 text-xs md:hidden">
-                    {`${formattedDate}`}
-                    </div>
+                       <div className="mt-8  mr-4 flex text-xl md:text-base  flex-col sm:flex-row items-center justify-center gap-4 p-4 bg-gray-300 text-gray-900 rounded-lg shadow-md">
+                       <Link 
+                           to="/login" 
+                           className="auth-link text-center hover:text-gray-700">
+                             {navbarConstants.login[language]}
+                       </Link>
+                       <Link 
+                           to="/register" 
+                           className="auth-link text-center hover:text-gray-700">
+                             {navbarConstants.signUp[language]}
+                       </Link>
+                   </div>
+                   
 
-                
-                        <NavLink
-                            to="/login"
-                            className={({ isActive }) =>
-                                `w-36  ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
-                            }
-                        >
-                       {navbarConstants.login[language]}
-                        </NavLink>
-                        <NavLink
-                            to="/register"
-                            className={({ isActive }) =>
-                                `w-36  ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
-                            }
-                        >
-                            {navbarConstants.signUp[language]}
-                        </NavLink>
-                     
-                    </div>
                 ) : (
                     <div className='flex flex-col md:flex-row md:space-x-4 items-start justify-start pr-8 md:pr-0 '>
                                <div className=" px-8 text-xs md:hidden">
