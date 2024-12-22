@@ -167,7 +167,7 @@ function Navbar() {
                     </NavLink>
                 </div>
 
-                <div className='flex gap-2 pl-2 items-center pr-6 md:pr-0'>
+                <div className='flex gap-4 justify-center items-center  md:pr-0'>
                     {!user ? (
                         <>
                             <NavLink
@@ -203,7 +203,7 @@ function Navbar() {
                         </>
                     )}
 
-                    <div className="dark:hover:text-gray-300 hover:text-yellow-500">
+                    <div className="dark:hover:text-gray-300 hover:text-yellow-500 pl-4">
                         <ThemeComponent />
                     </div>
                 </div>
