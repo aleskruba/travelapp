@@ -94,7 +94,7 @@ function Navbar() {
                         <NavLink
                             to="/traveltips"
                             className={({ isActive }) =>
-                                ` p-4 z-50  font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                                ` p-2 z-50  font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                             }
                         >
                            {navbarConstants.traveltips[language]}
@@ -102,7 +102,7 @@ function Navbar() {
                         <NavLink
                             to="/tours"
                             className={({ isActive }) =>
-                                `p-4 z-50   font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                                `p-2 z-50   font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                             }
                         >
                              {navbarConstants.travelMates[language]}
