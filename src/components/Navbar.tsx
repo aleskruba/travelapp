@@ -90,7 +90,7 @@ function Navbar() {
                     </NavLink>
 
 
-                    <div className='flex text-lg  gap-2 md:gap-6 w-72 '>
+                    <div className='flex text-lg  gap-2 md:gap-6 w-62 bg-red-500'>
                         <NavLink
                             to="/traveltips"
                             className={({ isActive }) =>
@@ -111,7 +111,7 @@ function Navbar() {
                 </div>
 
                 {!user ? (
-                       <div className="mt-8  flex text-lg md:text-base sm:gap-2  flex-col sm:flex-row items-center justify-center  p-2 mr-4 bg-gray-300 text-gray-900 rounded-lg shadow-md">
+                       <div className="mt-8  flex text-lg md:text-base sm:gap-2  flex-col sm:flex-row items-center justify-center  p-2  bg-gray-300 text-gray-900 rounded-lg shadow-md">
                         <div className='text-xs font-thin md:hidden sm:hidden '>start here</div>
                        <Link 
                            to="/login" 
