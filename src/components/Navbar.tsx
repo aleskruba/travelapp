@@ -105,36 +105,37 @@ function Navbar() {
                 </div>
 
                 {!user ? (
-                    <div className='flex flex-col md:flex-row md:space-x-4 items-start justify-start pr-8 md:pr-0 '>
-                        <NavLink
-                            to="/login"
-                            className={({ isActive }) =>
-                                `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
-                            }
-                        >
-                       {navbarConstants.login[language]}
-                        </NavLink>
-                        <NavLink
-                            to="/register"
-                            className={({ isActive }) =>
-                                `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
-                            }
-                        >
-                            {navbarConstants.signUp[language]}
-                        </NavLink>
-                    </div>
+             <div className="flex flex-col md:flex-row md:space-x-4 items-stretch justify-start  md:pr-0">
+             <NavLink
+               to="/login"
+               className={({ isActive }) =>
+                 `block px-4 py-2 ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+               }
+             >
+               {navbarConstants.login[language]}
+             </NavLink>
+             <NavLink
+               to="/register"
+               className={({ isActive }) =>
+                 `block px-4 py-2 ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+               }
+             >
+               {navbarConstants.signUp[language]}
+             </NavLink>
+           </div>
+           
                 ) : (
-                    <div className='flex flex-col md:flex-row md:space-x-4 items-start justify-start pr-8 md:pr-0 '>
+                    <div className='flex flex-col md:flex-row md:space-x-4 items-start justify-start  md:pr-0 mr-8'>
                         {!user.isAdmin && 
                         <NavLink
                             to="/profil"
                             className={({ isActive }) =>
-                                `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                           `block px-4 py-2 ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                             }
                         >
                           {navbarConstants.profile[language]}
                         </NavLink>}
-                        <div onClick={logOutFunction} className="dark:hover:text-gray-300 cursor-pointer hover:text-yellow-500">
+                        <div onClick={logOutFunction} className=" block px-4 py-2 dark:hover:text-gray-300 cursor-pointer hover:text-yellow-500">
                         {navbarConstants.logout[language]}
                         </div>
                     </div>

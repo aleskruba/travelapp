@@ -34,9 +34,9 @@ waitplease: {
   cz: 'Aktuální:',
   es: 'Actual:'
 },previousPage: {
-  en: 'Previous :',
-  cz: 'Předchozí :',
-  es: 'Anterior:'
+  en: 'Previous',
+  cz: 'Předchozí',
+  es: 'Anterior'
 },
 of: {
   en: 'of',
