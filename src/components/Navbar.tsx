@@ -111,7 +111,7 @@ function Navbar() {
                 </div>
 
                 {!user ? (
-                       <div className="mt-8  flex text-base  md:gap-4 flex-col sm:flex-row items-center justify-center  p-4 bg-gray-300 text-gray-900 rounded-lg shadow-md">
+                       <div className="mt-8  flex text-lg md:text-base  md:gap-4 flex-col sm:flex-row items-center justify-center  p-2 mr-4 bg-gray-300 text-gray-900 rounded-lg shadow-md">
                         <div className='text-xs font-thin md:hidden '>start here</div>
                        <Link 
                            to="/login" 
@@ -127,8 +127,8 @@ function Navbar() {
                    
 
                 ) : (
-                    <div className="mt-8  mr-4 flex text-xl md:text-base  flex-col sm:flex-row items-center justify-center gap-4 p-4 bg-gray-300 text-gray-900 rounded-lg shadow-md">
-
+                    <div className="mt-8  flex text-lg md:text-base  md:gap-4 flex-col sm:flex-row items-center justify-center  p-2 mr-4 bg-gray-300 text-gray-900 rounded-lg shadow-md">
+                     <div className='text-xs font-thin md:hidden '>welcome</div>
                         {!user.isAdmin && 
                       <Link 
                       to="/profil" 
