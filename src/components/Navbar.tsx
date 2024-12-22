@@ -105,27 +105,30 @@ function Navbar() {
                 </div>
 
                 {!user ? (
-             <div className="flex flex-col md:flex-row">
-             <NavLink
+             <div className="flex flex-row gap-4 bg-blue-300 pl-8 ">
+                <div>
+            <NavLink
                to="/login"
                className={({ isActive }) =>
-                 ` ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                 ` w-44 ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                }
-             > <div className='block px-4 py-2 bg-red-500'>
+             ><div className='block  py-2 bg-red-200 ml-6'>
                {navbarConstants.login[language]}
                </div>
              </NavLink>
+             </div>
+             <div>
              <NavLink
                to="/register"
                className={({ isActive }) =>
-                 ` ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                 ` w-44 ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
                }
-             ><div className='block px-4 py-2 bg-red-200'>
+             ><div className='block  py-2 bg-red-200 mr-6'>
                {navbarConstants.signUp[language]}
                </div>
              </NavLink>
            </div>
-           
+           </div>
                 ) : (
                     <div className='flex flex-col md:flex-row md:space-x-4 items-start justify-start  md:pr-0 mr-8'>
                         {!user.isAdmin && 
