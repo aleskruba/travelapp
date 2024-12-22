@@ -115,12 +115,12 @@ function Navbar() {
                         <div className='text-xs font-thin md:hidden sm:hidden '>start here</div>
                        <Link 
                            to="/login" 
-                           className="z-50 w-20 flex justify-center  hover:text-gray-700 ">
+                           className="z-50 w-22 flex justify-center  hover:text-gray-700 ">
                               {navbarConstants.login[language]}
                        </Link>
                        <Link 
                            to="/register" 
-                           className=" z-50 w-20 flex justify-center  hover:text-gray-700">
+                           className=" z-50 w-22 flex justify-center  hover:text-gray-700">
                              {navbarConstants.signUp[language]}
                        </Link>
                    </div>
@@ -132,10 +132,10 @@ function Navbar() {
                         {!user.isAdmin && 
                       <Link 
                       to="/profil" 
-                      className="z-50 w-20 text-center hover:text-gray-700">
+                      className="z-50 w-22 text-center hover:text-gray-700">
                         {navbarConstants.profile[language]}
                   </Link> }
-                        <div onClick={logOutFunction} className="z-50 w-20 text-center hover:text-gray-700 cursor-pointer">
+                        <div onClick={logOutFunction} className="z-50 w-22 text-center hover:text-gray-700 cursor-pointer">
                         {navbarConstants.logout[language]}
                         </div>
                     </div>
