@@ -111,7 +111,7 @@ function Navbar() {
                 </div>
 
                 {!user ? (
-                    <div className='flex flex-col md:mt-0 mt-5 text-xl md:gap-0 gap-4 md:flex-row md:space-x-4 items-start justify-start  md:pr-0 '>
+                    <div className='flex flex-col md:mt-0 mt-5  md:gap-0 gap-4 md:flex-row md:space-x-4 items-start justify-start  md:pr-0 '>
                         <div className=" px-8 text-xs md:hidden">
                     {`${formattedDate}`}
                     </div>
@@ -137,8 +137,11 @@ function Navbar() {
                     </div>
                 ) : (
                     <div className='flex flex-col md:flex-row md:space-x-4 items-start justify-start pr-8 md:pr-0 '>
+                               <div className=" px-8 text-xs md:hidden">
+                    {`${formattedDate}`}
+                    </div>
                         {!user.isAdmin && 
-                        <NavLink
+                                                <NavLink
                             to="/profil"
                             className={({ isActive }) =>
                                 `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
