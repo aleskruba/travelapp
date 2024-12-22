@@ -13,6 +13,7 @@ interface UpdateProfileProps {
   setUpdateProfile: React.Dispatch<React.SetStateAction<boolean>>;
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  googleUser:boolean ;
 }
 
 const UpdateProfile = ({
@@ -20,6 +21,7 @@ const UpdateProfile = ({
   setUpdateProfile,
   handleChange,
   setIsLoading,
+  googleUser
 }: UpdateProfileProps) => {
 
   const { user, updateUser,setUpdateUser, setUser } = useAuthContext();
@@ -169,7 +171,7 @@ const UpdateProfile = ({
               placeholder="Email"
               name={updateUser?.googleEmail ? "" : "email"}
               className={`w-full border rounded-md p-2 text-black ${
-                user?.googleEmail
+                googleUser
                   ? "bg-gradient-to-r from-red-700 via-yellow-600 to-blue-200 text-white pointer-events-none"
                   : ""
               }`}
@@ -179,7 +181,7 @@ const UpdateProfile = ({
               style={{ paddingRight: "40px" }} // Adjust padding to accommodate the image
             />
 
-            {updateUser?.googleEmail && (
+            {googleUser && (
               <img
                 src={google}
                 alt="Google Logo"

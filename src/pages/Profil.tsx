@@ -19,8 +19,11 @@ function Profil() {
   const [isLoading, setIsLoading] = useState(false);
   const { language} = useLanguageContext();
 
+  const [googleUser,setGoogleUser] = useState(false);
+
   useEffect(() => {
     setUpdateUser(user);
+    if (user?.googleEmail) {setGoogleUser(true)}
     console.log("useEffect updateUser profile runs");
   }, []);
 
@@ -36,6 +39,7 @@ function Profil() {
     });
   };
 
+  console.log(user)
   return (
     <div className="flex items-center h-full min-h-screen pb-4 flex-col pt-8 px-2 gap-6 ">
       {isLoading ? (
@@ -70,10 +74,11 @@ function Profil() {
               updateProfile={updateProfile}
               setUpdateProfile={setUpdateProfile}
               handleChange={handleChange}
+              googleUser={googleUser}
             />
           )}
 
-          {!updateProfile && (
+          {!updateProfile && !googleUser && (
             <UpdatePassword
               setIsLoading={setIsLoading}
               setUpdatePassword={setUpdatePassword}
