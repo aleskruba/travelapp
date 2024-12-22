@@ -256,9 +256,9 @@ function Register() {
             {authConstants.click[language]}
           </Link>  </h5>
 
-          <div className='h-[100px]'>
+    {/*       <div className='h-[100px]'>
             <Image className='flex mt-4  w-full h-full object-cover' src={fun} alt="lide" />
-          </div>
+          </div> */}
         </div>
     )}</div>
     </div>

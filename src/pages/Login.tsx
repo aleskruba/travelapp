@@ -225,11 +225,6 @@ function Login() {
 
                 return (
                   <Form className="flex flex-col space-y-4 items-center md:w-[380px] w-[300px] relative">
-
-                    <div className="relative w-full">
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                    Email
-                  </label>  
                     <Field
                       name="email"
                       type="email"
@@ -243,11 +238,8 @@ function Login() {
                       component="div"
                       className="text-red-500"
                     />
-            </div>
+
                     <div className="relative w-full">
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  {authConstants.password[language]}
-                </label>
                       <Field
                         name="password"
                         type={showPassword ? "text" : "password"}
@@ -326,13 +318,7 @@ function Login() {
                    {authConstants.click[language]}
               </Link>
             </h5>
-            <div className="h-[100px]">
-              <Image
-                className="flex mt-4 w-full h-full object-cover"
-                src={fun}
-                alt="lide"
-              />
-            </div>
+    
           </div>
         )}
       </div>
