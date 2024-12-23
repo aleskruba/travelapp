@@ -77,29 +77,39 @@ function Login() {
         "POST",
         credentials
       );
-
+  
       const data = await response.json();
-   
-      if (!response.ok) {
-        console.log(data)
-       setWrongData({email:data.error.email,password:data.error.password})
+  
+      // Handle non-OK responses
+      if (!response.ok || data.error) {
+        console.log(data);
+        setWrongData({
+          email: data.error?.email,
+          password: data.error?.password
+        });
         setIsLoding(false);
-        throw new Error(response.statusText);
+  
+        // Throw an error with a meaningful message
+        throw new Error(data.message || "An error occurred during login");
       }
-
-   
+  
+      // Success handling
       setUser(data.user);
       setIsLoding(false);
       return data;
-    } catch (error:any) {
+    } catch (error: any) {
       setIsLoding(false);
-      console.log('error',error.message);
-      if (error.message === 'Unauthorized') {
-        throw new Error(`BACKEND - ${authConstants.loginError[language] }`);
+      console.log("error", error.message);
+  
+      if (error.message === "Unauthorized") {
+        throw new Error(`BACKEND - ${authConstants.loginError[language]}`);
       }
-        }
-
+  
+      // Re-throw the error for further handling
+      throw error;
+    }
   };
+  
   const getClientIp = async () => {
     try {
       // Step 1: Get the IP address from ipify API
@@ -138,12 +148,13 @@ function Login() {
       };
 
       const data = await logCredentials(requestData);
- 
+      console.log(data);
       resetForm();
       navigate("/");
       showSuccessToast(authConstants.success[language])
     
     } catch (error: any) {
+     
        setBackendError(error.message)
        showErrorToast(authConstants.loginError[language])
     }
