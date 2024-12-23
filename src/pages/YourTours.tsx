@@ -120,10 +120,10 @@ function YourTours() {
     return (
         <div className='min-h-screen'>
              <h1 className='text-center mt-4 text-2xl font-bold'>
-           { data.yourtours.length < 1 && 'Nemáš vytvořenou žádnou spolucestu' } 
+           { data.yourtours.length < 1 && tourConstants.noTour[language]} 
            </h1>
            
-            <h1 className='text-center mt-4 text-2xl font-thin'>{tourConstants.maximumNumberOfTours[language] }</h1>
+            <h1 className='text-center mt-4 text-xl font-thin'>{tourConstants.maximumNumberOfTours[language] }</h1>
             <div className='text-center text-blue-500 text-xl'>
                 <Link to={'../createtour'}>
                 {tourConstants.createTour[language] } <span className="underline cursor-pointer text-blue-600">{tourConstants.here[language] }</span>

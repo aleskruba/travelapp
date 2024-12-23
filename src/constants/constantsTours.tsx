@@ -263,6 +263,10 @@ dateInPast: {
   en: "You have already created 4 tours, which is the maximum number...",
   cz: "Již máš vytvořené 4 spolucesty, což je maximální počet...",
   es: "Ya has creado 4 tours, que es el número máximo...",
+},noTour : {
+  en: "You haven't created any co-travel yet",
+  cz: "Nemáš vytvořenou žádnou spolucestu",
+  es: "Aún no has creado ningún viaje compartido",
 }
 
 
