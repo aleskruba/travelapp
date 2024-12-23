@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink,useNavigate } from 'react-router-dom';
 import Image from '../custom/Image';
 import ThemeComponent from './ThemeComponent';
 import logo from '../assets/images/travel4.png';
@@ -9,16 +9,21 @@ import { useLanguageContext } from '../context/languageContext';
 import { navbarConstants } from '../constants/constantsData';
 import { UserCircleIcon  } from '@heroicons/react/24/solid'
 import { LogIn, UserPlus } from "lucide-react";
-
+import { BASE_URL } from '../constants/config';
+import axios from 'axios';
+import { useQueryClient } from '@tanstack/react-query';
+import { Flip, toast } from 'react-toastify';
+import { authConstants } from "../constants/constantsAuth";
 function Navbar() {
     
 
     const [prevScrollPos, setPrevScrollPos] = useState(0);
     const [visible, setVisible] = useState(true);
-    const { user} = useAuthContext();
+    const { user,setUpdateUser,setUser } = useAuthContext();
      const { language} = useLanguageContext();
      const { isServerOn,isSocketServerOn,isRedisOn } = useAuthContext();
-
+     const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
 
     useEffect(() => {
@@ -44,6 +49,44 @@ function Navbar() {
         const formattedDate = `${String(today.getDate()).padStart(2, "0")}.${String(
           today.getMonth() + 1
         ).padStart(2, "0")} ${today.getFullYear()}`;
+
+
+        const logOutFunction = () => {
+          const fetchUserData = async () => {
+              try {
+                  const url = `${BASE_URL}/logout`;
+                  const response = await axios.get(url, { withCredentials: true });
+      
+        
+      
+                      queryClient.clear(); // Clear all cached data
+                
+      
+                  if (response.status === 200) {
+                      toast.success(authConstants.logout[language], {
+                          position: "top-left",
+                          autoClose: 1500,
+                          hideProgressBar: true,
+                          closeOnClick: true,
+                          pauseOnHover: true,
+                          draggable: true,
+                          progress: undefined,
+                          theme: "colored",
+                          transition: Flip,
+                      });
+                      setUpdateUser(null);
+                      setUser(null);
+                      navigate('/');
+                  }
+              } catch (err) {
+                  console.log('Error during logout :', err);
+              }
+          };
+      
+          fetchUserData();
+      };
+      
+      
 
     return (
         <>
@@ -133,7 +176,13 @@ function Navbar() {
                      >
                        <UserCircleIcon className="h-8 w-8" />
                        <span className="">{navbarConstants.profile[language]}</span>
-                     </NavLink>}
+                     </NavLink>}  {user.isAdmin && 
+                     <>
+                     <div onClick={logOutFunction} className="dark:hover:text-gray-300 hover:text-yellow-500 cursor-pointer">
+                            {navbarConstants.logout[language]}
+                         </div> 
+                     </>
+                     }
               
                     </div>
                 )}
