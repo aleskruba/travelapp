@@ -47,7 +47,7 @@ function Navbar() {
 
     return (
         <>
-            <nav className={`relative pt-3 md:pt-0 bg-gray-200 dark:bg-gray-700 top-0 flex justify-between items-center w-full text-gray-500 dark:text-gray-200 md:px-4 px-2 md:py-4 font-bold pb-4`}>
+            <nav className={`relative pt-4 md:pt-0 bg-gray-200 dark:bg-gray-700 top-0 flex justify-between items-center w-full text-gray-500 dark:text-gray-200 md:px-4 px-2 md:py-4 font-bold pb-4`}>
              
             <div className="flex gap-2 top-1  absolute left-1/2 transform -translate-x-1/2 ">
           
