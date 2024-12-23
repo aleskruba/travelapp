@@ -12,20 +12,20 @@ function FlagDisplay() {
   };
 
   return (
-    <div style={{ display: 'flex', gap: '10px' }}>
+    <div className='flex gap-6 md:gap-4 '>
       <CZ
         title="Czech Republic"
-        className="flag-icon cursor-pointer"
+        className="flag-icon cursor-pointer md:scale-100 scale-150"
         onClick={() => handleLanguageChange('cz')}
       />
       <GB
         title="United Kingdom"
-        className="flag-icon cursor-pointer"
+        className="flag-icon cursor-pointer md:scale-100 scale-150"
         onClick={() => handleLanguageChange('en')}
       />
       <ES
         title="Spain"
-        className="flag-icon cursor-pointer"
+        className="flag-icon cursor-pointer md:scale-100 scale-150"
         onClick={() => handleLanguageChange('es')}
       />
     </div>

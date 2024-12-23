@@ -11,7 +11,7 @@ function ThemeComponent() {
       <button
           key={theme}
           onClick={() => setTheme(theme === themeOptions[0] ? 'dark' : 'light')}
-          className={`flex items-center justify-center h-8 rounded-full hover:text-sky600 `}
+          className={`flex items-center justify-center scale-150 md:scale-100 md:h-8  rounded-full hover:text-sky600 `}
         >
           
           {theme === 'light' ? <FaMoon /> : <FaRegSun />}

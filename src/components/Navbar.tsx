@@ -138,7 +138,7 @@ function Navbar() {
                     </div>
                 )}
                     
-                <div className="flex items-center gap-2 dark:hover:text-gray-300 hover:text-darkBlue absolute top-1 right-2">
+                <div className="flex items-center pt-5 md:pt-0 md:gap-2 gap-6 dark:hover:text-gray-300 hover:text-darkBlue absolute top-1 right-2">
                 {!user?.isAdmin &&<FlagComponent/>} <ThemeComponent />
                 </div>
             </nav>
