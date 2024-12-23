@@ -6,12 +6,55 @@ import { Link } from 'react-router-dom';
 import { useLanguageContext } from '../context/languageContext';
 import { homeConstants, homeWelcome } from '../constants/constantsHome';
 import { navbarConstants } from "../constants/constantsData";
+import InfoMessage from '../components/InfoMessage';
 function Home() {
 
   const {user,isLoading} = useAuthContext()
   const { language} = useLanguageContext();
+  const { isServerOn,isSocketServerOn,isRedisOn } = useAuthContext();
 
-  if (isLoading) return <div className='flex h-screen justify-center items-center'>   {navbarConstants.waitplease[language]}</div>;
+  if (isLoading) return <div className='flex flex-col gap-4 h-screen justify-center items-center'> 
+        
+
+{navbarConstants.waitplease[language]}
+    
+ 
+<InfoMessage
+   message={
+     isServerOn === null
+       ? 'Checking Server...'
+       : isServerOn
+       ? 'Server is ON'
+       : 'Server is OFF'
+   }
+   status={isServerOn}
+ />
+
+<InfoMessage
+   message={
+     isSocketServerOn === null
+       ? 'Checking Socket Server...'
+       : isSocketServerOn
+       ? 'Socket Server is ON'
+       : 'Socket Server is OFF'
+   }
+   status={isSocketServerOn}
+ />
+
+
+   <InfoMessage
+ message={
+   isRedisOn === null
+     ? 'Checking Redis Server...'
+     : isRedisOn
+     ? 'Redis Server is ON'
+     : 'Redis is OFF'
+ }
+ status={isRedisOn}
+/>
+
+</div>
+ 
 
   return (
     <div className="flex h-full flex-col md:flex-row dark:text-lighTextColor px-2 py-2 md:px-6 md:py-6 ">

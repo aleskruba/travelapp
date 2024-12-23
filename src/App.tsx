@@ -39,7 +39,7 @@ import InfoMessage from './components/InfoMessage';
 function App() {
 
   const { theme,modal } = useThemeContext();
-  const { showModal,handleConfirm,isServerOn,isSocketServerOn,isRedisOn } = useAuthContext();
+  const { showModal,handleConfirm} = useAuthContext();
   const location = useLocation();
  const { language} = useLanguageContext();
 
@@ -48,43 +48,7 @@ function App() {
     <div className={`relative min-h-screen ${theme === 'dark' ? 'bg-darkBackground text-white' : 'bg-lightBackground text-black'}`}>
 {modal && <Modal/>}
 
-      <div className=''> 
 
-       <InfoMessage
-          message={
-            isServerOn === null
-              ? 'Checking Server...'
-              : isServerOn
-              ? 'Server is ON'
-              : 'Server is OFF'
-          }
-          status={isServerOn}
-        />
-
-  <InfoMessage
-          message={
-            isSocketServerOn === null
-              ? 'Checking Socket Server...'
-              : isSocketServerOn
-              ? 'Socket Server is ON'
-              : 'Socket Server is OFF'
-          }
-          status={isSocketServerOn}
-        />
- 
-  
-          <InfoMessage
-        message={
-          isRedisOn === null
-            ? 'Checking Redis Server...'
-            : isRedisOn
-            ? 'Redis Server is ON'
-            : 'Redis is OFF'
-        }
-        status={isRedisOn}
-      />
-
-</div>
 
       <Navbar/>
       {showModal  &&     <CookiesInfoModal

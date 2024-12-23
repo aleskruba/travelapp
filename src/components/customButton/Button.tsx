@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '../../utils/cn';
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  color: 'blue' | 'gray' | 'red' | 'green' |'answer';
+  color: 'blue' | 'gray' | 'lightgray' | 'red' | 'green' |'answer';
   width?: string; // Accepts custom width values like '100%', '200px', etc.
 };
 
@@ -15,7 +15,8 @@ const Button: React.FC<ButtonProps> = ({ color, children, className, width, ...p
     gray: 'bg-gray-500 text-white hover:bg-gray-600',
     red: 'bg-red-500 text-white hover:bg-red-600',
     green: 'bg-green-500 text-white hover:bg-green-600',
-  };
+    lightgray :'bg-gray-300 text-white hover:bg-gray-200',
+  }
 
   return (
     <button

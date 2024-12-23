@@ -1,28 +1,25 @@
 import { useState, useEffect } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import Image from '../custom/Image';
 import ThemeComponent from './ThemeComponent';
 import logo from '../assets/images/travel4.png';
 import { useAuthContext } from '../context/authContext';
-import { Flip, toast } from 'react-toastify';
-import { BASE_URL } from '../constants/config';
-import axios from 'axios';
 import FlagComponent from './FlagComponent';
 import { useLanguageContext } from '../context/languageContext';
 import { navbarConstants } from '../constants/constantsData';
-import { authConstants } from "../constants/constantsAuth";
-import { useQueryClient } from '@tanstack/react-query';
+import { UserCircleIcon  } from '@heroicons/react/24/solid'
+import { LogIn, UserPlus } from "lucide-react";
 
 function Navbar() {
     
-     const queryClient = useQueryClient();
+
     const [prevScrollPos, setPrevScrollPos] = useState(0);
     const [visible, setVisible] = useState(true);
-    const { user, setUser, setUpdateUser } = useAuthContext();
+    const { user} = useAuthContext();
      const { language} = useLanguageContext();
 
 
-    const navigate = useNavigate();
+
 
     useEffect(() => {
         const handleScroll = () => {
@@ -40,40 +37,7 @@ function Navbar() {
         };
     }, [prevScrollPos]);
 
-    const logOutFunction = () => {
-        const fetchUserData = async () => {
-            try {
-                const url = `${BASE_URL}/logout`;
-                const response = await axios.get(url, { withCredentials: true });
 
-      
-
-                    queryClient.clear(); // Clear all cached data
-              
-
-                if (response.status === 200) {
-                    toast.success(authConstants.logout[language], {
-                        position: "top-left",
-                        autoClose: 1500,
-                        hideProgressBar: true,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "colored",
-                        transition: Flip,
-                    });
-                    setUpdateUser(null);
-                    setUser(null);
-                    navigate('/');
-                }
-            } catch (err) {
-                console.log('Error during logout :', err);
-            }
-        };
-
-        fetchUserData();
-    };
 
    
         const today = new Date();
@@ -111,33 +75,44 @@ function Navbar() {
                 </div>
 
                 {!user ? (
-                       <div className="mt-8 w-24 md:w-48 flex text-lg md:text-base sm:gap-2  flex-col  md:flex-row items-center md:justify-between justify-center  p-2  bg-gray-300 text-gray-900 rounded-lg shadow-md">
-                        <div className='text-xs   pl-2 font-thin md:hidden sm:hidden '>traveltips</div>
-                       <Link 
-                           to="/login" 
-                           className="z-50 w-22 flex justify-center  hover:text-gray-700 ">
-                              {navbarConstants.login[language]}
-                       </Link>
-                       <Link 
-                           to="/register" 
-                           className=" z-50 w-22 flex justify-center  hover:text-gray-700">
-                             {navbarConstants.signUp[language]}
-                       </Link>
-                   </div>
+                    <div className="mt-12 md:mt-8 pl-4 flex gap-4 md:flex-row flex-col shadow-md">
+                    {/* Login Link */}
+                    <Link 
+                      to="/login" 
+                      className="flex items-center p-2 gap-2 hover:text-gray-700 dark:hover:text-gray-300"
+                    >
+                      <LogIn className="h-5 w-5" />
+                      <span>{navbarConstants.login[language]}</span>
+                    </Link>
+              
+                    {/* Register Link */}
+                    <Link 
+                      to="/register" 
+                      className="flex items-center p-2 gap-2 hover:text-gray-700 dark:hover:text-gray-300"
+                    >
+                      <UserPlus className="h-5 w-5" />
+                      <span>{navbarConstants.signUp[language]}</span>
+                    </Link>
+                  </div>
                    
 
                 ) : (
                     <div className="mt-8  flex text-lg md:text-base  md:gap-4 flex-col sm:flex-row items-center justify-center  p-2 mr-4 bg-gray-300 text-gray-900 rounded-lg shadow-md">
-                     <div className='text-xs font-thin md:hidden '>welcome</div>
+
                         {!user.isAdmin && 
-                      <Link 
-                      to="/profil" 
-                      className="z-50 w-22 text-center hover:text-gray-700">
-                        {navbarConstants.profile[language]}
-                  </Link> }
-                        <div onClick={logOutFunction} className="z-50 w-22 text-center hover:text-gray-700 cursor-pointer">
-                        {navbarConstants.logout[language]}
-                        </div>
+                       <NavLink
+                       to="/profil"
+                       className={({ isActive }) =>
+                         `${isActive 
+                           ? 'text-yellow-500' 
+                           : ' hover:text-yellow-500 text-gray-500 '} 
+                           flex items-center justify-center`
+                       }
+                     >
+                       <UserCircleIcon className="h-8 w-8" />
+                       <span className="">{navbarConstants.profile[language]}</span>
+                     </NavLink>}
+              
                     </div>
                 )}
                     
@@ -170,36 +145,38 @@ function Navbar() {
                 <div className='flex gap-4 justify-center items-center  md:pr-0'>
                     {!user ? (
                         <>
-                            <NavLink
-                                to="/login"
-                                className={({ isActive }) =>
-                                    `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
-                                }
-                            >
-                          {navbarConstants.login[language]}
-                            </NavLink>
-                            <NavLink
-                                to="/register"
-                                className={({ isActive }) =>
-                                    `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
-                                }
-                            >
-                              {navbarConstants.signUp[language]}
-                            </NavLink>
+                       <Link 
+                      to="/login" 
+                      className="flex items-center p-2 gap-2 hover:text-gray-700 dark:hover:text-gray-300"
+                    >
+                      <LogIn className="h-5 w-5" />
+                      <span>{navbarConstants.login[language]}</span>
+                    </Link>
+              
+                    {/* Register Link */}
+                    <Link 
+                      to="/register" 
+                      className="flex items-center p-2 gap-2 hover:text-gray-700 dark:hover:text-gray-300"
+                    >
+                      <UserPlus className="h-5 w-5" />
+                      <span>{navbarConstants.signUp[language]}</span>
+                    </Link>
                         </>
                     ) : (
                         <> {!user.isAdmin && 
                             <NavLink
-                                to="/profil"
-                                className={({ isActive }) =>
-                                    `${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
-                                }
-                            >
-                                {navbarConstants.profile[language]}
-                            </NavLink>}
-                            <div onClick={logOutFunction} className="dark:hover:text-gray-300 hover:text-yellow-500 cursor-pointer">
-                            {navbarConstants.logout[language]}
-                            </div>
+                            to="/profil"
+                            className={({ isActive }) =>
+                              `${isActive 
+                                ? 'text-yellow-500' 
+                                : ' hover:text-yellow-500 text-gray-500 '} 
+                                flex items-center justify-center`
+                            }
+                          >
+                            <UserCircleIcon className="h-8 w-8" />
+                            <span className="">{navbarConstants.profile[language]}</span>
+                          </NavLink>  }
+                   
                         </>
                     )}
 
