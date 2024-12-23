@@ -140,10 +140,10 @@ const checkSocketServer = async () => {
   }
 };
 
-useEffect(()=>{
+/* useEffect(()=>{
   checkSocketServer()
   checkRedis()
-},[])
+},[]) */
 
   const checkCookiesBlocked = async (): Promise<{ ok: boolean; error?: string }> => {
     try {
@@ -179,6 +179,10 @@ useEffect(()=>{
   };
   
 useEffect(() => {
+
+  checkSocketServer()
+  checkRedis()
+
   const initializeApp = async () => {
     // Step 1: Check server status first
     await checkServer();

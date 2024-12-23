@@ -16,8 +16,7 @@ function Home() {
   if (isLoading) return <div className='flex flex-col gap-4 h-screen justify-center items-center'> 
         
 
-{navbarConstants.waitplease[language]}
-    
+   
  
 <InfoMessage
    message={
@@ -53,11 +52,13 @@ function Home() {
  status={isRedisOn}
 />
 
+{navbarConstants.waitplease[language]}
 </div>
  
 
   return (
     <div className="flex h-full flex-col md:flex-row dark:text-lighTextColor px-2 py-2 md:px-6 md:py-6 ">
+
 
 
     <div className="flex  flex-col md:flex-row">

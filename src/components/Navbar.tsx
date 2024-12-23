@@ -17,7 +17,7 @@ function Navbar() {
     const [visible, setVisible] = useState(true);
     const { user} = useAuthContext();
      const { language} = useLanguageContext();
-
+     const { isServerOn,isSocketServerOn,isRedisOn } = useAuthContext();
 
 
 
@@ -47,7 +47,29 @@ function Navbar() {
 
     return (
         <>
-            <nav className={`relative bg-gray-200 dark:bg-gray-700 top-0 flex justify-between items-center w-full dark:text-white text-yellow-800 md:px-4 px-2 md:py-4 font-bold pb-4`}>
+            <nav className={`relative bg-gray-200 dark:bg-gray-700 top-0 flex justify-between items-center w-full text-gray-500 dark:text-gray-200 md:px-4 px-2 md:py-4 font-bold pb-4`}>
+             
+            <div className="flex gap-2 top-1  absolute left-1/2 transform -translate-x-1/2 ">
+          
+          <div className="flex items-center gap-2 w-14 h-3 text-xs">
+              <div className={`w-2 h-2 rounded-full ${isServerOn ? 'bg-green-500' : 'bg-red-500'}`}></div>
+              <span>Server</span>
+            </div>
+          
+            {/* Socket Server Status */}
+            <div className="flex items-center gap-2 w-14 h-3 text-xs">
+              <div className={`w-2 h-2 rounded-full ${isSocketServerOn ? 'bg-green-500' : 'bg-red-500'}`}></div>
+              <span>Socket</span>
+            </div>
+          
+            {/* Redis Status */}
+            <div className="flex items-center gap-2 w-14 h-3 text-xs">
+              <div className={`w-2 h-2 rounded-full ${isRedisOn ? 'bg-green-500' : 'bg-red-500'}`}></div>
+              <span>Redis</span>
+            </div>
+            </div>
+
+
                 <div className='flex flex-col md:flex-row md:space-x-16 space-x-2 md:space-y-0 space-y-2 items-start md:items-center'>
                 <NavLink to="/" className="md:w-[150px] w-[150px] pl-4 pt-2 block">
                     <Image src={logo} alt="Logo" className="blended-image" />
@@ -58,7 +80,7 @@ function Navbar() {
                         <NavLink
                             to="/traveltips"
                             className={({ isActive }) =>
-                                ` p-2 z-50  font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                                ` p-2 z-50  font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-darkBlue dark:text-lightBlue' : ' hover:text-darkBlue dark:hover:text-lightBlue'}`
                             }
                         >
                            {navbarConstants.traveltips[language]}
@@ -66,7 +88,7 @@ function Navbar() {
                         <NavLink
                             to="/tours"
                             className={({ isActive }) =>
-                                `p-2 z-50   font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                                `p-2 z-50   font-bold md:font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-darkBlue dark:text-lightBlue' : ' hover:text-darkBlue dark:hover:text-lightBlue'}`
                             }
                         >
                              {navbarConstants.travelMates[language]}
@@ -104,8 +126,8 @@ function Navbar() {
                        to="/profil"
                        className={({ isActive }) =>
                          `${isActive 
-                           ? 'text-yellow-500' 
-                           : ' hover:text-yellow-500 text-gray-500 '} 
+                           ? 'text-darkBlue ' 
+                           : ' hover:text-darkBlue text-gray-500 '} 
                            flex items-center justify-center`
                        }
                      >
@@ -116,18 +138,18 @@ function Navbar() {
                     </div>
                 )}
                     
-                <div className="flex items-center gap-2 dark:hover:text-gray-300 hover:text-yellow-500 absolute top-1 right-2">
+                <div className="flex items-center gap-2 dark:hover:text-gray-300 hover:text-darkBlue absolute top-1 right-2">
                 {!user?.isAdmin &&<FlagComponent/>} <ThemeComponent />
                 </div>
             </nav>
 
             {/* BOTTOM NAVBAR */}
-            <nav className={`${visible ? 'hidden' : 'fixed'} bg-gray-200 dark:bg-gray-700 bottom-0 flex flex-col md:flex-row justify-between items-center w-full dark:text-white text-yellow-800 px-2 md:px-4 md:py-4 md:text-xl font-bold text-base pb-4 `}>
+            <nav className={`${visible ? 'hidden' : 'fixed'} bg-gray-200 dark:bg-gray-700 bottom-0 flex z-50 flex-col md:flex-row justify-between items-center w-full text-gray-500 dark:text-gray-200 px-2 md:px-4 md:py-4 md:text-xl font-bold text-base pb-4 `}>
                 <div className='flex gap-2 md:items-center'>
                     <NavLink
                         to="/traveltips"
                         className={({ isActive }) =>
-                            `p-2 font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                            `p-2 font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-darkBlue dark:text-lightBlue' : ' hover:text-darkBlue dark:hover:text-lightBlue'}`
                         }
                     >
                     {navbarConstants.traveltips[language]}
@@ -135,7 +157,7 @@ function Navbar() {
                     <NavLink
                         to="/tours"
                         className={({ isActive }) =>
-                            `p-2 font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-yellow-500' : 'dark:hover:text-gray-300 hover:text-yellow-500'}`
+                            `p-2 font-extrabold transition duration-300 ease-in-out ${isActive ? 'text-darkBlue dark:text-lightBlue' : ' hover:text-darkBlue dark:hover:text-lightBlue'}`
                         }
                     >
                 {navbarConstants.travelMates[language]}
@@ -147,7 +169,7 @@ function Navbar() {
                         <>
                        <Link 
                       to="/login" 
-                      className="flex items-center p-2 gap-2 hover:text-gray-700 dark:hover:text-gray-300"
+                      className="flex items-center p-2 gap-2 hover:text-gray-700 dark:text-gray-200  dark:hover:text-gray-300"
                     >
                       <LogIn className="h-5 w-5" />
                       <span>{navbarConstants.login[language]}</span>
@@ -156,7 +178,7 @@ function Navbar() {
                     {/* Register Link */}
                     <Link 
                       to="/register" 
-                      className="flex items-center p-2 gap-2 hover:text-gray-700 dark:hover:text-gray-300"
+                      className="flex items-center p-2 gap-2 hover:text-gray-700 dark:text-gray-200 dark:hover:text-gray-300"
                     >
                       <UserPlus className="h-5 w-5" />
                       <span>{navbarConstants.signUp[language]}</span>
@@ -168,8 +190,8 @@ function Navbar() {
                             to="/profil"
                             className={({ isActive }) =>
                               `${isActive 
-                                ? 'text-yellow-500' 
-                                : ' hover:text-yellow-500 text-gray-500 '} 
+                                ? 'text-darkBlue dark:text-lightBlue'
+                                : ' hover:text-darkBlue text-gray-500 dark:text-gray-200 dark:hover:text-lightBlue'} 
                                 flex items-center justify-center`
                             }
                           >
@@ -180,7 +202,7 @@ function Navbar() {
                         </>
                     )}
 
-                    <div className="dark:hover:text-gray-300 hover:text-yellow-500 pl-4">
+                    <div className="dark:hover:text-gray-300 hover:text-darkBlue pl-4">
                         <ThemeComponent />
                     </div>
                 </div>

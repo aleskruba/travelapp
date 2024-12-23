@@ -241,7 +241,7 @@ function Register() {
             width="100%"
             onClick={() => login()}
           >
-             {authConstants.registerWithGoogle[language]} 🚀
+             {authConstants.registerWithGoogle[language]}🚀
           </Button>
 
           </div>

@@ -7,6 +7,8 @@ module.exports = {
       colors: {
         darkBackground: "#1f2937",
         lightBackground: "#f3f4f6",
+        darkBlue: '#1E3A8A',
+        lightBlue: '#A3D9FF',
         Submit: {
           DEFAULT: '#1e3a8a',  // bg-blue-800
           hover: '#1d4ed8',    // hover:bg-blue-700

@@ -58,7 +58,8 @@ function TourDetail() {
   });
 
   const [flag, setFlag] = useState("");
-
+/*   const convert = JSON.parse(data?.tour.tourtype )
+ */
   useEffect(() => {
     if (isSuccess) {
       const foundCountry = countriesData.find(
@@ -118,7 +119,7 @@ function TourDetail() {
     ]
   };
   
-
+  
   const formatTourDate = (startDate: any, endDate: any) => {
     const start = moment(startDate);
     const end = moment(endDate);
@@ -148,8 +149,8 @@ function TourDetail() {
   }
 
 
-  const convert = JSON.parse(data.tour.tourtype )
   
+
   const destinationIndex = typeof data?.tour?.destination === 'string' ? countryNames.indexOf(data?.tour.destination) : -1;
   
 
@@ -212,13 +213,15 @@ function TourDetail() {
             {" "}
             {tourConstants.tourType[language]}
             {typeOfTourObject.map((t: any, idx: number) => {
-  const key = Object.keys(t)[0];  // Extract the key (e.g., `1` or `2`)
-  const tourType = t[key];        // Access the translations object
-
+       
+                const key = Object.keys(t)[0];  // Extract the key (e.g., `1` or `2`)
+            
+                const tourType = t[key];        // Access the translations object
+  
   // Check if any value in `convert` array matches the current `key`
-  if (convert.includes(Number(key))) {
+  if (JSON.parse(data?.tour.tourtype).includes((key))) {
     const translatedText = tourType ? tourType[language] || 'Unknown' : 'Unknown';
-
+  
     return (
       <span key={idx} className="text-xs font-thin italic pl-4 md:pl-0">
         {translatedText} {" "}
