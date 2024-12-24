@@ -85,6 +85,7 @@ function Tours() {
   
   
   const currentPage = parseInt(searchParams.get('page') || '1', 10) - 1;
+  console.log(currentPage+1)
 
   const queryClient = useQueryClient();
   queryClient.invalidateQueries({ queryKey: ['tour'] })

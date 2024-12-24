@@ -198,7 +198,7 @@ const UpdateProfile = ({
           </div>
 
           {user?.googleEmail ? (
-            <span className="text-xs text-violet-700">
+            <span className="text-xs">
               {authConstants.emailGoogleLoggedin[language]}
             </span>
           ) : (

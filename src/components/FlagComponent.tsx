@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+
 import { CZ, GB, ES } from 'country-flag-icons/react/3x2';
 import { useLanguageContext } from '../context/languageContext';
 import { Language } from '../types';

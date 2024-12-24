@@ -4,6 +4,7 @@ import makeAnimated from 'react-select/animated';
 import { useLanguageContext } from '../../context/languageContext';
 import { tourConstants } from '../../constants/constantsTours';
 import { countryTranslationsEn,countryTranslationsEs } from '../../constants/constantsData'; // Import country translations
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 interface CountryOption {
   readonly value: string;
@@ -49,8 +50,10 @@ const SearchComponent: React.FC<CountryProps> = ({ availableDestinations, countr
   
   ;    
   const handleChange = (selectedOption: any) => {
-;    setCountries(selectedOption); // Update the countries state with selected options
-  };
+    setCountries(selectedOption); // Update the countries state with selected options
+  
+  
+};
 
 
   return (

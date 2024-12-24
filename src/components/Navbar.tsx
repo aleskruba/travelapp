@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, NavLink,useNavigate } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import Image from '../custom/Image';
 import ThemeComponent from './ThemeComponent';
 import logo from '../assets/images/travel4.png';
@@ -9,21 +9,17 @@ import { useLanguageContext } from '../context/languageContext';
 import { navbarConstants } from '../constants/constantsData';
 import { UserCircleIcon  } from '@heroicons/react/24/solid'
 import { LogIn, UserPlus } from "lucide-react";
-import { BASE_URL } from '../constants/config';
-import axios from 'axios';
-import { useQueryClient } from '@tanstack/react-query';
-import { Flip, toast } from 'react-toastify';
-import { authConstants } from "../constants/constantsAuth";
+
+
 function Navbar() {
     
 
     const [prevScrollPos, setPrevScrollPos] = useState(0);
     const [visible, setVisible] = useState(true);
-    const { user,setUpdateUser,setUser } = useAuthContext();
+    const { user } = useAuthContext();
      const { language} = useLanguageContext();
      const { isServerOn,isSocketServerOn,isRedisOn } = useAuthContext();
-     const queryClient = useQueryClient();
-  const navigate = useNavigate();
+    
 
 
     useEffect(() => {
@@ -44,48 +40,6 @@ function Navbar() {
 
 
 
-   
-        const today = new Date();
-        const formattedDate = `${String(today.getDate()).padStart(2, "0")}.${String(
-          today.getMonth() + 1
-        ).padStart(2, "0")} ${today.getFullYear()}`;
-
-
-        const logOutFunction = () => {
-          const fetchUserData = async () => {
-              try {
-                  const url = `${BASE_URL}/logout`;
-                  const response = await axios.get(url, { withCredentials: true });
-      
-        
-      
-                      queryClient.clear(); // Clear all cached data
-                
-      
-                  if (response.status === 200) {
-                      toast.success(authConstants.logout[language], {
-                          position: "top-left",
-                          autoClose: 1500,
-                          hideProgressBar: true,
-                          closeOnClick: true,
-                          pauseOnHover: true,
-                          draggable: true,
-                          progress: undefined,
-                          theme: "colored",
-                          transition: Flip,
-                      });
-                      setUpdateUser(null);
-                      setUser(null);
-                      navigate('/');
-                  }
-              } catch (err) {
-                  console.log('Error during logout :', err);
-              }
-          };
-      
-          fetchUserData();
-      };
-      
       
 
     return (
@@ -140,7 +94,7 @@ function Navbar() {
                 </div>
 
                 {!user ? (
-                    <div className="mt-12 md:mt-8 pl-4 flex gap-4 md:flex-row flex-col shadow-md">
+                    <div className="mt-12 md:mt-8 pl-4 flex gap-2 md:flex-row flex-col shadow-md">
                     {/* Login Link */}
                     <Link 
                       to="/login" 
@@ -164,7 +118,7 @@ function Navbar() {
                 ) : (
                     <div className="mt-8  flex text-lg md:text-base  md:gap-4 flex-col sm:flex-row items-center justify-center  p-2 mr-4 bg-gray-300 text-gray-900 rounded-lg shadow-md">
 
-                        {!user.isAdmin && 
+                   
                        <NavLink
                        to="/profil"
                        className={({ isActive }) =>
@@ -176,19 +130,13 @@ function Navbar() {
                      >
                        <UserCircleIcon className="h-8 w-8" />
                        <span className="">{navbarConstants.profile[language]}</span>
-                     </NavLink>}  {user.isAdmin && 
-                     <>
-                     <div onClick={logOutFunction} className="dark:hover:text-gray-300 hover:text-yellow-500 cursor-pointer">
-                            {navbarConstants.logout[language]}
-                         </div> 
-                     </>
-                     }
+                     </NavLink>
               
                     </div>
                 )}
                     
                 <div className="flex items-center pt-5 md:pt-0 md:gap-2 gap-6 dark:hover:text-gray-300 hover:text-darkBlue absolute top-1 right-2">
-                {!user?.isAdmin &&<FlagComponent/>} <ThemeComponent />
+               <FlagComponent/> <ThemeComponent />
                 </div>
             </nav>
 
@@ -234,7 +182,7 @@ function Navbar() {
                     </Link>
                         </>
                     ) : (
-                        <> {!user.isAdmin && 
+                        <> 
                             <NavLink
                             to="/profil"
                             className={({ isActive }) =>
@@ -246,7 +194,7 @@ function Navbar() {
                           >
                             <UserCircleIcon className="h-8 w-8" />
                             <span className="">{navbarConstants.profile[language]}</span>
-                          </NavLink>  }
+                          </NavLink>  
                    
                         </>
                     )}
