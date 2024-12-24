@@ -141,7 +141,7 @@ function Navbar() {
             </nav>
 
             {/* BOTTOM NAVBAR */}
-            <nav className={`${visible ? 'hidden' : 'fixed'} bg-gray-200 dark:bg-gray-700 bottom-0 flex  flex-col md:flex-row justify-between items-center w-full text-gray-500 dark:text-gray-200 px-2 md:px-4 md:py-4 md:text-xl font-bold text-base pb-4 `}>
+            <nav className={`${visible ? 'hidden' : 'fixed'} md:hidden z-50 bg-gray-200 dark:bg-gray-700 bottom-0 flex  flex-col md:flex-row justify-between items-center w-full text-gray-500 dark:text-gray-200 px-2 md:px-4 md:py-4 md:text-xl font-bold text-base pb-4 `}>
                 <div className='flex gap-2 md:items-center'>
                     <NavLink
                         to="/traveltips"

@@ -6,8 +6,8 @@ function Footer() {
   const { language} = useLanguageContext();
 
   return (
-    <footer className="dark:text-lightPrimary pb-20 z-50 ">
-      <div className=" px-8  flex flex-around border-t border-white  py-8  ">
+    <footer className="dark:text-lightPrimary pb-20  ">
+      <div className=" px-8  flex flex-around border-t border-white  py-8  z-50  ">
         <div className="w-full flex justify-center  mb-4 ">
           <div>
           <h3 className="text-lg font-bold mb-4 text-darkAccent ">{footerColumns.links[language]}</h3>
