@@ -22,6 +22,7 @@ interface CountryOption {
 }
 
 function Tours() {
+  const { user } = useAuthContext();
   const navigate = useNavigate();
   const [backendError, setBackendError] = useState<string | null>(null);
   const [backendServerError, setBackendServerError] = useState<string | null>(null);
@@ -39,14 +40,15 @@ function Tours() {
   const [countries, setCountries] = useState<any[]>(countriesParam 
     ? countriesParam.split(',').map(value => {
         if (language === 'en') {
-            const country = countryTranslationsEn.find(c => c.cz === value);
-          return { value, label: country ? country.en : value }; 
+          // Find the country translation in English
+          const country = countryTranslationsEn.find(c => c.cz === value);
+          return { value, label: country ? country.en : value }; // Default to `value` if no translation found
         } else if (language === 'es') {
           // Find the country translation in Spanish
           const country = countryTranslationsEs.find(c => c.cz === value);
-          return { value, label: country ? country.es : value }; 
+          return { value, label: country ? country.es : value }; // Default to `value` if no translation found
         }
-        return { value, label: value }; 
+        return { value, label: value }; // Default case, no translation
       })
     : []);
   
@@ -55,36 +57,45 @@ function Tours() {
     tourTypesParam.split(',').map(value => ({ value})) : []
 );
 
+
+
   
   const [tourDates, setTourDates] = useState<any[]>(tourDatesParam 
     ? tourDatesParam.split(',').map(value => {
-        const [month, year] = value.split('-'); 
-        let label = `${month}-${year}`; 
+        const [month, year] = value.split('-'); // Split the value into month and year
+        let label = `${month}-${year}`; // Default label format
   
         if (language === 'en') {
-            const monthName = monthNameObject.find(c => c.cz === month);
+          // Find the month translation in English
+          const monthName = monthNameObject.find(c => c.cz === month);
           if (monthName) {
             label = `${monthName.en}-${year}`;
           }
         } else if (language === 'es') {
+          // Find the month translation in Spanish
           const monthName = monthNameObject.find(c => c.cz === month);
           if (monthName) {
             label = `${monthName.es}-${year}`;
           }
         }
   
-        return { value, label }; 
+        return { value, label }; // Return the object with value and label
     })
     : []
   );
-    
+  
+  
   const currentPage = parseInt(searchParams.get('page') || '1', 10) - 1;
+  console.log(currentPage+1)
+
   const queryClient = useQueryClient();
   queryClient.invalidateQueries({ queryKey: ['tour'] })
 
  
   useEffect(() => {
+
     const searchParam = searchParams.get('search');
+
 
     if (countriesParam) {
   
@@ -98,12 +109,14 @@ function Tours() {
             : value // Default to the country value if no translation is found
         }))
       );
-            
+      
+      
     }
 
     if (tourTypesParam) {
       setTourTypes(tourTypesParam.split(',').map(value => ({ value, label: 'test' })));
     }
+
 
     if (tourDatesParam) {
         
@@ -117,12 +130,13 @@ function Tours() {
             : value // Default to the country value if no translation is found
         }))
       );
-       }
+      
+    }
 
     if (searchParam) {
       setText(searchParam);
     }
-  }, [searchParams,language ,countriesParam, tourDatesParam, tourTypesParam]);
+  }, [searchParams,countriesParam, tourDatesParam, tourTypesParam,language]);
 
   const [url, setUrl] = useState('');
 
@@ -145,7 +159,7 @@ function Tours() {
     const normalizedCurrentUrl = normalizeUrl(currentUrl);
 
     if (url !== normalizedCurrentUrl) {
-   
+      // URL has changed (excluding `page` parameter)
       setUrl(normalizedCurrentUrl);
       updateSearchParams({
         countries: countries.map(c => c.value).join(',') || undefined,
@@ -155,6 +169,7 @@ function Tours() {
         page: '1',
       });
     } else {
+      // Only the page parameter changes
       updateSearchParams({
         page: (currentPage + 1).toString(),
         countries: countries.map(c => c.value).join(',') || undefined,
@@ -163,7 +178,7 @@ function Tours() {
         search: debouncedValue || undefined,
       });
     }
-  }, [ countries, tourTypes, tourDates, debouncedValue]);
+  }, [url, countries, tourTypes, tourDates, debouncedValue, currentPage]);
 
   const fetchTours = async (page = 0) => {
     const params = new URLSearchParams();
@@ -193,12 +208,14 @@ function Tours() {
 
     try {
      const response = await fetchData(url,'GET');
+
     
       if (!response.ok) {
         const errorData = await response.json();
         setBackendError(errorData.error);
     
         }
+
 
       backendError && setBackendError(null);
       return await response.json();
@@ -208,7 +225,9 @@ function Tours() {
     }
   };
 
- 
+
+
+  
   const { data, isLoading, isFetching, isError} = useQuery({
     queryFn: () => fetchTours(currentPage),
     queryKey: ['tours', currentPage, debouncedValue, countries, tourTypes, tourDates,language],
@@ -238,11 +257,16 @@ function Tours() {
   }
 
 
+
+
   let  userDataFiltered =   data?.tours.filter((keyword: any) =>
         keyword.destinationes.toLowerCase().includes(debouncedValue ? debouncedValue.toLowerCase() : '') || 
         keyword.destinationen.toLowerCase().includes(debouncedValue ? debouncedValue.toLowerCase() : '') ||
         keyword.destination.toLowerCase().includes(debouncedValue ? debouncedValue.toLowerCase() : '') 
    ) || [];
+
+
+
 
   
   const currentUrl = window.location.href;
@@ -324,4 +348,3 @@ function Tours() {
 }
 
 export default Tours;
-
