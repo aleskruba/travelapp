@@ -6,7 +6,7 @@ function Footer() {
   const { language} = useLanguageContext();
 
   return (
-    <footer className="dark:text-lightPrimary pb-20 ">
+    <footer className="dark:text-lightPrimary pb-20 z-50 ">
       <div className=" px-8  flex flex-around border-t border-white  py-8  ">
         <div className="w-full flex justify-center  mb-4 ">
           <div>
