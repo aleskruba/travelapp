@@ -23,6 +23,7 @@ interface CountryOption {
 
 function Tours() {
   const navigate = useNavigate();
+  const {user} = useAuthContext()
   const [backendError, setBackendError] = useState<string | null>(null);
   const [backendServerError, setBackendServerError] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -249,6 +250,11 @@ function Tours() {
 
   return (
     <div className='md:px-2'>
+
+        <div className='flex justify-center pt-2 dark:text-lightBlue text-darkBlue'>
+       {user   ? tourConstants.createTourInfo[language] : tourConstants.onlyRegistredUsersCreateTour[language]}
+          </div>
+
 
 
 

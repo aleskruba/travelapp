@@ -53,6 +53,11 @@ function Home() {
 />
 
 {navbarConstants.waitplease[language]}
+
+<h5 className='pt-4 text-center text-base'  >
+{navbarConstants.waitingTime[language]}
+</h5>
+
 </div>
  
 

@@ -32,6 +32,11 @@ export const navbarConstants = {
     en: "Wait please...",
     cz: "Moment prosím...",
     es: "Espera por favor...",
+},
+waitingTime: {
+  en: "Please note that since I'm using the free version of Render for deployment, there may be a slight delay of around 30 seconds when the servers start up after turning on the app. This is because the free version usually requires the servers to \"wake up\" on first access after a period of inactivity.",
+  cz: "Vezměte prosím na vědomí, že protože pro nasazení používám bezplatnou verzi Render, může při spuštění serverů po zapnutí aplikace dojít k mírnému zpoždění přibližně 30 sekund. Důvodem je to, že bezplatná verze obvykle vyžaduje, aby se servery po určité době nečinnosti „probudily“ při prvním přístupu.",
+  es: "Tenga en cuenta que, dado que estoy usando la versión gratuita de Render para la implementación, puede haber una pequeña demora de alrededor de 30 segundos cuando los servidores se inician después de encender la aplicación. Esto se debe a que la versión gratuita generalmente requiere que los servidores se \"activen\" en el primer acceso después de un período de inactividad.",
 }
 
   

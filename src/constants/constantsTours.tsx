@@ -267,7 +267,16 @@ dateInPast: {
   en: "You haven't created any co-travel yet",
   cz: "Nemáš vytvořenou žádnou spolucestu",
   es: "Aún no has creado ningún viaje compartido",
-}
+},createTourInfo: {
+  en:'You can create a travel companion on your profile in the "Your Travel Mates" section.',
+  cz:'Vytvořit spolucetu můžete na vašem profilu v  sekci "Tvoje spolucesty"',
+  es:'Puedes crear un compañero de viaje en tu perfil en la sección "Tus Compañeros de viaje "'
+},  onlyRegistredUsersCreateTour : {
+ 
+  en: 'Only registered users can create Travel Mates',
+ cz: 'Pouze přihlášení uživatelé mohou vytvářet Spolucesty',
+ es: 'Solo los usuarios registrados pueden crear Compañeros de viaje',
+},
 
 
 }
