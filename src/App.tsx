@@ -98,7 +98,7 @@ function App() {
       </Routes>
       {(location.pathname === '/login' || location.pathname === '/register' || location.pathname === '/forgottenpassword') && <Home />}
      
-        <div className='md:hidden '>
+        <div className=' '>
       <Footer/>
       </div>
     </div>
